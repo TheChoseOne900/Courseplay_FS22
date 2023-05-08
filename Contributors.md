@@ -17,7 +17,7 @@
 * Polish: [KITT3000](https://github.com/KITT3000)
 * Portuguese: [Admilson](https://github.com/Admilson), [neekavis](https://github.com/neekavis)
 * Russian: [Gonimy-Vetrom](https://github.com/Gonimy-Vetrom), [Kurbackiy](https://github.com/Kurbackiy)
-* Spanish: [KCHARRO](https://github.com/KCHARRO), [aorek](https://github.com/aorek)
+* Spanish: [KCHARRO](https://github.com/KCHARRO), [TheChoseOne900](https://github.com/TheChoseOne900), [aorek](https://github.com/aorek)
 * Swedish: [piplarsson](https://github.com/piplarsson)
 * Turkish: [HakanGorkem](https://github.com/HakanGorkem)
 
