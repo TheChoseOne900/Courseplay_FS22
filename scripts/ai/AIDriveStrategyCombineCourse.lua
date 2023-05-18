@@ -27,6 +27,11 @@ AIDriveStrategyCombineCourse.safeUnloadDistanceBeforeEndOfRow = 30
 -- in the fruit
 AIDriveStrategyCombineCourse.waitForUnloadAtEndOfRowFillLevelThreshold = 95
 
+--- Percentage delta leftover until full, when the combine slows down.
+AIDriveStrategyCombineCourse.startingSlowdownFillLevelThreshold = 1.5 
+--- Minimum working speed, for slowdown.
+AIDriveStrategyCombineCourse.normalMinimalWorkingSpeed = 5
+
 AIDriveStrategyCombineCourse.myStates = {
     -- main states
     UNLOADING_ON_FIELD = {},
@@ -211,7 +216,17 @@ function AIDriveStrategyCombineCourse:getDriveData(dt, vX, vY, vZ)
         if self:shouldStopForUnloading() then
             -- player does not want us to move while discharging
             self:setMaxSpeed(0)
+        else
+            -- Slowdown the combine near the last few percent, so no crops are leftover, 
+            -- as the combine needs to stop in time, before it's full.
+            local leftoverPercentage = self.fillLevelFullPercentage - self.combineController:getFillLevelPercentage()
+            if( leftoverPercentage > 0 and leftoverPercentage < self.startingSlowdownFillLevelThreshold ) then 
+                local speed = leftoverPercentage * (self.vehicle:getSpeedLimit(true)/self.startingSlowdownFillLevelThreshold) + self.normalMinimalWorkingSpeed
+                self:setMaxSpeed(speed)
+            end
         end
+
+
     elseif self.state == self.states.TURNING then
         self:checkBlockingUnloader()
     elseif self.state == self.states.WAITING_FOR_LOWER then
@@ -1198,23 +1213,30 @@ end
 
 --- Only allow fuel save, if no trailer is under the pipe and we are waiting for unloading.
 function AIDriveStrategyCombineCourse:isFuelSaveAllowed()
+    if self.pipeController:isFillableTrailerUnderPipe() then 
+        -- Disables Fuel save, when a trailer is under the pipe.
+        return false
+    end
     --- Enables fuel save, while waiting for the rain to stop.
     if self.combine:getIsThreshingDuringRain() then
         return true
     end
-    return not self.pipeController:isFillableTrailerUnderPipe()
-            and self:isWaitingForUnload() or self:isChopperWaitingForUnloader()
+    return self:isWaitingForUnload() or self:isChopperWaitingForUnloader()
 end
 
---- Check if the vehicle should stop during a turn (for example while it
+--- Check if the vehicle should stop during a turn for example while it
 --- is held for unloading or waiting for the straw swath to stop
 function AIDriveStrategyCombineCourse:shouldHoldInTurnManeuver()
+    --- Hold during discharge
     local discharging = self:isDischarging() and not self:isChopper()
+
     local isFinishingRow = self.aiTurn and self.aiTurn:isFinishingRow()
-    local waitForStraw = self.combine.strawPSenabled and not isFinishingRow
-    self:debugSparse('discharging %s, held for unload %s, straw active %s, finishing row = %s',
-            tostring(discharging), tostring(self.heldForUnloadRefill), tostring(self.combine.strawPSenabled), tostring(isFinishingRow))
-    return discharging or self.heldForUnloadRefill or waitForStraw
+    local waitForStraw = self.combineController:isDroppingStrawSwath() and not isFinishingRow
+
+    self:debugSparse('Turn maneuver=> Dischargeable: %s, wait for straw: %s, straw swath active: %s, finishing row: %s',
+        tostring(discharging), tostring(waitForStraw), 
+        tostring(self.combineController:isDroppingStrawSwath()), tostring(isFinishingRow))
+    return discharging or waitForStraw
 end
 
 --- Should we return to the first point of the course after we are done?
