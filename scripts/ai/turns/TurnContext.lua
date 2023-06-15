@@ -387,7 +387,7 @@ function TurnContext:appendEndingTurnCourse(course, extraLength, useTightTurnOff
 	-- extra length at the end to allow for alignment
 	extraLength = extraLength and (extraLength + 3) or 3
     -- +1 so the first waypoint of the appended line won't overlap with the last wp of course
-    CpUtil.debugFormat(CpDebug.DBG_TURN, 'appendEndingTurnCourse: dzVehicleAtTurnEnd: %.1f, dzWorkStart: %.1f, extra %.1f)',
+    self:debug('appendEndingTurnCourse: dzVehicleAtTurnEnd: %.1f, dzWorkStart: %.1f, extra %.1f)',
             dzFrontMarker, dzWorkStart, extraLength)
     for d = math.min(dzFrontMarker, dzWorkStart) + 1, extraLength, 1 do
         local x, y, z = localToWorld(startNode, 0, 0, d)
@@ -449,21 +449,18 @@ end
 
 --- Assuming a vehicle just finished a row, provide parameters for calculating a path to the start
 --- of the next row, making sure that the vehicle and the implement arrives there aligned with the row direction
----@return number, number, number the node where the turn ends, z offset to use with the start node, which should be
---- the vehicle's direction node, and lastly, z offset to use with the end node
+---@return number, number the node where the turn ends, z offset to use with the end node
 function TurnContext:getTurnEndNodeAndOffsets(steeringLength)
-    local turnEndNode, startOffset, goalOffset
+    local turnEndNode, goalOffset
     if self.frontMarkerDistance > 0 then
         -- implement in front of vehicle. Turn should end with the implement at the work start position, this is where
         -- the vehicle's root node is on the vehicleAtTurnEndNode
         turnEndNode = self.vehicleAtTurnEndNode
-        startOffset = 0
         goalOffset = 0
     else
         -- implement behind vehicle. Since we are turning, we want to be aligned with the next row with our vehicle
         -- on the work start node so by the time the implement reaches it, it is also aligned
         turnEndNode = self.workStartNode
-        startOffset = 0
         -- vehicle is about frontMarkerDistance before the work end when finishing the turn
         if steeringLength > 0 then
             -- giving enough time for the implement to align, the vehicle will reach the next row about the
@@ -478,7 +475,7 @@ function TurnContext:getTurnEndNodeAndOffsets(steeringLength)
             goalOffset = self.frontMarkerDistance + self.turnEndForwardOffset
         end
     end
-    return turnEndNode, startOffset, goalOffset
+    return turnEndNode, goalOffset
 end
 
 function TurnContext:debug(...)

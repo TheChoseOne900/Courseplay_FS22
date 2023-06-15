@@ -28,15 +28,6 @@
     <!---->
     <!--AI job parameters-->
     <!---->
-    <text name="CP_jobParameters_title" text=""/>
-    <text name="CP_baleFinderJobParameters_title" text=""/>
-    <text name="CP_baleFinderJobParameters_baleWrapType_tooltip" text=""/>
-    <text name="CP_combineUnloaderJobParameters_title" text=""/>
-    <text name="CP_combineUnloaderJobParameters_useGiantsUnload_tooltip" text=""/>
-    <text name="CP_combineUnloaderJobParameters_unloadingStation_tooltip" text=""/>
-    <text name="CP_bunkerSiloJobParameters_title" text=""/>
-    <text name="CP_bunkerSiloJobParameters_drivingForwardsIntoSilo_tooltip" text=""/>
-    <text name="CP_bunkerSiloJobParameters_waitAtParkPosition_tooltip" text=""/>
     <text name="CP_jobParameters_fieldPosition_title" text="Umístění pole:"/>
     <text name="CP_jobParameters_bunkerSiloPosition_title" text="Umístění jámy:"/>
     <text name="CP_jobParameters_parkPosition_title" text="Parkovací pozice:"/>
@@ -101,6 +92,7 @@
     <!---->
     <text name="CP_siloLoaderJobParameters_subTitle_loadPosition" text="Nakládací pozice"/>
     <text name="CP_siloLoaderJobParameters_loadPosition_title" text="Nakládací pozice"/>
+    <text name="CP_siloLoader_fillLevelProgress" text="Pokrok: "/>
     <!---->
     <!--AI jobs-->
     <!---->
@@ -211,8 +203,7 @@
     <text name="CP_vehicle_setting_stopForUnload_title" text="Zastavit při vykládání"/>
     <text name="CP_vehicle_setting_stopForUnload_tooltip" text="Vždy zastaví jízdu při vykládání."/>
     <text name="CP_vehicle_setting_selfUnload_title" text="Kombajn se vyloží samostatně"/>
-    <text name="CP_vehicle_setting_selfUnload_tooltip" text="Samostatné vyložení kombajnu do vleku, který je poblíž. Není podporováno v režimu multitools nebo konvoje.
-"/>
+    <text name="CP_vehicle_setting_selfUnload_tooltip" text="Samostatné vyložení kombajnu do vleku, který je poblíž. Není podporováno v režimu multitools nebo konvoje."/>
     <text name="CP_vehicle_setting_unloadOnFirstHeadland_title" text="Vyložit kombajn na první souvrati"/>
     <text name="CP_vehicle_setting_unloadOnFirstHeadland_tooltip" text="Kombajn si přivolá odvozce na první souvrati."/>
     <text name="CP_vehicle_setting_strawSwath_title" text="Pokos slámy"/>
@@ -296,7 +287,7 @@
     <text name="CP_global_setting_wageModifier_tooltip" text="Mzdy CP pracovníků jako procento mzdy normálního pracovníka."/>
     <text name="CP_global_setting_autoRepair_title" text="Automatické opravy"/>
     <text name="CP_global_setting_autoRepair_tooltip" text="CP pracovník automaticky opravuje vozidlo."/>
-    <text name="CP_global_setting_autoRepair_off" text="Neoprvovat"/>
+    <text name="CP_global_setting_autoRepair_off" text="Neopravovat"/>
     <text name="CP_global_setting_autoRepair_less_than_25" text="&lt; 25%"/>
     <text name="CP_global_setting_autoRepair_less_than_70" text="&lt; 70%"/>
     <text name="CP_global_setting_autoRepair_always" text="Udržovat v dobrém stavu"/>
@@ -429,7 +420,7 @@ Trasa se automaticky uloží při zavření editoru a přepíše vybranou trasu.
     <!--Help menu-->
     <!---->
     <text name="CP_help_title" text="Courseplay"/>
-    <text name="CP_help_subTitle" text="A Modification for Farming Simulator 22 "/>
+    <text name="CP_help_subTitle" text="Modifikace pro Farming Simulator 22 "/>
     <text name="CP_help_page_blank" text=""/>
     <text name="CP_help_page_General_title" text="Všeobecné informace"/>
     <text name="CP_help_page_GeneralBase_text" text="
@@ -761,7 +752,7 @@ pak se tato hromada používá k vyložení.
 Směr značky se používá pro směr vykládky.
 Navíc pro vleky je třeba zvolit vykládací stranu.
 "/>
-    <text name="CP_help_page_bunker_title" text="Pacovník v silážní jámě"/>
+    <text name="CP_help_page_bunker_title" text="Pracovník v silážní jámě"/>
     <text name="CP_help_page_bunkerGeneral_text" text="
 Courseplay je schopen dusat nebo nahrnovat řezanku v silážní jámě.
 Zhutňování je možné bez speciálního nářadí, s válcem, závažím nebo jen vozidlem.

@@ -71,7 +71,7 @@ function AIDriveStrategyFindBales:startWithoutCourse()
     for _, implement in pairs(self.vehicle:getAttachedImplements()) do
         self:info(' - %s', CpUtil.getName(implement.object))
     end
-
+    self:lowerImplements()
 end
 
 function AIDriveStrategyFindBales:collectNextBale()
@@ -79,25 +79,25 @@ function AIDriveStrategyFindBales:collectNextBale()
     if #self.bales > 0 then
         self:findPathToNextBale()
     else
-        self:info('No bales found, scan the field once more before leaving for the unload course.')
+        self:debug('No bales found, scan the field once more before leaving for the unload course.')
         local wrongWrapType
         self.bales, wrongWrapType = self:findBales()
         if #self.bales > 0 then
-            self:info('Found more bales, collecting them')
+            self:debug('Found more bales, collecting them')
             self:findPathToNextBale()
             return
         end
         if self.baleLoader and self:hasBalesLoaded() and not (self.baleLoaderController and self.baleLoaderController:isChangingBaleSize()) then
             if self:isReadyToFoldImplements() then
                 --- Wait until the animations have finished and then make sure the bale loader can be send back with auto drive.
-                self:info('There really are no more bales on the field')
+                self:debug('There really are no more bales on the field')
                 self.vehicle:stopCurrentAIJob(AIMessageErrorIsFull.new())
             end
         elseif self.baleLoader and wrongWrapType then 
-            self:info('Only bales with a wrong wrap type left.')
+            self:debug('Only bales with a wrong wrap type left.')
             self.vehicle:stopCurrentAIJob(AIMessageErrorWrongBaleWrapType.new())
         else
-            self:info('There really are no more bales on the field')
+            self:debug('There really are no more bales on the field')
             self.vehicle:stopCurrentAIJob(AIMessageSuccessFinishedJob.new())
         end
     end
@@ -451,9 +451,16 @@ function AIDriveStrategyFindBales:getDriveData(dt, vX, vY, vZ)
     self:updateLowFrequencyImplementControllers()
     
     if self.state == self.states.INITIAL then
-        self.bales = self:findBales()
-        self:collectNextBale()
-        self.state = self.states.SEARCHING_FOR_NEXT_BALE
+        if self:getCanContinueWork() then 
+            self.state = self.states.SEARCHING_FOR_NEXT_BALE
+        else
+            --- Waiting until the unfolding has finished.
+            if self.bales == nil then 
+                --- Makes sure the hud bale counter already get's updated
+                self.bales = self:findBales() 
+            end
+            self:setMaxSpeed(0)
+        end
     elseif self.state == self.states.SEARCHING_FOR_NEXT_BALE then
         self:setMaxSpeed(0)
         self:debug('work: searching for next bale')
@@ -545,7 +552,7 @@ function AIDriveStrategyFindBales:update(dt)
     self:updateImplementControllers(dt)
 
     if self:areBaleLoadersFull() and self:isReadyToFoldImplements() then
-        self:info('Bale loader is full, stopping job.')
+        self:debug('Bale loader is full, stopping job.')
         self.vehicle:stopCurrentAIJob(AIMessageErrorIsFull.new())
     end
 end

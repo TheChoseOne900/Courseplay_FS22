@@ -14,7 +14,7 @@
     <text name="CP_unit_meter" text="м"/>
     <text name="CP_unit_foot" text="ft"/>
     <text name="CP_copy" text="Копировать курс: "/>
-    <text name="CP_infoText" text="CoursePlay(%s): Обратиться за помощью, отправить отчет об ошибках или исправлениях, можете посетив: https://github.com/Courseplay/Courseplay_FS22."/>
+    <text name="CP_infoText" text="CoursePlay(%s): Чтобы получить помощь, отправить отчет об ошибках или исправлениях, можете посетить: https://github.com/Courseplay/Courseplay_FS22."/>
     <text name="CP_error_no_course" text="Создайте курс до начала работы."/>
     <text name="CP_error_could_not_generate_course" text="Не удалось сгенерировать курс. В логе может содержаться дополнительная информация."/>
     <text name="CP_error_not_on_field" text="Цель не на поле."/>
@@ -22,21 +22,12 @@
     <text name="CP_error_start_position_to_far_away_from_field" text="Начальная позиция далеко от поля."/>
     <text name="CP_error_giants_unloader_not_available" text="Разгружающий Giants не доступен."/>
     <text name="CP_error_fieldUnloadPosition_too_far_away_from_field" text="Положение выгрузки слишком далеко от поля."/>
-    <text name="CP_error_vehicle_too_far_away_from_field" text="Vehicle is too far away from the field to start."/>
+    <text name="CP_error_vehicle_too_far_away_from_field" text="Транспортное средство слишком далеко от поля, чтобы стартовать."/>
     <text name="CP_error_no_bunkerSilo_found" text="Силосную яму не найдено."/>
     <text name="CP_error_no_heap_found" text="Не найдена куча."/>
     <!---->
     <!--AI job parameters-->
     <!---->
-    <text name="CP_jobParameters_title" text=""/>
-    <text name="CP_baleFinderJobParameters_title" text=""/>
-    <text name="CP_baleFinderJobParameters_baleWrapType_tooltip" text=""/>
-    <text name="CP_combineUnloaderJobParameters_title" text=""/>
-    <text name="CP_combineUnloaderJobParameters_useGiantsUnload_tooltip" text=""/>
-    <text name="CP_combineUnloaderJobParameters_unloadingStation_tooltip" text=""/>
-    <text name="CP_bunkerSiloJobParameters_title" text=""/>
-    <text name="CP_bunkerSiloJobParameters_drivingForwardsIntoSilo_tooltip" text=""/>
-    <text name="CP_bunkerSiloJobParameters_waitAtParkPosition_tooltip" text=""/>
     <text name="CP_jobParameters_fieldPosition_title" text="Положение на поле:"/>
     <text name="CP_jobParameters_bunkerSiloPosition_title" text="Положение перед ямой:"/>
     <text name="CP_jobParameters_parkPosition_title" text="Положение парковки:"/>
@@ -101,6 +92,7 @@
     <!---->
     <text name="CP_siloLoaderJobParameters_subTitle_loadPosition" text="Позиция загрузки"/>
     <text name="CP_siloLoaderJobParameters_loadPosition_title" text="Позиция загрузки"/>
+    <text name="CP_siloLoader_fillLevelProgress" text="Прогресс: "/>
     <!---->
     <!--AI jobs-->
     <!---->
@@ -232,7 +224,7 @@
     <text name="CP_vehicle_courseGeneratorSetting_headlandOverlapPercent_title" text="Перекрытие поворотных полос"/>
     <text name="CP_vehicle_courseGeneratorSetting_headlandOverlapPercent_tooltip" text="Перекрытие проходов поворотных полос в процентах от рабочей ширины. Значение: 0 - 25."/>
     <text name="CP_vehicle_courseGeneratorSetting_fieldMargin_title" text="Сдвиг границ поля"/>
-    <text name="CP_vehicle_courseGeneratorSetting_fieldMargin_tooltip" text="Положительные значения уменьшают размер поля, чтобы добавить буфер вокруг рабочей зоны, отрицательные - увеличивают рабочее пространство за пределы поля. Значение: -2 - 5.8."/>
+    <text name="CP_vehicle_courseGeneratorSetting_fieldMargin_tooltip" text="Положительные значения уменьшают размер поля, отрицательные - увеличивают рабочую область за пределы поля. Значение: -2 - 5.8."/>
     <text name="CP_vehicle_courseGeneratorSetting_rowsToSkip_title" text="Пропускать проходов"/>
     <text name="CP_vehicle_courseGeneratorSetting_rowsToSkip_tooltip" text="Сколько пропускать проходов при переходе к следующему проходу при челночном методе. Значение: 0 - 6."/>
     <text name="CP_vehicle_courseGeneratorSetting_rowsPerLand_title" text="Проходов в загоне"/>

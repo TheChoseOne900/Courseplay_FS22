@@ -96,6 +96,8 @@ function AIDriveStrategySiloLoader:startWithoutCourse(jobParameters)
     self.siloCourse = Course.createFromTwoWorldPositions(self.vehicle, x, z, dx, dz, 
         0, 0, 3, 3, false)
 
+    --- fill level, when the driver is started
+    self.fillLevelLeftOverSinceStart = self.silo:getTotalFillLevel()
 
     local distance = self.siloCourse:getDistanceBetweenVehicleAndWaypoint(self.vehicle, 1)
 
@@ -104,6 +106,8 @@ function AIDriveStrategySiloLoader:startWithoutCourse(jobParameters)
         self:startPathfindingToStart(self.siloCourse)
     else
         self:startCourse(self.siloCourse, 1)
+        self.vehicle:raiseAIEvent("onAIFieldWorkerStart", "onAIImplementStart")
+        self:lowerImplements()
     end
 
 end
@@ -312,6 +316,11 @@ function AIDriveStrategySiloLoader:update(dt)
     end
 end
 
+
+function AIDriveStrategySiloLoader:updateCpStatus(status)
+    status:setSiloLoaderStatus(self.silo:getTotalFillLevel(), self.fillLevelLeftOverSinceStart)
+end
+
 ---------------------------------------------
 --- Combine unloader interface functions
 ---------------------------------------------
@@ -355,19 +364,6 @@ function AIDriveStrategySiloLoader:hold(periodMs)
     self.temporaryHold:set(true, math.min(math.max(0, periodMs), 30000))
 end
 
-function AIDriveStrategySiloLoader:isActiveCpUnloader(vehicle)
-    if vehicle.getIsCpCombineUnloaderActive and vehicle:getIsCpCombineUnloaderActive() then
-        local strategy = vehicle:getCpDriveStrategy()
-        if strategy then 
-            local unloadTargetType = strategy:getUnloadTargetType()
-            if unloadTargetType ~= nil then 
-                return unloadTargetType == AIDriveStrategyUnloadCombine.UNLOAD_TYPES.SILO_LOADER
-            end
-        end    
-    end
-    return false
-end
-
 function AIDriveStrategySiloLoader:callUnloaderWhenNeeded()
     if not self.timeToCallUnloader:get() then
         return
@@ -394,7 +390,7 @@ function AIDriveStrategySiloLoader:findUnloader()
     local bestScore = -math.huge
     local bestUnloader, bestEte
     for _, vehicle in pairs(g_currentMission.vehicles) do
-        if self:isActiveCpUnloader(vehicle) then
+        if AIDriveStrategyUnloadCombine.isActiveCpSiloLoader(vehicle) then
             local x, _, z = getWorldTranslation(self.vehicle.rootNode)
             ---@type AIDriveStrategyUnloadCombine
             local driveStrategy = vehicle:getCpDriveStrategy()

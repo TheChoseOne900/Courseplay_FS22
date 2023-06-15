@@ -28,15 +28,6 @@
     <!---->
     <!--AI job parameters-->
     <!---->
-    <text name="CP_jobParameters_title" text=""/>
-    <text name="CP_baleFinderJobParameters_title" text=""/>
-    <text name="CP_baleFinderJobParameters_baleWrapType_tooltip" text=""/>
-    <text name="CP_combineUnloaderJobParameters_title" text=""/>
-    <text name="CP_combineUnloaderJobParameters_useGiantsUnload_tooltip" text=""/>
-    <text name="CP_combineUnloaderJobParameters_unloadingStation_tooltip" text=""/>
-    <text name="CP_bunkerSiloJobParameters_title" text=""/>
-    <text name="CP_bunkerSiloJobParameters_drivingForwardsIntoSilo_tooltip" text=""/>
-    <text name="CP_bunkerSiloJobParameters_waitAtParkPosition_tooltip" text=""/>
     <text name="CP_jobParameters_fieldPosition_title" text="Posizione del campo:"/>
     <text name="CP_jobParameters_bunkerSiloPosition_title" text="Posizione bunker silos:"/>
     <text name="CP_jobParameters_parkPosition_title" text="Posizione parcheggio:"/>
@@ -101,6 +92,7 @@
     <!---->
     <text name="CP_siloLoaderJobParameters_subTitle_loadPosition" text="Posizione di caricamento"/>
     <text name="CP_siloLoaderJobParameters_loadPosition_title" text="Posizione di caricamento"/>
+    <text name="CP_siloLoader_fillLevelProgress" text="Avanzamento: "/>
     <!---->
     <!--AI jobs-->
     <!---->
@@ -566,7 +558,7 @@ J: Copia e incolla un percorso su un altro veicolo.
      Una volta premuto il pulsante copia, quando l'icona diventa verde, il percorso può essere incollato su un veicolo senza percorso.
 K e L: Facendo clic sul testo verranno ripristinate le modifiche ai valori automatici.
 M: Mostra il percorso copiato.
-N: Quest'area mostra la correzione della corsia se è stata caricata una rotta multiutensile. Cliccando sul testo si alternano le posizioni.
+N: Quest'area mostra la correzione della corsia se è stata caricata una rotta multiattrezzo. Cliccando sul testo si alternano le posizioni.
 O: Avvia/interrompi la registrazione di un corso sul campo personalizzato.
 P: Rimuove il porcorso dal veicolo
 Q: Modifica la visibilità del percorso tra: acceso, spento e solo start/stop.

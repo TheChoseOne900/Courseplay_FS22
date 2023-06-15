@@ -28,15 +28,6 @@
     <!---->
     <!--AI job parameters-->
     <!---->
-    <text name="CP_jobParameters_title" text=""/>
-    <text name="CP_baleFinderJobParameters_title" text=""/>
-    <text name="CP_baleFinderJobParameters_baleWrapType_tooltip" text=""/>
-    <text name="CP_combineUnloaderJobParameters_title" text=""/>
-    <text name="CP_combineUnloaderJobParameters_useGiantsUnload_tooltip" text=""/>
-    <text name="CP_combineUnloaderJobParameters_unloadingStation_tooltip" text=""/>
-    <text name="CP_bunkerSiloJobParameters_title" text=""/>
-    <text name="CP_bunkerSiloJobParameters_drivingForwardsIntoSilo_tooltip" text=""/>
-    <text name="CP_bunkerSiloJobParameters_waitAtParkPosition_tooltip" text=""/>
     <text name="CP_jobParameters_fieldPosition_title" text="Posición en campo:"/>
     <text name="CP_jobParameters_bunkerSiloPosition_title" text="Posición en Silo:"/>
     <text name="CP_jobParameters_parkPosition_title" text="Pos. Estac."/>
@@ -101,6 +92,7 @@
     <!---->
     <text name="CP_siloLoaderJobParameters_subTitle_loadPosition" text="Posición de carga"/>
     <text name="CP_siloLoaderJobParameters_loadPosition_title" text="Posición de carga"/>
+    <text name="CP_siloLoader_fillLevelProgress" text="Progreso: "/>
     <!---->
     <!--AI jobs-->
     <!---->
@@ -108,7 +100,7 @@
     <text name="CP_job_baleCollect" text="CP: Recoger/Envolver fardos"/>
     <text name="CP_job_combineUnload" text="CP: Descargar Cosechadora"/>
     <text name="CP_job_bunkerSilo" text="CP: Trabajo en Silo"/>
-    <text name="CP_job_siloLoader" text="CP: Silo loading"/>
+    <text name="CP_job_siloLoader" text="CP: Carga de silos"/>
     <text name="CP_ai_page_generate_course" text="CP: Crear ruta de trabajo de campo."/>
     <text name="CP_ai_page_open_course_generator" text="CP: Abrir/Cerrar generador de rutas."/>
     <!---->

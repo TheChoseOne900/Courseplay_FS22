@@ -868,17 +868,15 @@ function AIDriveStrategyCombineCourse:callUnloader(bestUnloader, tentativeRendez
     end
 end
 
-function AIDriveStrategyCombineCourse:isActiveCpUnloader(vehicle)
-    if vehicle.getIsCpCombineUnloaderActive and vehicle:getIsCpCombineUnloaderActive() then
-        local strategy = vehicle:getCpDriveStrategy()
-        if strategy then 
-            local unloadTargetType = strategy:getUnloadTargetType()
-            if unloadTargetType ~= nil then 
-                return unloadTargetType == AIDriveStrategyUnloadCombine.UNLOAD_TYPES.COMBINE
-            end
-        end
+---@param vehicle table
+---@return boolean true if vehicle is an active Courseplay controlled combine/harvester
+function AIDriveStrategyCombineCourse.isActiveCpCombine(vehicle)
+    if not (vehicle.getIsCpActive and vehicle:getIsCpActive()) then
+        -- not driven by CP
+        return false
     end
-    return false
+    local driveStrategy = vehicle.getCpDriveStrategy and vehicle:getCpDriveStrategy()
+    return driveStrategy and driveStrategy.callUnloader ~= nil
 end
 
 --- Find an unloader to drive to the target, which may either be the combine itself (when stopped and waiting for unload)
@@ -891,7 +889,7 @@ function AIDriveStrategyCombineCourse:findUnloader(combine, waypoint)
     local bestScore = -math.huge
     local bestUnloader, bestEte
     for _, vehicle in pairs(g_currentMission.vehicles) do
-        if self:isActiveCpUnloader(vehicle) then
+        if AIDriveStrategyUnloadCombine.isActiveCpCombineUnloader(vehicle) then
             local x, _, z = getWorldTranslation(self.vehicle.rootNode)
             ---@type AIDriveStrategyUnloadCombine
             local driveStrategy = vehicle:getCpDriveStrategy()
@@ -1076,7 +1074,10 @@ function AIDriveStrategyCombineCourse:findBestWaypointToUnloadOnUpDownRows(ix, i
     if pipeInFruit and not isPipeInFruitAllowed then
         --if the pipe is in fruit AND the user selects 'avoid fruit'
         if ixAtRowStart then
-            if ixAtRowStart > currentIx then
+            if self.course:getMultiTools() > 1 then
+                self:debug('Pipe may be in fruit at waypoint %d, we have no reliable information as multitool active, rejecting rendezvous', ix)
+                newWpIx = nil
+            elseif ixAtRowStart > currentIx then
                 -- have not started the previous row yet
                 self:debug('Pipe would be in fruit at waypoint %d. Check previous row', ix)
                 pipeInFruit, _ = self:isPipeInFruitAt(ixAtRowStart - 2) -- wp before the turn start
@@ -1320,13 +1321,13 @@ function AIDriveStrategyCombineCourse:startTurn(ix)
             AIDriveStrategyCombineCourse.superClass().startTurn(self, ix)
         elseif self.course:isOnOutermostHeadland(ix) and self:isTurnOnFieldActive() then
             self:debug('Creating a pocket in the corner so the combine stays on the field during the turn')
-            self.aiTurn = CombinePocketHeadlandTurn(self.vehicle, self, self.ppc, self.turnContext,
+            self.aiTurn = CombinePocketHeadlandTurn(self.vehicle, self, self.ppc, self.proximityController, self.turnContext,
                     self.course, self:getWorkWidth())
             self.state = self.states.TURNING
             self.ppc:setShortLookaheadDistance()
         else
             self:debug('Use combine headland turn.')
-            self.aiTurn = CombineHeadlandTurn(self.vehicle, self, self.ppc, self.turnContext)
+            self.aiTurn = CombineHeadlandTurn(self.vehicle, self, self.ppc, self.proximityController, self.turnContext)
             self.state = self.states.TURNING
         end
     else

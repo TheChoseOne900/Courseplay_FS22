@@ -21,6 +21,7 @@ Base class for all Courseplay drive strategies
 
 ---@class AIDriveStrategyCourse : AIDriveStrategy
 ---@field vehicle table
+---@field controllers table
 AIDriveStrategyCourse = {}
 local AIDriveStrategyCourse_mt = Class(AIDriveStrategyCourse, AIDriveStrategy)
 
@@ -291,6 +292,19 @@ function AIDriveStrategyCourse:lowerImplements()
     self:raiseControllerEvent(self.onLoweringEvent)
 end
 
+--- Can the ai worker continue working?
+---@return boolean
+function AIDriveStrategyCourse:getCanContinueWork()
+    --- Not every implement, for example balers or bale wrapper are handled by the giants function.
+    for _, controller in pairs(self.controllers) do
+        ---@type ImplementController
+        if not controller:canContinueWork() then
+            return false
+        end
+    end
+    return self.vehicle:getCanAIFieldWorkerContinueWork()
+end
+
 -----------------------------------------------------------------------------------------------------------------------
 --- Static parameters (won't change while driving)
 -----------------------------------------------------------------------------------------------------------------------
@@ -369,15 +383,6 @@ end
 --- Get the currently active course (temporary or not)
 function AIDriveStrategyCourse:getCurrentCourse()
     return self.ppc:getCourse() or self.course
-end
-
-function AIDriveStrategyCourse:isActiveCpCombine(vehicle)
-    if not (vehicle.getIsCpActive and vehicle:getIsCpActive()) then
-        -- not driven by CP
-        return false
-    end
-    local driveStrategy = vehicle.getCpDriveStrategy and vehicle:getCpDriveStrategy()
-    return driveStrategy and driveStrategy.callUnloader ~= nil
 end
 
 function AIDriveStrategyCourse:update()
