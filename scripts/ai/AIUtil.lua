@@ -31,14 +31,12 @@ function AIUtil.isReverseDriving(vehicle)
 end
 
 function AIUtil.getDirectionNode(vehicle)
-	-- our reference node we are tracking/controlling, by default it is the vehicle's root/direction node
-	if AIUtil.isReverseDriving(vehicle) then
-		-- reverse driving tractor, use the CP calculated reverse driving direction node pointing in the
-		-- direction the driver seat is facing
-		return vehicle:getReverseDrivingDirectionNode()
-	else
-		return vehicle:getAIDirectionNode() or vehicle.rootNode
-	end
+	-- TODO: We used this to make sure to return a direction node that always points to the
+	-- forward direction, even if a vehicle had its direction reversed (cabin turned). Now we
+	-- think getAIDirectionNode() guarantees this, the only reason this is still here is that
+	-- we need to check if it is possible the call this with a vehicle which has no AI direction node
+	-- and fall back to the root node.
+	return vehicle.getAIDirectionNode and vehicle:getAIDirectionNode() or vehicle.rootNode
 end
 
 --- If we are towing an implement, move to a bigger radius in tight turns
@@ -202,7 +200,7 @@ function AIUtil.getTurningRadius(vehicle)
 					implement:getName(), turnRadius)
 			end
 		end
-		if turnRadius == 0 then
+		if turnRadius == 0 and implement ~= vehicle then
 			if AIUtil.isImplementTowed(vehicle, implement) then
 				if AIUtil.hasImplementWithSpecialization(vehicle, Trailer) and
 						AIUtil.hasImplementWithSpecialization(vehicle, Pipe) then
@@ -279,7 +277,7 @@ end
 function AIUtil.hasImplementsOnTheBack(vehicle)
 	for _, implement in pairs(vehicle:getAttachedImplements()) do
 		if implement.object ~= nil then
-			local _, _, dz = localToLocal(implement.object.rootNode, vehicle.rootNode, 0, 0, 0)
+			local _, _, dz = localToLocal(implement.object.rootNode, AIUtil.getDirectionNode(vehicle), 0, 0, 0)
 			if dz < 0 then
 				return true
 			end
@@ -293,7 +291,7 @@ end
 ---@param object table
 ---@return boolean
 function AIUtil.isObjectAttachedOnTheFront(vehicle,object)
-	local _, _, dz = localToLocal(object.rootNode, vehicle.rootNode, 0, 0, 0)
+	local _, _, dz = localToLocal(object.rootNode, AIUtil.getDirectionNode(vehicle), 0, 0, 0)
 	if dz > 0 then
 		return true
 	end
@@ -305,7 +303,7 @@ end
 ---@param object table
 ---@return boolean
 function AIUtil.isObjectAttachedOnTheBack(vehicle,object)
-	local _, _, dz = localToLocal(object.rootNode, vehicle.rootNode, 0, 0, 0)
+	local _, _, dz = localToLocal(object.rootNode, AIUtil.getDirectionNode(vehicle), 0, 0, 0)
 	if dz < 0 then
 		return true
 	end
@@ -330,12 +328,12 @@ function AIUtil.getFirstAttachedImplement(vehicle,suppressLog)
 	for _, implement in pairs(AIUtil.getAllAttachedImplements(vehicle)) do
 		if implement.object ~= nil then
 			-- the distance from the vehicle's root node to the front of the implement
-			local _, _, d = localToLocal(implement.object.rootNode, vehicle.rootNode, 0, 0,
+			local _, _, d = localToLocal(implement.object.rootNode, AIUtil.getDirectionNode(vehicle), 0, 0,
 				implement.object.size.length / 2 + implement.object.size.lengthOffset)
 			if implement.object.spec_leveler then 
 				local nodeData = ImplementUtil.getLevelerNode(implement.object)
 				if nodeData then 
-					_, _, d = localToLocal(nodeData.node, vehicle.rootNode, 0, 0, 0)
+					_, _, d = localToLocal(nodeData.node, AIUtil.getDirectionNode(vehicle), 0, 0, 0)
 				end
 			end
 			if not suppressLog then
@@ -359,12 +357,12 @@ function AIUtil.getLastAttachedImplement(vehicle,suppressLog)
 	for _, implement in pairs(AIUtil.getAllAttachedImplements(vehicle)) do
 		if implement.object ~= nil then
 			-- the distance from the vehicle's root node to the back of the implement
-			local _, _, d = localToLocal(implement.object.rootNode, vehicle.rootNode, 0, 0,
+			local _, _, d = localToLocal(implement.object.rootNode, AIUtil.getDirectionNode(vehicle), 0, 0,
 				- implement.object.size.length / 2 + implement.object.size.lengthOffset)
 			if implement.object.spec_leveler then 
 				local nodeData = ImplementUtil.getLevelerNode(implement.object)
 				if nodeData then 
-					_, _, d = localToLocal(nodeData.node, vehicle.rootNode, 0, 0, 0)
+					_, _, d = localToLocal(nodeData.node, AIUtil.getDirectionNode(vehicle), 0, 0, 0)
 				end
 			end	
 			if not suppressLog then
@@ -433,9 +431,9 @@ function AIUtil.getImplementWithSpecializationFromList(specialization, implement
 end
 
 --- Get number of child vehicles that have a certain specialization
----@param vehicle Vehicle
----@param specialization specialization to check for
----@return integer number of found vehicles
+---@param vehicle table
+---@param specialization table specialization to check for
+---@return number number of found vehicles
 function AIUtil.getNumberOfChildVehiclesWithSpecialization(vehicle, specialization)
 	local vehicles = AIUtil.getAllChildVehiclesWithSpecialization(vehicle, specialization, nil)
 
@@ -445,7 +443,7 @@ end
 --- Gets all child vehicles with a given specialization. 
 --- This can include the rootVehicle and implements
 --- that are not directly attached to the rootVehicle.
----@param vehicle Vehicle
+---@param vehicle table
 ---@param specialization table
 ---@param specializationReference string|nil alternative for mod specializations, as their object is not accessible by us.
 ---@return table all found vehicles/implements
@@ -471,7 +469,7 @@ end
 --- Was at least one child vehicle with the given specialization found ?
 --- This can include the rootVehicle and implements,
 --- that are not directly attached to the rootVehicle.
----@param vehicle Vehicle
+---@param vehicle table
 ---@param specialization table
 ---@param specializationReference string|nil
 ---@return boolean
@@ -508,8 +506,6 @@ function AIUtil.isValidAIImplement(object)
 		end
 	end
 end
-
-
 
 --- Is this a real wheel the implement is actually rolling on (and turning around) or just some auxiliary support
 --- wheel? We need to know about the real wheels when finding the turn radius/distance between attacher joint and
@@ -681,4 +677,31 @@ end
 function AIUtil.hasValidUniversalTrailerAttached(vehicle)
     local implements, found = AIUtil.getAllChildVehiclesWithSpecialization(vehicle, nil, "spec_universalAutoload")
 	return found and implements[1].spec_universalAutoload.isAutoloadEnabled
+end
+
+--- Checks if cutter on an trailer is attached.
+function AIUtil.hasCutterOnTrailerAttached(vehicle)
+	local trailer = AIUtil.getImplementWithSpecialization(vehicle, DynamicMountAttacher)
+	return trailer and next(trailer.spec_dynamicMountAttacher.dynamicMountedObjects) ~= nil and next(trailer.spec_dynamicMountAttacher.dynamicMountedObjects).spec_cutter ~= nil
+end
+
+--- Checks if a cutter is attached and it's not registered as a valid combine cutter.
+--- A Example is the New Holland Superflex header, when it is attached as transport trailer. 
+function AIUtil.hasCutterAsTrailerAttached(vehicle)
+	local cutters, found = AIUtil.getAllChildVehiclesWithSpecialization(vehicle, Cutter)
+	if not found then
+		--- No attached cutter was found.
+		return false
+	end
+	local combines, found = AIUtil.getAllChildVehiclesWithSpecialization(vehicle, Combine)
+	if not found then 
+		--- No valid combine object was found.
+		return false
+	end
+	local spec = combines[1].spec_combine
+	if spec.numAttachedCutters <= 0 then 
+		--- The cutter is not available for threshing in this combination.
+		return true
+	end
+	return false
 end

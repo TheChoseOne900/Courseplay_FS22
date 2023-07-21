@@ -353,6 +353,14 @@
 			<Text language="de"><![CDATA[Helfer %s hat die Arbeit gestoppt - abladen auf dem Boden nicht möglich!]]></Text>
 			<Text language="en"><![CDATA[AI worker %s has stopped work unexpectedly - unloading on the field not possible!]]></Text>
 		</Translation>
+		<Translation name="CP_ai_messageErrorCutterNotSupported">
+			<Text language="de"><![CDATA[Helfer %s hat die Arbeit gestoppt - ankuppelen von dem Schneidwerk nicht möglich!]]></Text>
+			<Text language="en"><![CDATA[AI worker %s has stopped work unexpectedly - attaching of the header is impossible!]]></Text>
+		</Translation>
+		<Translation name="CP_ai_messageErrorAutomaticCutterAttachNotActive">
+			<Text language="de"><![CDATA[Helfer %s hat die Arbeit gestoppt - automatisches Scheidwerk ankuppeln deaktiviert!]]></Text>
+			<Text language="en"><![CDATA[AI worker %s has stopped work unexpectedly - automatic cutter attach disabled!]]></Text>
+		</Translation>
 	</Category>
 	<Category name="Vehicle settings">	
 		<Translation name="CP_vehicle_setting_title">
@@ -519,6 +527,14 @@
 			<Text language="de"><![CDATA[Geräteversatz horizontal]]></Text>
 			<Text language="en"><![CDATA[Tool offset horizontal]]></Text>
 		</Translation>
+		<Translation name="CP_vehicle_setting_baleCollectorOffset_title">
+			<Text language="de"><![CDATA[Ballen Aufnahme Versatz]]></Text>
+			<Text language="en"><![CDATA[Bale pickup offset]]></Text>
+		</Translation>
+		<Translation name="CP_vehicle_setting_baleCollectorOffset_tooltip">
+			<Text language="de"><![CDATA[Versatz für den Ballensammler]]></Text>
+			<Text language="en"><![CDATA[Offset for the bale collector]]></Text>
+		</Translation>
 		<Translation name="CP_vehicle_setting_toolOffsetZ_title">
 			<Text language="de"><![CDATA[Geräteversatz vertikal]]></Text>
 			<Text language="en"><![CDATA[Tool offset vertical]]></Text>
@@ -651,6 +667,14 @@
 		</Translation>
 	</Category>
 	<Category name="Vehicle settings combine">
+		<Translation name="CP_vehicle_setting_automaticCutterAttach_title">
+			<Text language="de"><![CDATA[Automatisches Schneidwerk ankuppeln]]></Text>
+			<Text language="en"><![CDATA[Automatic cutter attach]]></Text>
+		</Translation>
+		<Translation name="CP_vehicle_setting_automaticCutterAttach_tooltip">
+			<Text language="de"><![CDATA[Ermöglicht das automatische ankuppeln von Schneidwerken, welche als Anhänger angekuppelt sind.]]></Text>
+			<Text language="en"><![CDATA[Allows automatic attachment of a cutter, which needs to be attach as a trailer or on a seperate header trailer.]]></Text>
+		</Translation>
 		<Translation name="CP_vehicle_setting_pipeAlwaysUnfold_title">
 			<Text language="de"><![CDATA[Rohr immer ausfahren]]></Text>
 			<Text language="en"><![CDATA[Always unfold the pipe]]></Text>
@@ -953,14 +977,6 @@
 			<Text language="de"><![CDATA[Grundeinstellungen]]></Text>
 			<Text language="en"><![CDATA[Basic settings]]></Text>
 		</Translation>
-		<Translation name="CP_global_setting_expertModeActive_title">
-			<Text language="de"><![CDATA[Expertenmodus]]></Text>
-			<Text language="en"><![CDATA[Expert mode ]]></Text>
-		</Translation>
-		<Translation name="CP_global_setting_expertModeActive_tooltip">
-			<Text language="de"><![CDATA[Schaltet den Expertenmodus an/aus, um weitere Einstellungen freizuschalten.]]></Text>
-			<Text language="en"><![CDATA[Enables/disables expert mode with additional features.]]></Text>
-		</Translation>
 		<Translation name="CP_global_setting_wageModifier_title">
 			<Text language="de"><![CDATA[CP-Fahrerlohn]]></Text>
 			<Text language="en"><![CDATA[Cp driver wages]]></Text>
@@ -1017,9 +1033,35 @@
 			<Text language="de"><![CDATA[Wenn die Einstellung aktiviert ist, dann warten alle Drescher solange bis der Regen aufhört.]]></Text>
 			<Text language="en"><![CDATA[If the setting is active, then all harvester wait for the raining to stop.]]></Text>
 		</Translation>
+		<Translation name="CP_global_setting_fruitDestruction_title">
+			<Text language="de"><![CDATA[Helfer Fruchtzerstörung]]></Text>
+			<Text language="en"><![CDATA[AI Helper fruit destruction]]></Text>
+		</Translation>
+		<Translation name="CP_global_setting_fruitDestruction_tooltip">
+			<Text language="de"><![CDATA[Aktiviert/deaktiviert die Fruchtzerstörung von Helfern.]]></Text>
+			<Text language="en"><![CDATA[Enable/disable the fruit destruction for helpers.]]></Text>
+		</Translation>
+		<Translation name="CP_global_setting_fruitDestruction_only_cp">
+			<Text language="de"><![CDATA[Aktiviert für Courseplay Helfer]]></Text>
+			<Text language="en"><![CDATA[Activated for Courseplay helpers]]></Text>
+		</Translation>
+		<Translation name="CP_global_setting_fruitDestruction_all_helpers">
+			<Text language="de"><![CDATA[Aktiviert für alle Helfer]]></Text>
+			<Text language="en"><![CDATA[Activated for every helpers]]></Text>
+		</Translation>
+	</Category>
+	<Category name="Global settings user settings">
 		<Translation name="CP_global_setting_subTitle_userSettings">
 			<Text language="de"><![CDATA[Benutzereinstellungen]]></Text>
 			<Text language="en"><![CDATA[User settings]]></Text>
+		</Translation>
+		<Translation name="CP_global_setting_expertModeActive_title">
+			<Text language="de"><![CDATA[Expertenmodus]]></Text>
+			<Text language="en"><![CDATA[Expert mode ]]></Text>
+		</Translation>
+		<Translation name="CP_global_setting_expertModeActive_tooltip">
+			<Text language="de"><![CDATA[Schaltet den Expertenmodus an/aus, um weitere Einstellungen freizuschalten.]]></Text>
+			<Text language="en"><![CDATA[Enables/disables expert mode with additional features.]]></Text>
 		</Translation>
 		<Translation name="CP_global_setting_controllerHudSelected_title">
 			<Text language="de"><![CDATA[Gamepadfreundliches HUD]]></Text>
@@ -1036,26 +1078,6 @@
 		<Translation name="CP_global_setting_showActionEventHelp_tooltip">
 			<Text language="de"><![CDATA[Schaltet die Anzeige der Tastenbelegung an und aus.]]></Text>
 			<Text language="en"><![CDATA[Shows action event help texts.]]></Text>
-		</Translation>
-		<Translation name="CP_global_setting_subTitle_pathfinder">
-			<Text language="de"><![CDATA[Pathfindereinstellungen]]></Text>
-			<Text language="en"><![CDATA[Pathfinder settings]]></Text>
-		</Translation>
-		<Translation name="CP_global_setting_maxDeltaAngleAtGoalDeg_title">
-			<Text language="de"><![CDATA[Ankunftswinkel am Ziel]]></Text>
-			<Text language="en"><![CDATA[Angle difference at goal]]></Text>
-		</Translation>
-		<Translation name="CP_global_setting_maxDeltaAngleAtGoalDeg_tooltip">
-			<Text language="de"><![CDATA[Maximaler zulässiger Winkel am Ziel. Kleine Winkel sind genauer, große schneller.]]></Text>
-			<Text language="en"><![CDATA[Maximum angle difference allowed at goal, bigger values are faster but less accurate]]></Text>
-		</Translation>
-		<Translation name="CP_global_setting_deltaAngleRelaxFactorDeg_title">
-			<Text language="de"><![CDATA[Änderungsfaktor Pathfinder]]></Text>
-			<Text language="en"><![CDATA[Delta angle relax factor]]></Text>
-		</Translation>
-		<Translation name="CP_global_setting_deltaAngleRelaxFactorDeg_tooltip">
-			<Text language="de"><![CDATA[Faktor um die Pathfindergenauigkeit bei gescheiterten Versuchen zu senken. Größere Werte sind schneller.]]></Text>
-			<Text language="en"><![CDATA[Factor to decrease pathfinder accuracy with unsuccessful iterations, bigger values are faster]]></Text>
 		</Translation>
 		<Translation name="CP_global_setting_showsAllActiveCourses_title">
 			<Text language="de"><![CDATA[Zeige alle Kurse]]></Text>
@@ -1112,6 +1134,28 @@
 		<Translation name="CP_global_setting_distanceUnit_imperial">
 			<Text language="de"><![CDATA[Fuß]]></Text>
 			<Text language="en"><![CDATA[Foot]]></Text>
+		</Translation>
+	</Category>
+	<Category name="Global settings pathfinder">
+		<Translation name="CP_global_setting_subTitle_pathfinder">
+			<Text language="de"><![CDATA[Pathfindereinstellungen]]></Text>
+			<Text language="en"><![CDATA[Pathfinder settings]]></Text>
+		</Translation>
+		<Translation name="CP_global_setting_maxDeltaAngleAtGoalDeg_title">
+			<Text language="de"><![CDATA[Ankunftswinkel am Ziel]]></Text>
+			<Text language="en"><![CDATA[Angle difference at goal]]></Text>
+		</Translation>
+		<Translation name="CP_global_setting_maxDeltaAngleAtGoalDeg_tooltip">
+			<Text language="de"><![CDATA[Maximaler zulässiger Winkel am Ziel. Kleine Winkel sind genauer, große schneller.]]></Text>
+			<Text language="en"><![CDATA[Maximum angle difference allowed at goal, bigger values are faster but less accurate]]></Text>
+		</Translation>
+		<Translation name="CP_global_setting_deltaAngleRelaxFactorDeg_title">
+			<Text language="de"><![CDATA[Änderungsfaktor Pathfinder]]></Text>
+			<Text language="en"><![CDATA[Delta angle relax factor]]></Text>
+		</Translation>
+		<Translation name="CP_global_setting_deltaAngleRelaxFactorDeg_tooltip">
+			<Text language="de"><![CDATA[Faktor um die Pathfindergenauigkeit bei gescheiterten Versuchen zu senken. Größere Werte sind schneller.]]></Text>
+			<Text language="en"><![CDATA[Factor to decrease pathfinder accuracy with unsuccessful iterations, bigger values are faster]]></Text>
 		</Translation>
 	</Category>
 	<Category name="Course manager">	
@@ -1451,6 +1495,14 @@ The course is saved automatically on closing of the editor and overrides the sel
 		<Translation name="CP_infoTexts_errorGroundUnloadNotSupported">
 			<Text language="de"><![CDATA[Abladen zum Boden nicht möglich]]></Text>
 			<Text language="en"><![CDATA[Tipping to ground not possible]]></Text>
+		</Translation>
+		<Translation name="CP_infoTexts_errorCutterNotSupported">
+			<Text language="de"><![CDATA[Schneidwerk nicht unterstützt]]></Text>
+			<Text language="en"><![CDATA[Cutter not supported]]></Text>
+		</Translation>
+		<Translation name="CP_infoTexts_errorAutomaticCutterAttachNotActive">
+			<Text language="de"><![CDATA[Schneidwerk ankuppeln deaktiviert]]></Text>
+			<Text language="en"><![CDATA[Cutter attaching deactivated]]></Text>
 		</Translation>
 	</Category>
 	<Category name="Custom field manager">	

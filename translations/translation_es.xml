@@ -111,6 +111,8 @@
     <text name="CP_ai_messageErrorWrongBaleWrapType" text="Trabajador CP %s ha dejado de trabajar inesperadamente - ¡No se encontraron pacas del tipo seleccionado!"/>
     <text name="CP_ai_messageErrorNoPathFound" text="Trabajador CP %s ha dejado de trabajar inesperadamente - ¡Ninguna Ruta encontrada!"/>
     <text name="CP_ai_messageErrorGroundUnloadNotSupported" text="Trabajador CP %s ha dejado de trabajar inesperadamente: ¡No es posible descargar en el campo!"/>
+    <text name="CP_ai_messageErrorCutterNotSupported" text="Trabajador CP %s ha dejado de trabajar inesperadamente: - ¡Acoplar el cabezal es imposible!"/>
+    <text name="CP_ai_messageErrorAutomaticCutterAttachNotActive" text="Trabajador CP %s ha dejado de trabajar inesperadamente: - ¡Acoplamiento automático del cabezal desabilitado!"/>
     <!---->
     <!--Vehicle settings-->
     <!---->
@@ -155,6 +157,8 @@
     <text name="CP_vehicle_setting_avoidFruit_tooltip" text="El conductor intentará evitar conducir sobre los cultivos"/>
     <text name="CP_vehicle_setting_toolOffsetX_title" text="Desp. Herramienta Izq/Der"/>
     <text name="CP_vehicle_setting_toolOffsetX_tooltip" text="Desp. Herramienta Izq/Der"/>
+    <text name="CP_vehicle_setting_baleCollectorOffset_title" text="Compensación de recogida de pacas"/>
+    <text name="CP_vehicle_setting_baleCollectorOffset_tooltip" text="Compensación para el recogedor de pacas"/>
     <text name="CP_vehicle_setting_toolOffsetZ_title" text="Desp. Herramienta Del/Tra"/>
     <text name="CP_vehicle_setting_toolOffsetZ_tooltip" text="Desp. Herramienta Del/Tra"/>
     <text name="CP_vehicle_setting_fullThreshold_title" text="Vaciar al estar al:"/>
@@ -198,6 +202,8 @@
     <!---->
     <!--Vehicle settings combine-->
     <!---->
+    <text name="CP_vehicle_setting_automaticCutterAttach_title" text="Acoplamiento automático del cabezal"/>
+    <text name="CP_vehicle_setting_automaticCutterAttach_tooltip" text="Permite la conexión automática de un cabezal, que debe conectarse como un remolque o en un remolque para cabezales separado."/>
     <text name="CP_vehicle_setting_pipeAlwaysUnfold_title" text="Desplegar siempre el tubo"/>
     <text name="CP_vehicle_setting_pipeAlwaysUnfold_tooltip" text="Despliegue siempre el tubo cuando la cosechadora esté llena y esperando el descargador."/>
     <text name="CP_vehicle_setting_stopForUnload_title" text="Detener durante la descarga"/>
@@ -281,8 +287,6 @@
     <!---->
     <text name="CP_global_setting_title" text="Ajustes globales"/>
     <text name="CP_global_setting_subTitle_general" text="Ajustes globales"/>
-    <text name="CP_global_setting_expertModeActive_title" text="Modo Experto"/>
-    <text name="CP_global_setting_expertModeActive_tooltip" text="Habilita/Desabilita el modo experto con características adicionales."/>
     <text name="CP_global_setting_wageModifier_title" text="Salarios de conductores CP"/>
     <text name="CP_global_setting_wageModifier_tooltip" text="Salarios de conductores CP en porcentaje"/>
     <text name="CP_global_setting_autoRepair_title" text="Reparación automática"/>
@@ -297,16 +301,20 @@
     <text name="CP_global_setting_brokenThreshold_tooltip" text="El conductor será liberado, si el vehículo o un implemento está más desgastado. Si es 100% se desactiva."/>
     <text name="CP_global_setting_stopThreshingDuringRain_title" text="Detener Cosechadoras, mientras llueve"/>
     <text name="CP_global_setting_stopThreshingDuringRain_tooltip" text="Si está activo, entonces todas las Cosechadoras esperarán a que se detenga la lluvia."/>
+    <text name="CP_global_setting_fruitDestruction_title" text="Conductor CP: Destrucción de cultivos."/>
+    <text name="CP_global_setting_fruitDestruction_tooltip" text="Habilita/Deshabilita la destrucción de cultivos para los ayudantes."/>
+    <text name="CP_global_setting_fruitDestruction_only_cp" text="Solo activado para ayudantes CP"/>
+    <text name="CP_global_setting_fruitDestruction_all_helpers" text="Activado para todos los ayudantes"/>
+    <!---->
+    <!--Global settings user settings-->
+    <!---->
     <text name="CP_global_setting_subTitle_userSettings" text="Ajustes de usuario"/>
+    <text name="CP_global_setting_expertModeActive_title" text="Modo Experto"/>
+    <text name="CP_global_setting_expertModeActive_tooltip" text="Habilita/Desabilita el modo experto con características adicionales."/>
     <text name="CP_global_setting_controllerHudSelected_title" text="Hud compatible con gamepad"/>
     <text name="CP_global_setting_controllerHudSelected_tooltip" text="Usa el Hud, que se puede controlar con un Gamepad. Si está activado, no se mostrará el Mini-Hud."/>
     <text name="CP_global_setting_showActionEventHelp_title" text="Mostrar teclas en la ventana de F1"/>
     <text name="CP_global_setting_showActionEventHelp_tooltip" text="Muestra la asignación de teclas o botones en la ventana al presionar F1"/>
-    <text name="CP_global_setting_subTitle_pathfinder" text="Ajustes del generador de rutas"/>
-    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_title" text="Ángulo máximo a usar"/>
-    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_tooltip" text="Diferencia máxima de ángulo permitida en el destino, los valores más grandes son más rápidos pero menos precisos."/>
-    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_title" text="Factor de ángulo Delta"/>
-    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_tooltip" text="Factor para disminuir la precisión del generador de rutas con iteraciones fallidas, valores grandes son más rápidos."/>
     <text name="CP_global_setting_showsAllActiveCourses_title" text="Muestra todos las rutas activas"/>
     <text name="CP_global_setting_showsAllActiveCourses_tooltip" text="Muestra todos las rutas activas en el mapa del juego."/>
     <text name="CP_global_setting_drawOntoTheHudMap_title" text="Mostrar los Cursos en el Minimapa."/>
@@ -321,6 +329,14 @@
     <text name="CP_global_setting_distanceUnit_tooltip" text="Unidades de distancia en Metros o Pies."/>
     <text name="CP_global_setting_distanceUnit_meter" text="Metros"/>
     <text name="CP_global_setting_distanceUnit_imperial" text="Pies"/>
+    <!---->
+    <!--Global settings pathfinder-->
+    <!---->
+    <text name="CP_global_setting_subTitle_pathfinder" text="Ajustes del generador de rutas"/>
+    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_title" text="Ángulo máximo a usar"/>
+    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_tooltip" text="Diferencia máxima de ángulo permitida en el destino, los valores más grandes son más rápidos pero menos precisos."/>
+    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_title" text="Factor de ángulo Delta"/>
+    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_tooltip" text="Factor para disminuir la precisión del generador de rutas con iteraciones fallidas, valores grandes son más rápidos."/>
     <!---->
     <!--Course manager-->
     <!---->
@@ -400,6 +416,8 @@ El curso se guarda automáticamente al cerrar el editor y anula el curso selecci
     <text name="CP_infoTexts_wrongBaleWrapType" text="Tipo de paca incorrecta"/>
     <text name="CP_infoTexts_errorNoPathFound" text="Ningún camino encontrado"/>
     <text name="CP_infoTexts_errorGroundUnloadNotSupported" text="No es posible volcar al suelo"/>
+    <text name="CP_infoTexts_errorCutterNotSupported" text="Cabezal no compatible"/>
+    <text name="CP_infoTexts_errorAutomaticCutterAttachNotActive" text="Acoplamiento automático del cabezal desactivado"/>
     <!---->
     <!--Custom field manager-->
     <!---->

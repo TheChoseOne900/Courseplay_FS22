@@ -12,7 +12,7 @@
     <text name="CP_deactivated" text="desativado"/>
     <text name="CP_automatic" text="automático"/>
     <text name="CP_unit_meter" text="m"/>
-    <text name="CP_unit_foot" text="ft"/>
+    <text name="CP_unit_foot" text="pés"/>
     <text name="CP_copy" text="Copiar rota: "/>
     <text name="CP_infoText" text="Courseplay(%s): Para ajuda, reportar bug ou notas de patch, favor visitar: https://github.com/Courseplay/Courseplay_FS22."/>
     <text name="CP_error_no_course" text="Criar rota primeiro."/>
@@ -111,6 +111,8 @@
     <text name="CP_ai_messageErrorWrongBaleWrapType" text="O trabalhador IA %s parou de trabalhar inesperadamente - nenhum tipo de fardo selecionado foi encontrado!"/>
     <text name="CP_ai_messageErrorNoPathFound" text="Trabalhador AI %s parou de funcionar inesperadamente - nenhum caminho encontrado!"/>
     <text name="CP_ai_messageErrorGroundUnloadNotSupported" text="AI worker %s has stopped work unexpectedly - não é possível descarregar no campo!"/>
+    <text name="CP_ai_messageErrorCutterNotSupported" text="O trabalhador AI %s parou inesperadamente - impossível conectar o equipamento!"/>
+    <text name="CP_ai_messageErrorAutomaticCutterAttachNotActive" text="O trabalhador AI %s parou inesperadamente - conexão automática do cortador desativada!"/>
     <!---->
     <!--Vehicle settings-->
     <!---->
@@ -155,6 +157,8 @@
     <text name="CP_vehicle_setting_avoidFruit_tooltip" text="AI evitará dirigir na plantação"/>
     <text name="CP_vehicle_setting_toolOffsetX_title" text="Distancia horizontal do implemento"/>
     <text name="CP_vehicle_setting_toolOffsetX_tooltip" text="Distancia horizontal do implemento"/>
+    <text name="CP_vehicle_setting_baleCollectorOffset_title" text="Distância lateral para coleta de fardos"/>
+    <text name="CP_vehicle_setting_baleCollectorOffset_tooltip" text="Distância lateral para coleta de fardos"/>
     <text name="CP_vehicle_setting_toolOffsetZ_title" text="Distancia vertical do implemento"/>
     <text name="CP_vehicle_setting_toolOffsetZ_tooltip" text="Distancia vertical do implemento"/>
     <text name="CP_vehicle_setting_fullThreshold_title" text="Esvaziar quando acabar:"/>
@@ -198,6 +202,8 @@
     <!---->
     <!--Vehicle settings combine-->
     <!---->
+    <text name="CP_vehicle_setting_automaticCutterAttach_title" text="Conexão automático do cortador"/>
+    <text name="CP_vehicle_setting_automaticCutterAttach_tooltip" text="Permite a conexão automática de um cortador, que precisa ser acoplado como um reboque ou em um reboque separado."/>
     <text name="CP_vehicle_setting_pipeAlwaysUnfold_title" text="Manter o tubo desdobrado"/>
     <text name="CP_vehicle_setting_pipeAlwaysUnfold_tooltip" text="Desdobrar o tubo quando a colheitadeira estiver cheia ou aguardando descarregar."/>
     <text name="CP_vehicle_setting_stopForUnload_title" text="Parar enquanto descarrega"/>
@@ -281,8 +287,6 @@
     <!---->
     <text name="CP_global_setting_title" text="Configurações global"/>
     <text name="CP_global_setting_subTitle_general" text="Configurações Basicas"/>
-    <text name="CP_global_setting_expertModeActive_title" text="Modo especialista "/>
-    <text name="CP_global_setting_expertModeActive_tooltip" text="Ativa/desativa o modo especialista com recursos adicionais."/>
     <text name="CP_global_setting_wageModifier_title" text="Cp pagamento ao motorista"/>
     <text name="CP_global_setting_wageModifier_tooltip" text="Cp pagamento ao motorista por porcentagem"/>
     <text name="CP_global_setting_autoRepair_title" text="Reparo automático"/>
@@ -297,16 +301,20 @@
     <text name="CP_global_setting_brokenThreshold_tooltip" text="Motorista será liberado, se o veículo ou implemento estiver 100% danificado."/>
     <text name="CP_global_setting_stopThreshingDuringRain_title" text="Parar a colheitadeira, enquanto estiver chovendo"/>
     <text name="CP_global_setting_stopThreshingDuringRain_tooltip" text="Se a configuração estiver ativa, todas as colheitadeiras aguardam a chuva passar."/>
+    <text name="CP_global_setting_fruitDestruction_title" text="Destruição de plantações pelo motorista AI"/>
+    <text name="CP_global_setting_fruitDestruction_tooltip" text="Ativar/desativar destruição de plantações pelo motorista AI."/>
+    <text name="CP_global_setting_fruitDestruction_only_cp" text="Somente ativado para motorista AI no Courseplay"/>
+    <text name="CP_global_setting_fruitDestruction_all_helpers" text="Ativado para todos os motoristas AI"/>
+    <!---->
+    <!--Global settings user settings-->
+    <!---->
     <text name="CP_global_setting_subTitle_userSettings" text="Configurações do usuário"/>
+    <text name="CP_global_setting_expertModeActive_title" text="Modo especialista "/>
+    <text name="CP_global_setting_expertModeActive_tooltip" text="Ativa/desativa o modo especialista com recursos adicionais."/>
     <text name="CP_global_setting_controllerHudSelected_title" text="Hud compatível com gamepad"/>
     <text name="CP_global_setting_controllerHudSelected_tooltip" text="Use o Hud, que pode ser controlado com um Gamepad."/>
     <text name="CP_global_setting_showActionEventHelp_title" text="Ajuda do evento de ação"/>
     <text name="CP_global_setting_showActionEventHelp_tooltip" text="Mostra os textos de ajuda do evento de ação."/>
-    <text name="CP_global_setting_subTitle_pathfinder" text="Configurações Pathfinder"/>
-    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_title" text="Meta diferença angular"/>
-    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_tooltip" text="Diferença angular máxima permitida na meta, valores maiores são mais rápidos, mas menos precisos"/>
-    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_title" text="Fator de relaxamento do ângulo delta"/>
-    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_tooltip" text="Fator para diminuir a precisão do pathfinder com iterações malsucedidas, valores maiores são mais rápidos"/>
     <text name="CP_global_setting_showsAllActiveCourses_title" text="Mostrar todas as rotas ativas"/>
     <text name="CP_global_setting_showsAllActiveCourses_tooltip" text="Mostrar todas as rotas ativas no mapa."/>
     <text name="CP_global_setting_drawOntoTheHudMap_title" text="Mostrar rotas no minimapa"/>
@@ -321,6 +329,14 @@
     <text name="CP_global_setting_distanceUnit_tooltip" text="Unidade de distância em metros ou Pés."/>
     <text name="CP_global_setting_distanceUnit_meter" text="Metros"/>
     <text name="CP_global_setting_distanceUnit_imperial" text="Pés"/>
+    <!---->
+    <!--Global settings pathfinder-->
+    <!---->
+    <text name="CP_global_setting_subTitle_pathfinder" text="Configurações Pathfinder"/>
+    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_title" text="Meta diferença angular"/>
+    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_tooltip" text="Diferença angular máxima permitida na meta, valores maiores são mais rápidos, mas menos precisos"/>
+    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_title" text="Fator de relaxamento do ângulo delta"/>
+    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_tooltip" text="Fator para diminuir a precisão do pathfinder com iterações malsucedidas, valores maiores são mais rápidos"/>
     <!---->
     <!--Course manager-->
     <!---->
@@ -400,6 +416,8 @@ A rota é salva automaticamente ao fechar o editor e substituir a rota seleciona
     <text name="CP_infoTexts_wrongBaleWrapType" text="Tipo de fardo errado"/>
     <text name="CP_infoTexts_errorNoPathFound" text="Caminho não encontrado"/>
     <text name="CP_infoTexts_errorGroundUnloadNotSupported" text="Inclinação para o solo não é possível"/>
+    <text name="CP_infoTexts_errorCutterNotSupported" text="Cortador não suportado"/>
+    <text name="CP_infoTexts_errorAutomaticCutterAttachNotActive" text="Conexão do cortador desativado"/>
     <!---->
     <!--Custom field manager-->
     <!---->

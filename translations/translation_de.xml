@@ -111,6 +111,8 @@
     <text name="CP_ai_messageErrorWrongBaleWrapType" text="Helfer %s hat die Arbeit gestoppt - keinen Ballen des gewählten Typs gefunden!"/>
     <text name="CP_ai_messageErrorNoPathFound" text="Helfer %s hat die Arbeit gestoppt - keinen Weg gefunden!"/>
     <text name="CP_ai_messageErrorGroundUnloadNotSupported" text="Helfer %s hat die Arbeit gestoppt - abladen auf dem Boden nicht möglich!"/>
+    <text name="CP_ai_messageErrorCutterNotSupported" text="Helfer %s hat die Arbeit gestoppt - ankuppelen von dem Schneidwerk nicht möglich!"/>
+    <text name="CP_ai_messageErrorAutomaticCutterAttachNotActive" text="Helfer %s hat die Arbeit gestoppt - automatisches Scheidwerk ankuppeln deaktiviert!"/>
     <!---->
     <!--Vehicle settings-->
     <!---->
@@ -155,6 +157,8 @@
     <text name="CP_vehicle_setting_avoidFruit_tooltip" text="Versucht nach Möglichkeit nicht in der Frucht zu fahren."/>
     <text name="CP_vehicle_setting_toolOffsetX_title" text="Geräteversatz horizontal"/>
     <text name="CP_vehicle_setting_toolOffsetX_tooltip" text="Geräteversatz horizontal"/>
+    <text name="CP_vehicle_setting_baleCollectorOffset_title" text="Ballen Aufnahme Versatz"/>
+    <text name="CP_vehicle_setting_baleCollectorOffset_tooltip" text="Versatz für den Ballensammler"/>
     <text name="CP_vehicle_setting_toolOffsetZ_title" text="Geräteversatz vertikal"/>
     <text name="CP_vehicle_setting_toolOffsetZ_tooltip" text="Geräteversatz vertikal"/>
     <text name="CP_vehicle_setting_fullThreshold_title" text="Entleeren wenn über:"/>
@@ -198,6 +202,8 @@
     <!---->
     <!--Vehicle settings combine-->
     <!---->
+    <text name="CP_vehicle_setting_automaticCutterAttach_title" text="Automatisches Schneidwerk ankuppeln"/>
+    <text name="CP_vehicle_setting_automaticCutterAttach_tooltip" text="Ermöglicht das automatische ankuppeln von Schneidwerken, welche als Anhänger angekuppelt sind."/>
     <text name="CP_vehicle_setting_pipeAlwaysUnfold_title" text="Rohr immer ausfahren"/>
     <text name="CP_vehicle_setting_pipeAlwaysUnfold_tooltip" text="Rohr ausfahren, wenn der Drescher voll ist und auf den Abfahrer wartet."/>
     <text name="CP_vehicle_setting_stopForUnload_title" text="Beim Entladen stehen bleiben"/>
@@ -281,8 +287,6 @@
     <!---->
     <text name="CP_global_setting_title" text="Globale Einstellungen"/>
     <text name="CP_global_setting_subTitle_general" text="Grundeinstellungen"/>
-    <text name="CP_global_setting_expertModeActive_title" text="Expertenmodus"/>
-    <text name="CP_global_setting_expertModeActive_tooltip" text="Schaltet den Expertenmodus an/aus, um weitere Einstellungen freizuschalten."/>
     <text name="CP_global_setting_wageModifier_title" text="CP-Fahrerlohn"/>
     <text name="CP_global_setting_wageModifier_tooltip" text="Lohn für CP-Fahrer, prozentual von dem Standardlohn."/>
     <text name="CP_global_setting_autoRepair_title" text="Automatische Reparatur"/>
@@ -297,16 +301,20 @@
     <text name="CP_global_setting_brokenThreshold_tooltip" text="Fahrer wird entlassen, wenn der Schaden des Fahrzeugs oder Arbeitsgeräts über diesem Wert liegt. 100% ist aus."/>
     <text name="CP_global_setting_stopThreshingDuringRain_title" text="Stoppt Drescher während Regen"/>
     <text name="CP_global_setting_stopThreshingDuringRain_tooltip" text="Wenn die Einstellung aktiviert ist, dann warten alle Drescher solange bis der Regen aufhört."/>
+    <text name="CP_global_setting_fruitDestruction_title" text="Helfer Fruchtzerstörung"/>
+    <text name="CP_global_setting_fruitDestruction_tooltip" text="Aktiviert/deaktiviert die Fruchtzerstörung von Helfern."/>
+    <text name="CP_global_setting_fruitDestruction_only_cp" text="Aktiviert für Courseplay Helfer"/>
+    <text name="CP_global_setting_fruitDestruction_all_helpers" text="Aktiviert für alle Helfer"/>
+    <!---->
+    <!--Global settings user settings-->
+    <!---->
     <text name="CP_global_setting_subTitle_userSettings" text="Benutzereinstellungen"/>
+    <text name="CP_global_setting_expertModeActive_title" text="Expertenmodus"/>
+    <text name="CP_global_setting_expertModeActive_tooltip" text="Schaltet den Expertenmodus an/aus, um weitere Einstellungen freizuschalten."/>
     <text name="CP_global_setting_controllerHudSelected_title" text="Gamepadfreundliches HUD"/>
     <text name="CP_global_setting_controllerHudSelected_tooltip" text="Benutze das HUD, welches sich über ein Gamepad bedienen lässt."/>
     <text name="CP_global_setting_showActionEventHelp_title" text="Zeige Tastenbelegung"/>
     <text name="CP_global_setting_showActionEventHelp_tooltip" text="Schaltet die Anzeige der Tastenbelegung an und aus."/>
-    <text name="CP_global_setting_subTitle_pathfinder" text="Pathfindereinstellungen"/>
-    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_title" text="Ankunftswinkel am Ziel"/>
-    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_tooltip" text="Maximaler zulässiger Winkel am Ziel. Kleine Winkel sind genauer, große schneller."/>
-    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_title" text="Änderungsfaktor Pathfinder"/>
-    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_tooltip" text="Faktor um die Pathfindergenauigkeit bei gescheiterten Versuchen zu senken. Größere Werte sind schneller."/>
     <text name="CP_global_setting_showsAllActiveCourses_title" text="Zeige alle Kurse"/>
     <text name="CP_global_setting_showsAllActiveCourses_tooltip" text="Zeigt alle geladenen Kurse auf der Karte."/>
     <text name="CP_global_setting_drawOntoTheHudMap_title" text="Zeige Kurse auf der Minikarte"/>
@@ -321,6 +329,14 @@
     <text name="CP_global_setting_distanceUnit_tooltip" text="Distanzeinheit Meter oder Fuß."/>
     <text name="CP_global_setting_distanceUnit_meter" text="Meter"/>
     <text name="CP_global_setting_distanceUnit_imperial" text="Fuß"/>
+    <!---->
+    <!--Global settings pathfinder-->
+    <!---->
+    <text name="CP_global_setting_subTitle_pathfinder" text="Pathfindereinstellungen"/>
+    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_title" text="Ankunftswinkel am Ziel"/>
+    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_tooltip" text="Maximaler zulässiger Winkel am Ziel. Kleine Winkel sind genauer, große schneller."/>
+    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_title" text="Änderungsfaktor Pathfinder"/>
+    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_tooltip" text="Faktor um die Pathfindergenauigkeit bei gescheiterten Versuchen zu senken. Größere Werte sind schneller."/>
     <!---->
     <!--Course manager-->
     <!---->
@@ -400,6 +416,8 @@ Der Kurs wird beim Schließen automatisch gespeichert und überschrieben.
     <text name="CP_infoTexts_wrongBaleWrapType" text="Ballentyp nicht gefunden"/>
     <text name="CP_infoTexts_errorNoPathFound" text="Keinen Weg gefunden"/>
     <text name="CP_infoTexts_errorGroundUnloadNotSupported" text="Abladen zum Boden nicht möglich"/>
+    <text name="CP_infoTexts_errorCutterNotSupported" text="Schneidwerk nicht unterstützt"/>
+    <text name="CP_infoTexts_errorAutomaticCutterAttachNotActive" text="Schneidwerk ankuppeln deaktiviert"/>
     <!---->
     <!--Custom field manager-->
     <!---->

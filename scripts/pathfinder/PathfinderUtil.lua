@@ -69,7 +69,7 @@ function PathfinderUtil.VehicleData:init(vehicle, withImplements, buffer)
         }
         local inputAttacherJoint = self.trailer:getActiveInputAttacherJoint()
         if inputAttacherJoint then
-            local _, _, dz = localToLocal(inputAttacherJoint.node, vehicle:getAIDirectionNode(), 0, 0, 0)
+            local _, _, dz = localToLocal(inputAttacherJoint.node,  AIUtil.getDirectionNode(vehicle), 0, 0, 0)
             self.trailerHitchOffset = dz
         else
             self.trailerHitchOffset = self.dRear
@@ -130,7 +130,7 @@ end
 function PathfinderUtil.VehicleData:calculateSizeOfObjectList(vehicle, implements, buffer, rectangles)
     for _, implement in ipairs(implements) do
         --print(implement.object:getName())
-        local referenceNode = vehicle:getAIDirectionNode() --vehicle.rootNode
+        local referenceNode =  AIUtil.getDirectionNode(vehicle) --vehicle.rootNode
         if implement.object ~= self.trailer then
             -- everything else is attached to the root vehicle and calculated as it was moving with it (having
             -- the same heading)
@@ -439,6 +439,14 @@ end
 function PathfinderUtil.NodeArea:drawDebug()
     DebugUtil.drawDebugRectangle(self.node, self.xOffset, self.xOffset + self.width,
             self.zOffset, self.zOffset + self.length, 5, 1, 1, 0, 1, false)
+end
+
+--- Creates an area to avoid for a vehicle based on it's defined dimensions.
+---@param vehicle table
+---@return PathfinderUtil.NodeArea
+function PathfinderUtil.NodeArea.createVehicleArea(vehicle)
+    return PathfinderUtil.NodeArea(vehicle.rootNode, -vehicle.size.width/2 + vehicle.size.widthOffset, 
+        -vehicle.size.length/2 + vehicle.size.lengthOffset, vehicle.size.width, vehicle.size.length)
 end
 
 --[[
@@ -837,6 +845,15 @@ function PathfinderUtil.findAnalyticPath(solver, vehicleDirectionNode, startOffs
     local start = State3D(x, -z, CourseGenerator.fromCpAngle(yRot))
     x, z, yRot = PathfinderUtil.getNodePositionAndDirection(goalReferenceNode, xOffset or 0, zOffset or 0)
     local goal = State3D(x, -z, CourseGenerator.fromCpAngle(yRot))
+    return PathfinderUtil.findAnalyticPathFromStartToGoal(solver, start, goal, turnRadius)
+end
+
+--- Generate an analytic path between a start and goal position (given as State3D)
+---@param solver AnalyticSolver for instance PathfinderUtil.dubinsSolver or PathfinderUtil.reedsSheppSolver
+---@param start State3D start pose
+---@param goal State3D goal pose
+---@param turnRadius number vehicle turning radius
+function PathfinderUtil.findAnalyticPathFromStartToGoal(solver, start, goal, turnRadius)
     local solution = solver:solve(start, goal, turnRadius)
     local length, path = solution:getLength(turnRadius)
     -- a solution with math.huge length means no soulution found
@@ -854,9 +871,11 @@ function PathfinderUtil.getNodePositionAndDirection(node, xOffset, zOffset)
 end
 
 ---@param vehicle table
+---@param xOffset|nil
+---@param zOffset|nil
 ---@return State3D position/heading of vehicle
-function PathfinderUtil.getVehiclePositionAsState3D(vehicle)
-    local x, z, yRot = PathfinderUtil.getNodePositionAndDirection(vehicle:getAIDirectionNode())
+function PathfinderUtil.getVehiclePositionAsState3D(vehicle, xOffset, zOffset)
+    local x, z, yRot = PathfinderUtil.getNodePositionAndDirection( AIUtil.getDirectionNode(vehicle), xOffset, zOffset)
     return State3D(x, -z, CourseGenerator.fromCpAngle(yRot))
 end
 
@@ -901,13 +920,13 @@ end
 ---@param xOffset number side offset of the goal from the goal node
 ---@param zOffset number length offset of the goal from the goal node
 ---@param allowReverse boolean allow reverse driving
----@param fieldNum number if other than 0 or nil the pathfinding is restricted to the given field and its vicinity
----@param vehiclesToIgnore table[] list of vehicles to ignore for the collision detection (optional)
----@param maxFruitPercent number maximum percentage of fruit present before a node is marked as invalid (optional). If
+---@param fieldNum number|nil if other than 0 or nil the pathfinding is restricted to the given field and its vicinity
+---@param vehiclesToIgnore table[]|nil list of vehicles to ignore for the collision detection (optional)
+---@param maxFruitPercent number|nil maximum percentage of fruit present before a node is marked as invalid (optional). If
 --- nil, will set according to the vehicle setting: 50% when avoid fruit is enabled, math.huge when disabled.
----@param offFieldPenalty number penalty to apply to nodes off the field
----@param areaToAvoid PathfinderUtil.NodeArea nodes in this area will be penalized so the path will most likely avoid it
----@param mustBeAccurate boolean must be accurately find the goal position/angle (optional)
+---@param offFieldPenalty number|nil penalty to apply to nodes off the field
+---@param areaToAvoid PathfinderUtil.NodeArea|nil nodes in this area will be penalized so the path will most likely avoid it
+---@param mustBeAccurate boolean|nil must be accurately find the goal position/angle (optional)
 function PathfinderUtil.startPathfindingFromVehicleToNode(vehicle, goalNode,
                                                           xOffset, zOffset, allowReverse,
                                                           fieldNum, vehiclesToIgnore, maxFruitPercent,
@@ -974,13 +993,13 @@ function PathfinderUtil.checkForObstaclesAhead(vehicle, turnRadius, objectsToIgn
     end
 
     local function findPath(start, hitchLength, xOffset, zOffset)
-        local x, y, z = localToWorld(vehicle:getAIDirectionNode(), xOffset, 0, zOffset)
+        local x, y, z = localToWorld(AIUtil.getDirectionNode(vehicle), xOffset, 0, zOffset)
         setTranslation(PathfinderUtil.helperNode, x, y, z)
-        local dx, dy, dz = localDirectionToWorld(vehicle:getAIDirectionNode(), xOffset, 0, xOffset == 0 and 1 or 0)
+        local dx, dy, dz = localDirectionToWorld(AIUtil.getDirectionNode(vehicle), xOffset, 0, xOffset == 0 and 1 or 0)
         local yRot = MathUtil.getYRotationFromDirection(dx, dz)
         setRotation(PathfinderUtil.helperNode, 0, yRot, 0)
         local path, len = PathfinderUtil.findAnalyticPath(PathfinderUtil.dubinsSolver,
-                vehicle:getAIDirectionNode(), 0, PathfinderUtil.helperNode, 0, 0, turnRadius)
+            AIUtil.getDirectionNode(vehicle), 0, PathfinderUtil.helperNode, 0, 0, turnRadius)
         -- making sure we continue with the correct trailer heading
         path[1]:setTrailerHeading(start:getTrailerHeading())
         State3D.calculateTrailerHeadings(path, hitchLength)

@@ -111,6 +111,8 @@
     <text name="CP_ai_messageErrorWrongBaleWrapType" text="Yapay zeka çalışanı %s beklenmedik bir şekilde çalışmayı durdurdu - seçili türde balya bulunamadı!"/>
     <text name="CP_ai_messageErrorNoPathFound" text="Yapay zeka çalışanı %s beklenmedik bir şekilde çalışmayı durdurdu - Yol bulunamadı!"/>
     <text name="CP_ai_messageErrorGroundUnloadNotSupported" text="AI worker %s has stopped work unexpectedly - unloading on the field not possible!"/>
+    <text name="CP_ai_messageErrorCutterNotSupported" text="AI worker %s has stopped work unexpectedly - attaching of the header is impossible!"/>
+    <text name="CP_ai_messageErrorAutomaticCutterAttachNotActive" text="AI worker %s has stopped work unexpectedly - automatic cutter attach disabled!"/>
     <!---->
     <!--Vehicle settings-->
     <!---->
@@ -155,6 +157,8 @@
     <text name="CP_vehicle_setting_avoidFruit_tooltip" text="AI meyve sürüş önlemek için çalışacağız."/>
     <text name="CP_vehicle_setting_toolOffsetX_title" text="Takım ofseti yatay"/>
     <text name="CP_vehicle_setting_toolOffsetX_tooltip" text="Takım ofseti yatay"/>
+    <text name="CP_vehicle_setting_baleCollectorOffset_title" text="Bale pickup offset"/>
+    <text name="CP_vehicle_setting_baleCollectorOffset_tooltip" text="Offset for the bale collector"/>
     <text name="CP_vehicle_setting_toolOffsetZ_title" text="Takım ofseti dikey"/>
     <text name="CP_vehicle_setting_toolOffsetZ_tooltip" text="Takım ofseti dikey"/>
     <text name="CP_vehicle_setting_fullThreshold_title" text="Bittiğinde boş:"/>
@@ -198,6 +202,8 @@
     <!---->
     <!--Vehicle settings combine-->
     <!---->
+    <text name="CP_vehicle_setting_automaticCutterAttach_title" text="Automatic cutter attach"/>
+    <text name="CP_vehicle_setting_automaticCutterAttach_tooltip" text="Allows automatic attachment of a cutter, which needs to be attach as a trailer or on a seperate header trailer."/>
     <text name="CP_vehicle_setting_pipeAlwaysUnfold_title" text="Boruyu her zaman açın"/>
     <text name="CP_vehicle_setting_pipeAlwaysUnfold_tooltip" text="Birleştirme dolduğunda ve boşaltıcıyı beklerken daima boruyu açın."/>
     <text name="CP_vehicle_setting_stopForUnload_title" text="Boşaltma sırasında dur"/>
@@ -281,8 +287,6 @@
     <!---->
     <text name="CP_global_setting_title" text="Genel Ayarlar"/>
     <text name="CP_global_setting_subTitle_general" text="Temel ayarlar"/>
-    <text name="CP_global_setting_expertModeActive_title" text="Uzman Modu "/>
-    <text name="CP_global_setting_expertModeActive_tooltip" text="Ek özelliklerle uzman modunu etkinleştirir/devre dışı bırakır."/>
     <text name="CP_global_setting_wageModifier_title" text="Cp sürücü ücretleri"/>
     <text name="CP_global_setting_wageModifier_tooltip" text="Normal işçi ücretlerinin yüzdesi olarak Cp sürücü ücretleri."/>
     <text name="CP_global_setting_autoRepair_title" text="Otomatik onarım"/>
@@ -297,16 +301,20 @@
     <text name="CP_global_setting_brokenThreshold_tooltip" text="Araç veya bir ekipman daha fazla bozulursa sürücü serbest bırakılır. %100 kapalı."/>
     <text name="CP_global_setting_stopThreshingDuringRain_title" text="Stops harvester, while it's raining"/>
     <text name="CP_global_setting_stopThreshingDuringRain_tooltip" text="If the setting is active, then all harvester wait for the raining to stop."/>
+    <text name="CP_global_setting_fruitDestruction_title" text="AI Helper fruit destruction"/>
+    <text name="CP_global_setting_fruitDestruction_tooltip" text="Enable/disable the fruit destruction for helpers."/>
+    <text name="CP_global_setting_fruitDestruction_only_cp" text="Only activated for Coursesplay helpers"/>
+    <text name="CP_global_setting_fruitDestruction_all_helpers" text="Activated for every helpers"/>
+    <!---->
+    <!--Global settings user settings-->
+    <!---->
     <text name="CP_global_setting_subTitle_userSettings" text="Kullanıcı ayarları"/>
+    <text name="CP_global_setting_expertModeActive_title" text="Uzman Modu "/>
+    <text name="CP_global_setting_expertModeActive_tooltip" text="Ek özelliklerle uzman modunu etkinleştirir/devre dışı bırakır."/>
     <text name="CP_global_setting_controllerHudSelected_title" text="Gamepad dostu Hud"/>
     <text name="CP_global_setting_controllerHudSelected_tooltip" text="Gamepad ile kontrol edilebilen Hud'u kullanın."/>
     <text name="CP_global_setting_showActionEventHelp_title" text="Eylem olayı yardımı"/>
     <text name="CP_global_setting_showActionEventHelp_tooltip" text="Eylem olayı yardım metinlerini gösterir."/>
-    <text name="CP_global_setting_subTitle_pathfinder" text="Yol Bulucu ayarları"/>
-    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_title" text="Hedefte açı farkı"/>
-    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_tooltip" text="Hedefe izin verilen maksimum açı farkı, daha büyük değerler daha hızlı ancak daha az doğrudur."/>
-    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_title" text="Delta açısı gevşeme faktörü"/>
-    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_tooltip" text="Başarısız yinelemelerde yol bulucu doğruluğunu azaltan faktör, daha büyük değerler daha hızlıdır."/>
     <text name="CP_global_setting_showsAllActiveCourses_title" text="Tüm etkin kursları gösterir"/>
     <text name="CP_global_setting_showsAllActiveCourses_tooltip" text="Oyun haritasındaki tüm aktif kursları gösterir."/>
     <text name="CP_global_setting_drawOntoTheHudMap_title" text="Kursları mini haritada gösterir"/>
@@ -321,6 +329,14 @@
     <text name="CP_global_setting_distanceUnit_tooltip" text="Mesafe birimi metre veya Ayak."/>
     <text name="CP_global_setting_distanceUnit_meter" text="Metre"/>
     <text name="CP_global_setting_distanceUnit_imperial" text="Ayak"/>
+    <!---->
+    <!--Global settings pathfinder-->
+    <!---->
+    <text name="CP_global_setting_subTitle_pathfinder" text="Yol Bulucu ayarları"/>
+    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_title" text="Hedefte açı farkı"/>
+    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_tooltip" text="Hedefe izin verilen maksimum açı farkı, daha büyük değerler daha hızlı ancak daha az doğrudur."/>
+    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_title" text="Delta açısı gevşeme faktörü"/>
+    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_tooltip" text="Başarısız yinelemelerde yol bulucu doğruluğunu azaltan faktör, daha büyük değerler daha hızlıdır."/>
     <!---->
     <!--Course manager-->
     <!---->
@@ -400,6 +416,8 @@ Editör kapatıldığında kurs otomatik olarak kaydedilir ve seçilen kursu ge�
     <text name="CP_infoTexts_wrongBaleWrapType" text="Yanlış balya tipi"/>
     <text name="CP_infoTexts_errorNoPathFound" text="Yol bulunamadı"/>
     <text name="CP_infoTexts_errorGroundUnloadNotSupported" text="Tipping to ground not possible"/>
+    <text name="CP_infoTexts_errorCutterNotSupported" text="Cutter not supported"/>
+    <text name="CP_infoTexts_errorAutomaticCutterAttachNotActive" text="Cutter attaching deactivated"/>
     <!---->
     <!--Custom field manager-->
     <!---->

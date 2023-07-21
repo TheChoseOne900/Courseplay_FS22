@@ -111,6 +111,8 @@
     <text name="CP_ai_messageErrorWrongBaleWrapType" text="%s segítő váratlanul abbahagyta a munkát - Nincs a kiválasztott típusú bála!"/>
     <text name="CP_ai_messageErrorNoPathFound" text="AI segítő %s váratlanul abbahagyta a munkát - útvonal nem található!"/>
     <text name="CP_ai_messageErrorGroundUnloadNotSupported" text="AI worker %s has stopped work unexpectedly - unloading on the field not possible!"/>
+    <text name="CP_ai_messageErrorCutterNotSupported" text="AI worker %s has stopped work unexpectedly - attaching of the header is impossible!"/>
+    <text name="CP_ai_messageErrorAutomaticCutterAttachNotActive" text="AI worker %s has stopped work unexpectedly - automatic cutter attach disabled!"/>
     <!---->
     <!--Vehicle settings-->
     <!---->
@@ -155,6 +157,8 @@
     <text name="CP_vehicle_setting_avoidFruit_tooltip" text="Az AI megpróbálja elkerülni, hogy a terménybe hajtson"/>
     <text name="CP_vehicle_setting_toolOffsetX_title" text="Szerszámeltolás oldalra"/>
     <text name="CP_vehicle_setting_toolOffsetX_tooltip" text="Szerszámeltolás balra/jobbra"/>
+    <text name="CP_vehicle_setting_baleCollectorOffset_title" text="Bale pickup offset"/>
+    <text name="CP_vehicle_setting_baleCollectorOffset_tooltip" text="Offset for the bale collector"/>
     <text name="CP_vehicle_setting_toolOffsetZ_title" text="Szerszámeltolás hosszirányban"/>
     <text name="CP_vehicle_setting_toolOffsetZ_tooltip" text="Szerszámeltolás előre/hátra"/>
     <text name="CP_vehicle_setting_fullThreshold_title" text="Empty when over:"/>
@@ -198,6 +202,8 @@
     <!---->
     <!--Vehicle settings combine-->
     <!---->
+    <text name="CP_vehicle_setting_automaticCutterAttach_title" text="Automatic cutter attach"/>
+    <text name="CP_vehicle_setting_automaticCutterAttach_tooltip" text="Allows automatic attachment of a cutter, which needs to be attach as a trailer or on a seperate header trailer."/>
     <text name="CP_vehicle_setting_pipeAlwaysUnfold_title" text="Mindig hajtsa ki a csövet"/>
     <text name="CP_vehicle_setting_pipeAlwaysUnfold_tooltip" text="Mindig hajtsa ki a csövet, amikor a kombájn megtelt és a kirakodóra vár."/>
     <text name="CP_vehicle_setting_stopForUnload_title" text="Ürítés csak álló helyzetben"/>
@@ -281,8 +287,6 @@
     <!---->
     <text name="CP_global_setting_title" text="Általános beállítások"/>
     <text name="CP_global_setting_subTitle_general" text="Alapbeállítások"/>
-    <text name="CP_global_setting_expertModeActive_title" text="Haladó mód"/>
-    <text name="CP_global_setting_expertModeActive_tooltip" text="Haladó beállítások engedélyezése."/>
     <text name="CP_global_setting_wageModifier_title" text="CP segítő bére"/>
     <text name="CP_global_setting_wageModifier_tooltip" text="CP segítő bére a normál segítői bér százalékában"/>
     <text name="CP_global_setting_autoRepair_title" text="Automatikus javítás"/>
@@ -297,16 +301,20 @@
     <text name="CP_global_setting_brokenThreshold_tooltip" text="A segítő abbahagyja a munkát, ha a jármű/szerszám ennél jobban meghibásodik. 100% soha nem hagyja abba."/>
     <text name="CP_global_setting_stopThreshingDuringRain_title" text="Stops harvester, while it's raining"/>
     <text name="CP_global_setting_stopThreshingDuringRain_tooltip" text="If the setting is active, then all harvester wait for the raining to stop."/>
+    <text name="CP_global_setting_fruitDestruction_title" text="AI Helper fruit destruction"/>
+    <text name="CP_global_setting_fruitDestruction_tooltip" text="Enable/disable the fruit destruction for helpers."/>
+    <text name="CP_global_setting_fruitDestruction_only_cp" text="Only activated for Coursesplay helpers"/>
+    <text name="CP_global_setting_fruitDestruction_all_helpers" text="Activated for every helpers"/>
+    <!---->
+    <!--Global settings user settings-->
+    <!---->
     <text name="CP_global_setting_subTitle_userSettings" text="Felhasználói beállítások"/>
+    <text name="CP_global_setting_expertModeActive_title" text="Haladó mód"/>
+    <text name="CP_global_setting_expertModeActive_tooltip" text="Haladó beállítások engedélyezése."/>
     <text name="CP_global_setting_controllerHudSelected_title" text="Gamepaddal használható HUD"/>
     <text name="CP_global_setting_controllerHudSelected_tooltip" text="Használja a gamepaddal is vezérelhető HUD-ot"/>
     <text name="CP_global_setting_showActionEventHelp_title" text="Súgó a műveletekhez"/>
     <text name="CP_global_setting_showActionEventHelp_tooltip" text="Mutassa a súgót a különböző műveletekhez."/>
-    <text name="CP_global_setting_subTitle_pathfinder" text="útkereső beállításai"/>
-    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_title" text="Célszög különbség"/>
-    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_tooltip" text="Maximális megengedett szögkülönbség a célnál, a nagyobb értékek gyorsabbak, de kevésbé pontosak"/>
-    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_title" text="Simítási szög tényező"/>
-    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_tooltip" text="Az útkeresés pontosságát csökkentő tényező sikertelen iterációk esetén; nagy értékek - gyorsabb"/>
     <text name="CP_global_setting_showsAllActiveCourses_title" text="Az összes aktív útvonal megjelenítése"/>
     <text name="CP_global_setting_showsAllActiveCourses_tooltip" text="Az összes aktív útvonal megjelenítése a játéktérképen."/>
     <text name="CP_global_setting_drawOntoTheHudMap_title" text="Mutatja az útvonalakat a kistérképen"/>
@@ -321,6 +329,14 @@
     <text name="CP_global_setting_distanceUnit_tooltip" text="Távolság egység (méter vagy láb)"/>
     <text name="CP_global_setting_distanceUnit_meter" text="Méter"/>
     <text name="CP_global_setting_distanceUnit_imperial" text="Láb"/>
+    <!---->
+    <!--Global settings pathfinder-->
+    <!---->
+    <text name="CP_global_setting_subTitle_pathfinder" text="útkereső beállításai"/>
+    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_title" text="Célszög különbség"/>
+    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_tooltip" text="Maximális megengedett szögkülönbség a célnál, a nagyobb értékek gyorsabbak, de kevésbé pontosak"/>
+    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_title" text="Simítási szög tényező"/>
+    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_tooltip" text="Az útkeresés pontosságát csökkentő tényező sikertelen iterációk esetén; nagy értékek - gyorsabb"/>
     <!---->
     <!--Course manager-->
     <!---->
@@ -400,6 +416,8 @@ Az útvonal automatikusan mentésre kerül a szerkesztő bezárásakor és felü
     <text name="CP_infoTexts_wrongBaleWrapType" text="Rossz bálatípus"/>
     <text name="CP_infoTexts_errorNoPathFound" text="Útvonal nem található"/>
     <text name="CP_infoTexts_errorGroundUnloadNotSupported" text="Tipping to ground not possible"/>
+    <text name="CP_infoTexts_errorCutterNotSupported" text="Cutter not supported"/>
+    <text name="CP_infoTexts_errorAutomaticCutterAttachNotActive" text="Cutter attaching deactivated"/>
     <!---->
     <!--Custom field manager-->
     <!---->

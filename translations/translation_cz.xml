@@ -110,7 +110,9 @@
     <text name="CP_ai_messageError" text="Pracovník %s přestal neočekávaně pracovat - opustil trasu!"/>
     <text name="CP_ai_messageErrorWrongBaleWrapType" text="Pracovník %s přestal neočekávaně pracovat – nebyl nalezen zvolený typ balíků!"/>
     <text name="CP_ai_messageErrorNoPathFound" text="Pracovník AI %s neočekávaně ukončil práci - nebyla nalezena žádná cesta!"/>
-    <text name="CP_ai_messageErrorGroundUnloadNotSupported" text="AI pracovník %s neočekávaně přestal pracovat - vykládání na poli není možné!"/>
+    <text name="CP_ai_messageErrorGroundUnloadNotSupported" text="AI pracovník %s přestal neočekávaně pracovat - vykládání na poli není možné!"/>
+    <text name="CP_ai_messageErrorCutterNotSupported" text="Pracovník AI %s neočekávaně zastavil práci - připojení lišty není možné!"/>
+    <text name="CP_ai_messageErrorAutomaticCutterAttachNotActive" text="Pracovník AI %s přestal neočekávaně pracovat - automatické připojení lišty deaktivováno!"/>
     <!---->
     <!--Vehicle settings-->
     <!---->
@@ -155,9 +157,11 @@
     <text name="CP_vehicle_setting_avoidFruit_tooltip" text="Umělá inteligence se pokusí vyhnout vjíždění do plodin."/>
     <text name="CP_vehicle_setting_toolOffsetX_title" text="Horizontální odsazení nástroje"/>
     <text name="CP_vehicle_setting_toolOffsetX_tooltip" text="Nastaví horizontální odsazení nástroje."/>
+    <text name="CP_vehicle_setting_baleCollectorOffset_title" text="Odsazení pro nakládání balíků"/>
+    <text name="CP_vehicle_setting_baleCollectorOffset_tooltip" text="Odsazení pro sběrač balíků."/>
     <text name="CP_vehicle_setting_toolOffsetZ_title" text="Vertikální odsazení nástroje"/>
     <text name="CP_vehicle_setting_toolOffsetZ_tooltip" text="Nastaví vertikální odsazení nástroje."/>
-    <text name="CP_vehicle_setting_fullThreshold_title" text="Vyprázdnit po skončení:"/>
+    <text name="CP_vehicle_setting_fullThreshold_title" text="Vyprázdnit po naplnění:"/>
     <text name="CP_vehicle_setting_fullThreshold_tooltip" text="CO DĚLAT"/>
     <text name="CP_vehicle_setting_useAdditiveFillUnit_title" text="Kontrola silážních aditiv"/>
     <text name="CP_vehicle_setting_useAdditiveFillUnit_tooltip" text="Pokud je aktivní a dojdou silážní aditiva, pracovník se zastaví."/>
@@ -198,6 +202,8 @@
     <!---->
     <!--Vehicle settings combine-->
     <!---->
+    <text name="CP_vehicle_setting_automaticCutterAttach_title" text="Automatické připojení sklízecí lišty"/>
+    <text name="CP_vehicle_setting_automaticCutterAttach_tooltip" text="Umožňuje automatické připojení sklízecí lišty, kterou je třeba připojit z podvalníku nebo na samostatně."/>
     <text name="CP_vehicle_setting_pipeAlwaysUnfold_title" text="Stále otevřený komín"/>
     <text name="CP_vehicle_setting_pipeAlwaysUnfold_tooltip" text="Otevřít komín, když je kombajn plný a čeká na vykládku."/>
     <text name="CP_vehicle_setting_stopForUnload_title" text="Zastavit při vykládání"/>
@@ -281,8 +287,6 @@
     <!---->
     <text name="CP_global_setting_title" text="Globální nastavení"/>
     <text name="CP_global_setting_subTitle_general" text="Základní nastavení."/>
-    <text name="CP_global_setting_expertModeActive_title" text="Expertní režim"/>
-    <text name="CP_global_setting_expertModeActive_tooltip" text="Aktivuje/deaktivuje expertní režim s dalšími funkcemi."/>
     <text name="CP_global_setting_wageModifier_title" text="Mzdy pracovníků"/>
     <text name="CP_global_setting_wageModifier_tooltip" text="Mzdy CP pracovníků jako procento mzdy normálního pracovníka."/>
     <text name="CP_global_setting_autoRepair_title" text="Automatické opravy"/>
@@ -297,16 +301,20 @@
     <text name="CP_global_setting_brokenThreshold_tooltip" text="Řidič bude propuštěn, pokud je vozidlo nebo nářadí více rozbité. 100% je vypnuto."/>
     <text name="CP_global_setting_stopThreshingDuringRain_title" text="Zastavit kombajn, když prší"/>
     <text name="CP_global_setting_stopThreshingDuringRain_tooltip" text="Pokud je nastavení aktivní, pak všechny sklízeče čekají, až přestane pršet."/>
+    <text name="CP_global_setting_fruitDestruction_title" text="Zničení plodin AI pracovníkem"/>
+    <text name="CP_global_setting_fruitDestruction_tooltip" text="Zapíná/vypíná zničení plodin pro pracovníky."/>
+    <text name="CP_global_setting_fruitDestruction_only_cp" text="Aktivní pouze pro CP pracovníky"/>
+    <text name="CP_global_setting_fruitDestruction_all_helpers" text="Aktivní pro všechny pracovníky"/>
+    <!---->
+    <!--Global settings user settings-->
+    <!---->
     <text name="CP_global_setting_subTitle_userSettings" text="Uživatelské nastavení"/>
+    <text name="CP_global_setting_expertModeActive_title" text="Expertní režim"/>
+    <text name="CP_global_setting_expertModeActive_tooltip" text="Aktivuje/deaktivuje expertní režim s dalšími funkcemi."/>
     <text name="CP_global_setting_controllerHudSelected_title" text="Hud nastavený pro Gamepad"/>
     <text name="CP_global_setting_controllerHudSelected_tooltip" text="Použijte Hud, který lze ovládat pomocí Gamepadu."/>
     <text name="CP_global_setting_showActionEventHelp_title" text="Nápověda k akci"/>
     <text name="CP_global_setting_showActionEventHelp_tooltip" text="Zobrazuje texty nápovědy k akci."/>
-    <text name="CP_global_setting_subTitle_pathfinder" text="Nastavení generování trasy"/>
-    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_title" text="Rozdíl úhlů v cíli"/>
-    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_tooltip" text="Maximální povolený rozdíl úhlu u cíle. Větší hodnoty jsou rychlejší, ale méně přesné."/>
-    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_title" text="Faktor Delta úhlů"/>
-    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_tooltip" text="Faktor pro snížení přesnosti generování trasy při neúspěšných iteracích. Větší hodnoty jsou rychlejší."/>
     <text name="CP_global_setting_showsAllActiveCourses_title" text="Zobrazit všechny aktivní trasy"/>
     <text name="CP_global_setting_showsAllActiveCourses_tooltip" text="Zobrazuje všechny aktivní trasy na herní mapě."/>
     <text name="CP_global_setting_drawOntoTheHudMap_title" text="Zobrazit trasy na minimapě"/>
@@ -321,6 +329,14 @@
     <text name="CP_global_setting_distanceUnit_tooltip" text="Jednotka vzdálenosti metr nebo stopa."/>
     <text name="CP_global_setting_distanceUnit_meter" text="Metr"/>
     <text name="CP_global_setting_distanceUnit_imperial" text="Stopa"/>
+    <!---->
+    <!--Global settings pathfinder-->
+    <!---->
+    <text name="CP_global_setting_subTitle_pathfinder" text="Nastavení generování trasy"/>
+    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_title" text="Rozdíl úhlů v cíli"/>
+    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_tooltip" text="Maximální povolený rozdíl úhlu u cíle. Větší hodnoty jsou rychlejší, ale méně přesné."/>
+    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_title" text="Faktor Delta úhlů"/>
+    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_tooltip" text="Faktor pro snížení přesnosti generování trasy při neúspěšných iteracích. Větší hodnoty jsou rychlejší."/>
     <!---->
     <!--Course manager-->
     <!---->
@@ -400,6 +416,8 @@ Trasa se automaticky uloží při zavření editoru a přepíše vybranou trasu.
     <text name="CP_infoTexts_wrongBaleWrapType" text="Špatný typ balíku"/>
     <text name="CP_infoTexts_errorNoPathFound" text="Nenalezena trasa"/>
     <text name="CP_infoTexts_errorGroundUnloadNotSupported" text="Vysypání na zem není možné"/>
+    <text name="CP_infoTexts_errorCutterNotSupported" text="Sklízecí lišta není podporována"/>
+    <text name="CP_infoTexts_errorAutomaticCutterAttachNotActive" text="Připojování lišty deaktivováno"/>
     <!---->
     <!--Custom field manager-->
     <!---->

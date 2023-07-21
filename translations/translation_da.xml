@@ -111,6 +111,8 @@
     <text name="CP_ai_messageErrorWrongBaleWrapType" text="AI-arbejder %s har stoppet arbejdet uventet - ingen baller af valgt type fundet!"/>
     <text name="CP_ai_messageErrorNoPathFound" text="AI hjælper %s har stoppet arbejdet uventet - ingen sti fundet!"/>
     <text name="CP_ai_messageErrorGroundUnloadNotSupported" text="AI worker %s has stopped work unexpectedly - unloading on the field not possible!"/>
+    <text name="CP_ai_messageErrorCutterNotSupported" text="AI worker %s has stopped work unexpectedly - attaching of the header is impossible!"/>
+    <text name="CP_ai_messageErrorAutomaticCutterAttachNotActive" text="AI worker %s has stopped work unexpectedly - automatic cutter attach disabled!"/>
     <!---->
     <!--Vehicle settings-->
     <!---->
@@ -155,6 +157,8 @@
     <text name="CP_vehicle_setting_avoidFruit_tooltip" text="Forsøger så vidt muligt at køre udenom afgrøder."/>
     <text name="CP_vehicle_setting_toolOffsetX_title" text="Redskab forskudt vandret"/>
     <text name="CP_vehicle_setting_toolOffsetX_tooltip" text="Redskab forskudt vandret"/>
+    <text name="CP_vehicle_setting_baleCollectorOffset_title" text="Bale pickup offset"/>
+    <text name="CP_vehicle_setting_baleCollectorOffset_tooltip" text="Offset for the bale collector"/>
     <text name="CP_vehicle_setting_toolOffsetZ_title" text="Redskab forskudt lodret"/>
     <text name="CP_vehicle_setting_toolOffsetZ_tooltip" text="Redskab forskudt vertikal"/>
     <text name="CP_vehicle_setting_fullThreshold_title" text="Tøm, når den er færdig:"/>
@@ -198,6 +202,8 @@
     <!---->
     <!--Vehicle settings combine-->
     <!---->
+    <text name="CP_vehicle_setting_automaticCutterAttach_title" text="Automatic cutter attach"/>
+    <text name="CP_vehicle_setting_automaticCutterAttach_tooltip" text="Allows automatic attachment of a cutter, which needs to be attach as a trailer or on a seperate header trailer."/>
     <text name="CP_vehicle_setting_pipeAlwaysUnfold_title" text="Kør altid snegl ud"/>
     <text name="CP_vehicle_setting_pipeAlwaysUnfold_tooltip" text="Kør altid snegl ud, når mejetærsker er fuld og venter på vogn."/>
     <text name="CP_vehicle_setting_stopForUnload_title" text="Bliv stående ved aflæsning"/>
@@ -281,8 +287,6 @@
     <!---->
     <text name="CP_global_setting_title" text="Globale indstillinger"/>
     <text name="CP_global_setting_subTitle_general" text="Grund indstillinger"/>
-    <text name="CP_global_setting_expertModeActive_title" text="Eksperttilstand"/>
-    <text name="CP_global_setting_expertModeActive_tooltip" text="Aktiverer/deaktiverer eksperttilstand med yderligere funktioner."/>
     <text name="CP_global_setting_wageModifier_title" text="CP Chaufførløn"/>
     <text name="CP_global_setting_wageModifier_tooltip" text="Chaufførløn til CP Arbejter, procentvis af stanard løn."/>
     <text name="CP_global_setting_autoRepair_title" text="Automatisk reparation"/>
@@ -297,16 +301,20 @@
     <text name="CP_global_setting_brokenThreshold_tooltip" text="Føreren fyres, hvis køretøjet eller et redskab er mere ødelagt. 100% er funktionen deaktiveret."/>
     <text name="CP_global_setting_stopThreshingDuringRain_title" text="Stopper mejetærskere, imens det regner"/>
     <text name="CP_global_setting_stopThreshingDuringRain_tooltip" text="Hvis indstillingen er aktiv, vil alle mejetærskere holde stille til regnen er stoppet"/>
+    <text name="CP_global_setting_fruitDestruction_title" text="AI Helper fruit destruction"/>
+    <text name="CP_global_setting_fruitDestruction_tooltip" text="Enable/disable the fruit destruction for helpers."/>
+    <text name="CP_global_setting_fruitDestruction_only_cp" text="Only activated for Coursesplay helpers"/>
+    <text name="CP_global_setting_fruitDestruction_all_helpers" text="Activated for every helpers"/>
+    <!---->
+    <!--Global settings user settings-->
+    <!---->
     <text name="CP_global_setting_subTitle_userSettings" text="Brugerindstillinger"/>
+    <text name="CP_global_setting_expertModeActive_title" text="Eksperttilstand"/>
+    <text name="CP_global_setting_expertModeActive_tooltip" text="Aktiverer/deaktiverer eksperttilstand med yderligere funktioner."/>
     <text name="CP_global_setting_controllerHudSelected_title" text="Controller venling Hud"/>
     <text name="CP_global_setting_controllerHudSelected_tooltip" text="Benyt Hud, som kan betjenes via controlleren."/>
     <text name="CP_global_setting_showActionEventHelp_title" text="Hjælp til handlingsarrangementer"/>
     <text name="CP_global_setting_showActionEventHelp_tooltip" text="Viser hjælpetekster til handlingsbegivenheder."/>
-    <text name="CP_global_setting_subTitle_pathfinder" text="Pathfinder Indstillinger"/>
-    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_title" text="Ankomstvinkel ved mål"/>
-    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_tooltip" text="Maksimal tilladt vinkel ved målet. Små vinkler er mere nøjagtige, store er hurtigere"/>
-    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_title" text="Ændringsfaktor pathfinder"/>
-    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_tooltip" text="Faktor for at reducere pathfinder nøjagtighed ved mislykkede forsøg. Større værdier er hurtigere"/>
     <text name="CP_global_setting_showsAllActiveCourses_title" text="Vis alle ruter"/>
     <text name="CP_global_setting_showsAllActiveCourses_tooltip" text="Vis kun indlæste ruter."/>
     <text name="CP_global_setting_drawOntoTheHudMap_title" text="Viser ruter på minimappet"/>
@@ -321,6 +329,14 @@
     <text name="CP_global_setting_distanceUnit_tooltip" text="Distance i meter eller Fod."/>
     <text name="CP_global_setting_distanceUnit_meter" text="Meter"/>
     <text name="CP_global_setting_distanceUnit_imperial" text="Fod"/>
+    <!---->
+    <!--Global settings pathfinder-->
+    <!---->
+    <text name="CP_global_setting_subTitle_pathfinder" text="Pathfinder Indstillinger"/>
+    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_title" text="Ankomstvinkel ved mål"/>
+    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_tooltip" text="Maksimal tilladt vinkel ved målet. Små vinkler er mere nøjagtige, store er hurtigere"/>
+    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_title" text="Ændringsfaktor pathfinder"/>
+    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_tooltip" text="Faktor for at reducere pathfinder nøjagtighed ved mislykkede forsøg. Større værdier er hurtigere"/>
     <!---->
     <!--Course manager-->
     <!---->
@@ -400,6 +416,8 @@ Ruten gemmes automatisk ved lukning af editoren og tilsidesætter den valgte rut
     <text name="CP_infoTexts_wrongBaleWrapType" text="Forkerte balle type"/>
     <text name="CP_infoTexts_errorNoPathFound" text="Ingen rute fundet"/>
     <text name="CP_infoTexts_errorGroundUnloadNotSupported" text="Tipping to ground not possible"/>
+    <text name="CP_infoTexts_errorCutterNotSupported" text="Cutter not supported"/>
+    <text name="CP_infoTexts_errorAutomaticCutterAttachNotActive" text="Cutter attaching deactivated"/>
     <!---->
     <!--Custom field manager-->
     <!---->

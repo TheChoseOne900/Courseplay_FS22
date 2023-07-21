@@ -92,7 +92,7 @@
     <!---->
     <text name="CP_siloLoaderJobParameters_subTitle_loadPosition" text="Pozycja załadunku"/>
     <text name="CP_siloLoaderJobParameters_loadPosition_title" text="Pozycja załadunku"/>
-    <text name="CP_siloLoader_fillLevelProgress" text="Progress: "/>
+    <text name="CP_siloLoader_fillLevelProgress" text="Postęp: "/>
     <!---->
     <!--AI jobs-->
     <!---->
@@ -111,6 +111,8 @@
     <text name="CP_ai_messageErrorWrongBaleWrapType" text="Pomocnik SI %s niespodziewanie przerwał pracę - nie znaleziono bel wybranego typu!"/>
     <text name="CP_ai_messageErrorNoPathFound" text="Pomocnik SI %s niespodziewanie przerwał pracę - nie znaleziono ścieżki!"/>
     <text name="CP_ai_messageErrorGroundUnloadNotSupported" text="Pomocnik SI  %s niespodziewanie przerwał pracę - rozładunek na polu niemożliwy!"/>
+    <text name="CP_ai_messageErrorCutterNotSupported" text="Pomocnik SI %s niespodziewanie przerwał pracę - podczepienie hederu niemożliwe!"/>
+    <text name="CP_ai_messageErrorAutomaticCutterAttachNotActive" text="Pomocnik SI %s niespodziewanie przerwał pracę - automatyczne podczepienie hederu wyłączone!"/>
     <!---->
     <!--Vehicle settings-->
     <!---->
@@ -155,6 +157,8 @@
     <text name="CP_vehicle_setting_avoidFruit_tooltip" text="Pomocnik spróbuje uniknąć jazdy na skróty przez uprawy."/>
     <text name="CP_vehicle_setting_toolOffsetX_title" text="Przes. poziome dla narzędzi"/>
     <text name="CP_vehicle_setting_toolOffsetX_tooltip" text="Przesunięcie horyzontalne (poziome) dla narzędzi."/>
+    <text name="CP_vehicle_setting_baleCollectorOffset_title" text="Bale pickup offset"/>
+    <text name="CP_vehicle_setting_baleCollectorOffset_tooltip" text="Offset for the bale collector"/>
     <text name="CP_vehicle_setting_toolOffsetZ_title" text="Przes. pionowe dla narzędzi"/>
     <text name="CP_vehicle_setting_toolOffsetZ_tooltip" text="Przesunięcie wertykalne (pionowe) dla narzędzi."/>
     <text name="CP_vehicle_setting_fullThreshold_title" text="Opróżnij, gdy ponad:"/>
@@ -198,6 +202,8 @@
     <!---->
     <!--Vehicle settings combine-->
     <!---->
+    <text name="CP_vehicle_setting_automaticCutterAttach_title" text="Automatyczne podczepianie hederu"/>
+    <text name="CP_vehicle_setting_automaticCutterAttach_tooltip" text="Umożliwia automatyczne podczepianie hederu, z wózkiem lub na osobnym wózku do hedera."/>
     <text name="CP_vehicle_setting_pipeAlwaysUnfold_title" text="Zawsze rozłóż rurę"/>
     <text name="CP_vehicle_setting_pipeAlwaysUnfold_tooltip" text="Zawsze rozłóż rurę gdy kombajn jest pełny i czeka na rozładunek."/>
     <text name="CP_vehicle_setting_stopForUnload_title" text="Zatrzymaj podczas rozładunku"/>
@@ -281,8 +287,6 @@
     <!---->
     <text name="CP_global_setting_title" text="Ustawienia globalne"/>
     <text name="CP_global_setting_subTitle_general" text="Ustawienia podstawowe"/>
-    <text name="CP_global_setting_expertModeActive_title" text="Tryb zaawansowany"/>
-    <text name="CP_global_setting_expertModeActive_tooltip" text="Włącza/Wyłącza tryb zaawansowany z dodatkowymi funkcjami."/>
     <text name="CP_global_setting_wageModifier_title" text="Wynagrodzenie pomocników CP"/>
     <text name="CP_global_setting_wageModifier_tooltip" text="Procentowe wynagrodzenie pomocników CP względem zwykłych pomocników"/>
     <text name="CP_global_setting_autoRepair_title" text="Automatyczna naprawa"/>
@@ -297,16 +301,20 @@
     <text name="CP_global_setting_brokenThreshold_tooltip" text="Kierowca zostanie zwolniony, jeśli pojazd lub maszyna/narzędzie jest uszkodzona w ustalonym progu procentowym. 100% oznacza wyłączone."/>
     <text name="CP_global_setting_stopThreshingDuringRain_title" text="Zatrzymaj młócenie podczas deszczu"/>
     <text name="CP_global_setting_stopThreshingDuringRain_tooltip" text="Gdy to ustawienie jest aktywne, wszystkie kombajny zostaną zatrzymane i będą czekały na zakończenie opadów."/>
+    <text name="CP_global_setting_fruitDestruction_title" text="Niszczenie upraw przez pomocnika SI"/>
+    <text name="CP_global_setting_fruitDestruction_tooltip" text="Włącza/Wyłącza niszczenie upraw przez pomocników."/>
+    <text name="CP_global_setting_fruitDestruction_only_cp" text="Aktywowane tylko dla pomocników Coursesplay"/>
+    <text name="CP_global_setting_fruitDestruction_all_helpers" text="Aktywowany dla każdego pomocnika"/>
+    <!---->
+    <!--Global settings user settings-->
+    <!---->
     <text name="CP_global_setting_subTitle_userSettings" text="Ustawienia użytkownika"/>
+    <text name="CP_global_setting_expertModeActive_title" text="Tryb zaawansowany"/>
+    <text name="CP_global_setting_expertModeActive_tooltip" text="Włącza/Wyłącza tryb zaawansowany z dodatkowymi funkcjami."/>
     <text name="CP_global_setting_controllerHudSelected_title" text="HUD przyjazny kontrolerom"/>
     <text name="CP_global_setting_controllerHudSelected_tooltip" text="Używa HUDa, który może być ustawiany przez kontrolery gier."/>
     <text name="CP_global_setting_showActionEventHelp_title" text="Okno pomocy"/>
     <text name="CP_global_setting_showActionEventHelp_tooltip" text="Wyświetla klawisze od funkcji w oknie pomocy."/>
-    <text name="CP_global_setting_subTitle_pathfinder" text="Ustawienia szukania ścieżki"/>
-    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_title" text="Różnica kątów na bramce"/>
-    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_tooltip" text="Maksymalna dopuszczalna różnica kątów na bramce, większe wartości są szybsze, ale mniej dokładne."/>
-    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_title" text="Współczynnik relaksu kątu delta"/>
-    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_tooltip" text="Współczynnik zmniejszający dokładność wyznaczania ścieżki przy nieudanych iteracjach, większe wartości są szybsze"/>
     <text name="CP_global_setting_showsAllActiveCourses_title" text="Pokaż wszystkie aktywne kursy"/>
     <text name="CP_global_setting_showsAllActiveCourses_tooltip" text="Pokazuje wszystkie aktywne kursy na podglądzie mapy."/>
     <text name="CP_global_setting_drawOntoTheHudMap_title" text="Rysowanie kursu na minimapie"/>
@@ -321,6 +329,14 @@
     <text name="CP_global_setting_distanceUnit_tooltip" text="Długość w metrach lub stopach."/>
     <text name="CP_global_setting_distanceUnit_meter" text="metr"/>
     <text name="CP_global_setting_distanceUnit_imperial" text="stopa"/>
+    <!---->
+    <!--Global settings pathfinder-->
+    <!---->
+    <text name="CP_global_setting_subTitle_pathfinder" text="Ustawienia szukania ścieżki"/>
+    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_title" text="Różnica kątów na bramce"/>
+    <text name="CP_global_setting_maxDeltaAngleAtGoalDeg_tooltip" text="Maksymalna dopuszczalna różnica kątów na bramce, większe wartości są szybsze, ale mniej dokładne."/>
+    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_title" text="Współczynnik relaksu kątu delta"/>
+    <text name="CP_global_setting_deltaAngleRelaxFactorDeg_tooltip" text="Współczynnik zmniejszający dokładność wyznaczania ścieżki przy nieudanych iteracjach, większe wartości są szybsze"/>
     <!---->
     <!--Course manager-->
     <!---->
@@ -400,6 +416,8 @@ Kurs jest automatycznie zapisywany po zamknięciu edytora i nadpisuje wybrany ku
     <text name="CP_infoTexts_wrongBaleWrapType" text="Niewłaściwy typ beli"/>
     <text name="CP_infoTexts_errorNoPathFound" text="Nie znaleziono ścieżki"/>
     <text name="CP_infoTexts_errorGroundUnloadNotSupported" text="Kiprowanie na ziemię niemożliwe"/>
+    <text name="CP_infoTexts_errorCutterNotSupported" text="Nieobsługiwany heder"/>
+    <text name="CP_infoTexts_errorAutomaticCutterAttachNotActive" text="Podczepianie hederu nieaktywne"/>
     <!---->
     <!--Custom field manager-->
     <!---->
