@@ -59,6 +59,7 @@ function CpAIFieldWorker.registerFunctions(vehicleType)
     SpecializationUtil.registerFunction(vehicleType, "getIsCpHarvesterManeuvering", CpAIFieldWorker.getIsCpHarvesterManeuvering)
     SpecializationUtil.registerFunction(vehicleType, "holdCpHarvesterTemporarily", CpAIFieldWorker.holdCpHarvesterTemporarily)
     SpecializationUtil.registerFunction(vehicleType, "startCpFieldWorker", CpAIFieldWorker.startCpFieldWorker)
+    SpecializationUtil.registerFunction(vehicleType, "stopCpFieldWorker", CpAIFieldWorker.stopCpFieldWorker)
     SpecializationUtil.registerFunction(vehicleType, "getCanStartCpFieldWork", CpAIFieldWorker.getCanStartCpFieldWork)
 
     SpecializationUtil.registerFunction(vehicleType, "startCpAtFirstWp", CpAIFieldWorker.startCpAtFirstWp)
@@ -272,6 +273,8 @@ function CpAIFieldWorker:getCanStartCpFieldWork()
             AIUtil.hasImplementWithSpecialization(self, Cutter) or 
             AIUtil.hasChildVehicleWithSpecialization(self, VineCutter) or 
             AIUtil.hasChildVehicleWithSpecialization(self, VinePrepruner) or 
+            --- This also allows the use of stump cutters, that work like a mulcher.
+            AIUtil.hasChildVehicleWithSpecialization(self, Plow) or
             -- Harvester with cutter on trailer attached.
             AIUtil.hasCutterOnTrailerAttached(self) or
             --- precision farming
@@ -315,6 +318,11 @@ function CpAIFieldWorker:startCpFieldWorker(jobParameters, startPosition)
         local spec = self.spec_cpAIFieldWorker
         spec.cpJobStartAtLastWp:getCpJobParameters().laneOffset:setValue(jobParameters.laneOffset:getValue())
     end
+end
+
+function CpAIFieldWorker:stopCpFieldWorker()
+    self:stopFieldWorker()
+    self:cpBrakeToStop()
 end
 
 -- We replace the Giants AIDriveStrategyStraight with our AIDriveStrategyFieldWorkCourse  to take care of
