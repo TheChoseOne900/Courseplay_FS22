@@ -28,7 +28,6 @@ local AIDriveStrategyCourse_mt = Class(AIDriveStrategyCourse, AIDriveStrategy)
 AIDriveStrategyCourse.myStates = {
     INITIAL = {},
     WAITING_FOR_PATHFINDER = {},
-    DRIVING_TO_WORK_START_WAYPOINT = {},
 }
 
 --- Implement controller events.
@@ -38,6 +37,11 @@ AIDriveStrategyCourse.onFinishedEvent = "onFinished"
 AIDriveStrategyCourse.onStartEvent = "onStart"
 AIDriveStrategyCourse.updateEvent = "update"
 AIDriveStrategyCourse.deleteEvent = "delete"
+--- A row has just been finished, implements are being raised and about to start the actual turn
+AIDriveStrategyCourse.onFinishRowEvent = "onFinishRow"
+--- The actual turn is done, now we are starting into the row and will lower the implements when
+--- they reach the start of the row
+AIDriveStrategyCourse.onTurnEndProgressEvent = "onTurnEndProgress"
 
 function AIDriveStrategyCourse.new(customMt)
     if customMt == nil then
@@ -375,9 +379,10 @@ function AIDriveStrategyCourse:setFrontAndBackMarkers()
     self:debug('front marker: %.1f, back marker: %.1f', frontMarkerDistance, backMarkerDistance)
 end
 
---- Gets the front and back marker offset
----@return number front marker distance
----@return number back marker distance
+--- Gets the front and back marker offset relative to the direction node. These markers define the front
+--- and the back of the work area. When negative, they are behind the direction node, when positive, in front of it.
+---@return number distance of the foremost work area from the direction node, negative when behind the direction node
+---@return number distance of the rearmost work area from the direction node, negative when behind the direction node
 function AIDriveStrategyCourse:getFrontAndBackMarkers()
     if not self.frontMarkerDistance then
         self:setFrontAndBackMarkers()

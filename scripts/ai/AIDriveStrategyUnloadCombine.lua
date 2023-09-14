@@ -383,12 +383,16 @@ function AIDriveStrategyUnloadCombine:getDriveData(dt, vX, vY, vZ)
             self:startUnloadingTrailers()
         end
     elseif self.state == self.states.INITIAL then
-        Timer.createOneshot(50, function ()
-            --- Pipe measurement seems to be buggy with a few over loaders, like bergman RRW 500,
-            --- so a small delay of 50 ms is inserted here before unfolding starts.
-            self.vehicle:raiseAIEvent("onAIFieldWorkerStart", "onAIImplementStart")
-            self.state = self.states.IDLE
-        end)
+        if not self.startTimer then
+            --- Only create one instance of the timer and wait until it finishes.
+            self.startTimer = Timer.createOneshot(50, function ()
+                --- Pipe measurement seems to be buggy with a few over loaders, like bergman RRW 500,
+                --- so a small delay of 50 ms is inserted here before unfolding starts.
+                self.vehicle:raiseAIEvent("onAIFieldWorkerStart", "onAIImplementStart")
+                self.state = self.states.IDLE
+                self.startTimer = nil
+            end)
+        end
         self:setMaxSpeed(0)
     elseif self.state == self.states.IDLE then
         -- nothing to do right now, wait for one of the following:
@@ -512,7 +516,7 @@ function AIDriveStrategyUnloadCombine:driveBesideCombine()
     local targetNode = self:getTrailersTargetNode()
     local _, offsetZ = self:getPipeOffset(self.combineToUnload)
     -- TODO: this - 1 is a workaround the fact that we use a simple P controller instead of a PI
-    local _, _, dz = localToLocal(targetNode, self:getCombineRootNode(), 0, 0, -offsetZ - 2)
+    local _, _, dz = localToLocal(targetNode, self.combineToUnload:getAIDirectionNode(), 0, 0, -offsetZ - 2)
     -- use a factor to make sure we reach the pipe fast, but be more gentle while discharging
     local factor = self.combineToUnload:getCpDriveStrategy():isDischarging() and 0.5 or 2
     local speed = self.combineToUnload.lastSpeedReal * 3600 + MathUtil.clamp(-dz * factor, -10, 15)
