@@ -584,9 +584,9 @@ end
 ---@return boolean true if it is ok the continue driving, false when the vehicle should stop
 function CourseTurn:endTurn(dt)
     -- keep driving on the turn course until we need to lower our implements
-    self.driveStrategy:raiseControllerEvent(AIDriveStrategyCourse.onTurnEndProgressEvent,
-            self.turnContext.workStartNode, self.turnContext:isLeftTurn())
     local shouldLower, dz = self.driveStrategy:shouldLowerImplements(self.turnContext.workStartNode, self.ppc:isReversing())
+    self.driveStrategy:raiseControllerEvent(AIDriveStrategyCourse.onTurnEndProgressEvent,
+            self.turnContext.workStartNode, self.ppc:isReversing(), shouldLower, self.turnContext:isLeftTurn())
     if shouldLower then
         if not self.implementsLowered then
             -- have not started lowering implements yet
@@ -730,8 +730,8 @@ function CourseTurn:onPathfindingDone(path)
         self.turnCourse:setUseTightTurnOffsetForLastWaypoints(15)
         local endingTurnLength = self.turnContext:appendEndingTurnCourse(self.turnCourse, nil, true)
         local x = AIUtil.getDirectionNodeToReverserNodeOffset(self.vehicle)
-        self:debug('Extending course at direction switch for reversing: %.1f m', -x )
-        self.turnCourse:adjustForReversing(math.max(0, -x))
+        self:debug('Extending course at direction switch for reversing to %.1f m (or at least 1m)', -x )
+        self.turnCourse:adjustForReversing(math.max(1, -x))
         TurnManeuver.setLowerImplements(self.turnCourse, endingTurnLength, true)
     else
         self:debug('No path found in %d ms, falling back to normal turn course generator', g_currentMission.time - (self.pathfindingStartedAt or 0))

@@ -39,19 +39,26 @@ function DevHelper:debug(...)
     CpUtil.info(string.format(...))
 end
 
+--- Makes sure deleting of the selected vehicle can be detected
+function DevHelper:removedSelectedVehicle()
+    self.vehicle = nil
+end
+
 function DevHelper:update()
     if not self.isEnabled then return end
 
     local lx, lz, hasCollision, vehicle
 
     -- make sure not calling this for something which does not have courseplay installed (only ones with spec_aiVehicle)
-    if g_currentMission.controlledVehicle and g_currentMission.controlledVehicle.spec_aiVehicle then
-
+    if g_currentMission.controlledVehicle and g_currentMission.controlledVehicle.spec_cpAIWorker then
         if self.vehicle ~= g_currentMission.controlledVehicle then
+            if self.vehicle then
+                self.vehicle:removeDeleteListener(self, "removedSelectedVehicle")
+            end
             --self.vehicleData = PathfinderUtil.VehicleData(g_currentMission.controlledVehicle, true)
         end
-
         self.vehicle = g_currentMission.controlledVehicle
+        self.vehicle:addDeleteListener(self, "removedSelectedVehicle")
         self.node = g_currentMission.controlledVehicle:getAIDirectionNode()
         lx, _, lz = localDirectionToWorld(self.node, 0, 0, 1)
 
@@ -169,6 +176,8 @@ function DevHelper:keyEvent(unicode, sym, modifier, isDown)
         if ok then
             self.course = course
         end
+    elseif bitAND(modifier, Input.MOD_LALT) ~= 0 and isDown and sym == Input.KEY_n then
+        self:togglePpcControlledNode()
     end
 end
 
@@ -182,10 +191,12 @@ function DevHelper:draw()
     for key, value in pairs(self.data) do
         table.insert(data, {name = key, value = value})
     end
-    DebugUtil.renderTable(0.65, 0.3, 0.013, data, 0.05)
+    DebugUtil.renderTable(0.65, 0.27, 0.013, data, 0.05)
 
     self:showFillNodes()
     self:showAIMarkers()
+
+    self:showDriveData()
 
 	if not self.tNode then
 		self.tNode = createTransformGroup("devhelper")
@@ -262,10 +273,41 @@ function DevHelper:showAIMarkers()
     CpUtil.drawDebugNode(frontMarker, false, 3)
     CpUtil.drawDebugNode(backMarker, false, 3)
 
-    if self.vehicle:getAIDirectionNode() then 
-        CpUtil.drawDebugNode(self.vehicle:getAIDirectionNode(), false , 3, "AiDirectionNode")
+    local directionNode = self.vehicle:getAIDirectionNode()
+    if directionNode then 
+        CpUtil.drawDebugNode(self.vehicle:getAIDirectionNode(), false , 4, "AiDirectionNode")
     end
+    local reverseNode = self.vehicle:getAIReverserNode()
+    if reverseNode then 
+        CpUtil.drawDebugNode(reverseNode, false , 4.5, "AiReverseNode")
+    end
+    local steeringNode = self.vehicle:getAISteeringNode()
+    if steeringNode then 
+        CpUtil.drawDebugNode(steeringNode, false , 5, "AiSteeringNode")
+    end
+    local articulatedAxisReverseNode = AIUtil.getArticulatedAxisVehicleReverserNode(self.vehicle)
+    if articulatedAxisReverseNode then 
+        CpUtil.drawDebugNode(articulatedAxisReverseNode, false , 5.5, "AiArticulatedAxisReverseNode")
+    end   
+end
 
+function DevHelper:togglePpcControlledNode()
+    if not self.vehicle then return end
+    local strategy = self.vehicle:getCpDriveStrategy()
+    if not strategy then return end
+    if strategy.ppc:getControlledNode() == AIUtil.getReverserNode(self.vehicle) then
+        strategy.pcc:resetControlledNode()
+    else
+        strategy.ppc:setControlledNode(AIUtil.getReverserNode(self.vehicle))
+    end
+end
+
+function DevHelper:showDriveData()
+    if not self.vehicle then return end
+    local strategy = self.vehicle:getCpDriveStrategy()
+    if not strategy then return end
+    strategy.ppc:update()
+    strategy.reverser:getDriveData()
 end
 
 -- make sure to recreate the global dev helper whenever this script is (re)loaded

@@ -70,7 +70,7 @@ function CpSettingsUtil.init()
 	schema:register(XMLValueType.STRING, "Settings#autoUpdateGui", "Gui gets updated automatically")
 
 	local key = "Settings.SettingSubTitle(?)"
-	schema:register(XMLValueType.STRING, key .."#title", "Setting sub title", nil, true)
+	schema:register(XMLValueType.STRING, key .."#title", "Setting sub title", nil)
 	schema:register(XMLValueType.BOOL, key .."#prefix", "Setting sub title is a prefix", true)
 	
 	schema:register(XMLValueType.STRING, key.."#isDisabled", "Callback function, if the settings is disabled.") -- optional
@@ -137,10 +137,17 @@ end
 ---@param class table class to save the data
 ---@param filePath string
 function CpSettingsUtil.loadSettingsFromSetup(class, filePath)
-    local xmlFile = XMLFile.load("settingSetupXml", filePath, CpSettingsUtil.setupXmlSchema)
-    class.settings = {}
+	local xmlFile = XMLFile.load("settingSetupXml", filePath, CpSettingsUtil.setupXmlSchema)
+	class.settings = {}
+	setmetatable(class.settings, { __tostring = function(self)
+		--- Adds tostring function to print all settings
+		for i, s in ipairs(self) do 
+			CpUtil.info("%2d: %s", i, tostring(s))
+		end
+		return tostring(#self)
+	end})
 	class.settingsBySubTitle = {}
-    local uniqueID = 0
+	local uniqueID = 0
 	local autoUpdateGui = xmlFile:getValue("Settings#autoUpdateGui")
 	local setupKey = xmlFile:getValue("Settings#prefixText")
 	local pageTitle = xmlFile:getValue("Settings#title")
@@ -150,7 +157,7 @@ function CpSettingsUtil.loadSettingsFromSetup(class, filePath)
 		class.pageTitle = setupKey .. "title"
 	end
 	xmlFile:iterate("Settings.SettingSubTitle", function (i, masterKey)
-		local subTitle = xmlFile:getValue(masterKey.."#title")
+		local subTitle = xmlFile:getValue(masterKey.."#title", "...")
 		--- This flag can by used to simplify the translation text. 
 		local pre = xmlFile:getValue(masterKey.."#prefix", true)	
 		if pre then 
@@ -256,7 +263,9 @@ end
 ---@param class table 
 ---@param settings table
 function CpSettingsUtil.cloneSettingsTable(class, settings, ...)
+	local mt = getmetatable(settings)
 	class.settings = {}
+	setmetatable(class.settings, mt)
 	for _, setting in ipairs(settings) do 
 		local settingClone = setting:clone(...)
 		table.insert(class.settings, settingClone)

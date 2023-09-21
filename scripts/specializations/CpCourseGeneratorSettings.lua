@@ -6,9 +6,12 @@
 CpCourseGeneratorSettings = {}
 
 CpCourseGeneratorSettings.MOD_NAME = g_currentModName
-CpCourseGeneratorSettings.KEY = "."..CpCourseGeneratorSettings.MOD_NAME..".cpCourseGeneratorSettings"
 CpCourseGeneratorSettings.SETTINGS_KEY = ".settings"
 CpCourseGeneratorSettings.VINE_SETTINGS_KEY = ".vineSettings"
+CpCourseGeneratorSettings.NAME = ".cpCourseGeneratorSettings"
+CpCourseGeneratorSettings.SPEC_NAME = CpCourseGeneratorSettings.MOD_NAME .. CpCourseGeneratorSettings.NAME
+CpCourseGeneratorSettings.KEY = "." .. CpCourseGeneratorSettings.MOD_NAME .. CpCourseGeneratorSettings.NAME
+
 function CpCourseGeneratorSettings.initSpecialization()
 	local schema = Vehicle.xmlSchemaSavegame
     --- Old save format
@@ -23,11 +26,18 @@ function CpCourseGeneratorSettings.initSpecialization()
     CpSettingsUtil.registerXmlSchema(schema, 
         "vehicles.vehicle(?)"..CpCourseGeneratorSettings.KEY..CpCourseGeneratorSettings.VINE_SETTINGS_KEY.."(?)")
     CpCourseGeneratorSettings.loadSettingsSetup()
+
+    CpCourseGeneratorSettings.registerConsoleCommands()
 end
 
+function CpCourseGeneratorSettings.register(typeManager,typeName,specializations)
+	if CpCourseGeneratorSettings.prerequisitesPresent(specializations) then
+		typeManager:addSpecialization(typeName, CpCourseGeneratorSettings.SPEC_NAME)
+	end
+end
 
 function CpCourseGeneratorSettings.prerequisitesPresent(specializations)
-    return SpecializationUtil.hasSpecialization(AIFieldWorker, specializations) 
+    return SpecializationUtil.hasSpecialization(CpAIWorker, specializations) 
 end
 
 function CpCourseGeneratorSettings.registerEvents(vehicleType)
@@ -77,8 +87,7 @@ end
 
 function CpCourseGeneratorSettings:onLoad(savegame)
 	--- Register the spec: spec_cpCourseGeneratorSettings
-    local specName = CpCourseGeneratorSettings.MOD_NAME .. ".cpCourseGeneratorSettings"
-    self.spec_cpCourseGeneratorSettings = self["spec_" .. specName]
+    self.spec_cpCourseGeneratorSettings = self["spec_" .. CpCourseGeneratorSettings.SPEC_NAME]
     local spec = self.spec_cpCourseGeneratorSettings
     spec.gui = g_currentMission.inGameMenu.pageAI
     --- Clones the generic settings to create different settings containers for each vehicle. 
@@ -234,4 +243,39 @@ function CpCourseGeneratorSettings:generateWorkWidthSettingValuesAndTexts(settin
         table.insert(texts, i)
     end
     return values, texts
+end
+
+---------------------------------------------
+--- Console Commands
+---------------------------------------------
+
+function CpCourseGeneratorSettings.registerConsoleCommands()
+    g_devHelper.consoleCommands:registerConsoleCommand("cpSettingsPrintGenerator", 
+        "Prints the course generator settings or a given setting", 
+        "consoleCommandPrintSetting", CpCourseGeneratorSettings)
+end
+
+--- Either prints all settings or a desired setting by the name or index in the setting table.
+---@param name any
+function CpCourseGeneratorSettings:consoleCommandPrintSetting(name)
+    local vehicle = g_currentMission.controlledVehicle
+    if not vehicle then 
+        CpUtil.info("Not entered a valid vehicle!")
+        return
+    end
+    local spec = vehicle.spec_cpCourseGeneratorSettings
+    if not spec then 
+        CpUtil.infoVehicle(vehicle, "has no course generator settings!")
+        return
+    end
+    if name == nil then 
+        CpUtil.infoVehicle(vehicle,"%d Course generator settings printed", tostring(spec.settings))
+        return
+    end
+    local num = tonumber(name)
+    if num then 
+        CpUtil.infoVehicle(vehicle, tostring(spec.settings[num]))
+        return
+    end
+    CpUtil.infoVehicle(vehicle, tostring(spec[name]))
 end
