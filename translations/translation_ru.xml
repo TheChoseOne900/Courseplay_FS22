@@ -95,9 +95,9 @@
     <text name="CP_siloLoaderJobParameters_subTitle_loadPosition" text="Позиция загрузки"/>
     <text name="CP_siloLoaderJobParameters_loadPosition_title" text="Позиция загрузки"/>
     <text name="CP_siloLoader_fillLevelProgress" text="Прогресс: "/>
-    <text name="CP_siloLoaderJobParameters_subTitle_unloading" text="Разгружать на:"/>
+    <text name="CP_siloLoaderJobParameters_subTitle_unloading" text="Разгрузка в:"/>
     <text name="CP_siloLoaderJobParameters_unloadAt_trailer" text="Прицеп"/>
-    <text name="CP_siloLoaderJobParameters_unloadAt_unloadTrigger" text="Станция разгрузки"/>
+    <text name="CP_siloLoaderJobParameters_unloadAt_unloadTrigger" text="Станцию разгрузки"/>
     <!---->
     <!--AI jobs-->
     <!---->
@@ -118,6 +118,36 @@
     <text name="CP_ai_messageErrorGroundUnloadNotSupported" text="ИИ-работник %s неожиданно прекратил работу - разгрузка на поле невозможна!"/>
     <text name="CP_ai_messageErrorCutterNotSupported" text="ИИ-работник %s неожиданно прекратил работу - присоединение жатки не возможно!"/>
     <text name="CP_ai_messageErrorAutomaticCutterAttachNotActive" text="ИИ-работник %s неожиданно прекратил работу - автоприсоединение жатки отключено!"/>
+    <text name="CP_ai_messageErrorWrongMissionFruitType" text="ИИ-работник %s неожиданно прекратил работу - неправильный fill_type для выбранной миссии!"/>
+    <!---->
+    <!--AI fieldwork task descriptions-->
+    <!---->
+    <text name="CP_ai_taskDescriptionAttachHeader" text="Прикрепляет жатку"/>
+    <!---->
+    <!--AI bale finder task descriptions-->
+    <!---->
+    <text name="CP_ai_taskDescriptionCollectsBales" text="Сбор тюков на поле"/>
+    <text name="CP_ai_taskDescriptionWrapsBales" text="Оборачивание тюков на поле"/>
+    <!---->
+    <!--AI combine unloader task descriptions-->
+    <!---->
+    <text name="CP_ai_taskDescriptionUnloadCombine" text="Разгружает комбайн"/>
+    <text name="CP_ai_taskDescriptionWaitsForTargetCombine" text="Ожидает комбайн"/>
+    <text name="CP_ai_taskDescriptionUnloadSiloLoader" text="Выгружает погрузчика"/>
+    <text name="CP_ai_taskDescriptionWaitsForTargetSiloLoader" text="Ожидает загрузчика"/>
+    <text name="CP_ai_taskDescriptionUnloadingToHeap" text="Выгружает на кучу"/>
+    <text name="CP_ai_taskDescriptionUnloadingToTrailer" text="Разгружает в прицеп"/>
+    <text name="CP_ai_taskDescriptionUnloadingWithGiants" text="Разгрузка рабочим Giants"/>
+    <!---->
+    <!--AI silo worker task descriptions-->
+    <!---->
+    <text name="CP_ai_taskDescriptionWorksInTheSilo" text="Работы в силосной яме"/>
+    <text name="CP_ai_taskDescriptionWaitsForUnloaders" text="Ожидает разгрузчика"/>
+    <!---->
+    <!--AI silo loader task descriptions-->
+    <!---->
+    <text name="CP_ai_taskDescriptionWaitsForTrailer" text="Ожидает прицеп"/>
+    <text name="CP_ai_taskDescriptionUnloadingToTrigger" text="Разгружается в триггере"/>
     <!---->
     <!--Vehicle settings-->
     <!---->
@@ -164,10 +194,12 @@
     <text name="CP_vehicle_setting_toolOffsetX_tooltip" text="Поперечное смещение инструмента."/>
     <text name="CP_vehicle_setting_baleCollectorOffset_title" text="Смещение подборщика тюков"/>
     <text name="CP_vehicle_setting_baleCollectorOffset_tooltip" text="Смещение подборщика тюков"/>
-    <text name="CP_vehicle_setting_toolOffsetZ_title" text="Продольное смещение"/>
-    <text name="CP_vehicle_setting_toolOffsetZ_tooltip" text="Продольное смещение инструмента."/>
-    <text name="CP_vehicle_setting_fullThreshold_title" text="Опустошать когда заполнен:"/>
-    <text name="CP_vehicle_setting_fullThreshold_tooltip" text="Если уровень заполнения разгрузчика превышает это значение, он не будет ждать комбайн."/>
+    <text name="CP_vehicle_setting_combineOffsetX_title" text="Смещение поперечное"/>
+    <text name="CP_vehicle_setting_combineOffsetX_tooltip" text="Смещение от разгузочной трубы вправо(+) и влево(-)"/>
+    <text name="CP_vehicle_setting_combineOffsetZ_title" text="Смещение продольное"/>
+    <text name="CP_vehicle_setting_combineOffsetZ_tooltip" text="Смещение вдоль разгузочной трубы вперёд(+) и назад(-)"/>
+    <text name="CP_vehicle_setting_fullThreshold_title" text="Разгружаться при:"/>
+    <text name="CP_vehicle_setting_fullThreshold_tooltip" text="Если уровень заполнения разгрузчика уже превышает это значение, то он не будет ждать следующего вызова комбайна, а сразу поедет разгружаться."/>
     <text name="CP_vehicle_setting_useAdditiveFillUnit_title" text="Контроль силосной добавки."/>
     <text name="CP_vehicle_setting_useAdditiveFillUnit_tooltip" text="Если активная и силовая добавка закончилась, водитель остановится."/>
     <text name="CP_vehicle_setting_symmetricLaneChange_title" text="Симметричная смена полосы движения"/>
@@ -182,8 +214,10 @@
     <text name="CP_vehicle_setting_subTitle_bunkerSilo" text="Настройки работника в силосной яме"/>
     <text name="CP_vehicle_setting_bunkerSiloWorkWidth_title" text="Рабочая ширина"/>
     <text name="CP_vehicle_setting_bunkerSiloWorkWidth_tooltip" text="Рабочая ширина. Значение: 0 - 50"/>
-    <text name="CP_vehicle_setting_loadingShovelHeightOffset_title" text="Смещение загрузки ковша. Значение: -1 - 1"/>
-    <text name="CP_vehicle_setting_loadingShovelHeightOffset_tooltip" text="Смещение загрузки ковша. Значение: -1 - 1"/>
+    <text name="CP_vehicle_setting_levelerHeightOffset_title" text="Смещение высоты отвала"/>
+    <text name="CP_vehicle_setting_levelerHeightOffset_tooltip" text="Предустановленный подъём отвала от земли. Значение: 0 - 1"/>
+    <text name="CP_vehicle_setting_loadingShovelHeightOffset_title" text="Смещение высоты ковша"/>
+    <text name="CP_vehicle_setting_loadingShovelHeightOffset_tooltip" text="Изменение высоты загрузки ковша. Значение: -1 - 1"/>
     <!---->
     <!--Vehicle settings speed-->
     <!---->
@@ -210,7 +244,7 @@
     <!--Vehicle settings combine-->
     <!---->
     <text name="CP_vehicle_setting_automaticCutterAttach_title" text="Автоприсоединение жатки"/>
-    <text name="CP_vehicle_setting_automaticCutterAttach_tooltip" text="Позволяет автоматическое прикрепление жатки, которую можно прикреплять как прицеп или на отдельном прицепе для жатки."/>
+    <text name="CP_vehicle_setting_automaticCutterAttach_tooltip" text="Позволяет автоматическое прикрепление жатки, которую можно транспортировать как самостоятельный прицеп или на отдельном прицепе для жаток."/>
     <text name="CP_vehicle_setting_pipeAlwaysUnfold_title" text="Всегда разворачивать трубу"/>
     <text name="CP_vehicle_setting_pipeAlwaysUnfold_tooltip" text="Всегда разворачивать трубу, когда комбайн заполнен и ожидает разгрузки."/>
     <text name="CP_vehicle_setting_stopForUnload_title" text="Стоять при разгрузке"/>
@@ -218,7 +252,7 @@
     <text name="CP_vehicle_setting_selfUnload_title" text="Саморазгрузка комбайна"/>
     <text name="CP_vehicle_setting_selfUnload_tooltip" text="Комбайн самостоятельно двигается к прицепу на поле или возле него для разгрузки. Не поддерживается в реж. работы нескольких орудий."/>
     <text name="CP_vehicle_setting_unloadOnFirstHeadland_title" text="Разгрузка на первой поворотной полосе"/>
-    <text name="CP_vehicle_setting_unloadOnFirstHeadland_tooltip" text="Комбайн вызовет разгрузчик на первой поворотной полосе."/>
+    <text name="CP_vehicle_setting_unloadOnFirstHeadland_tooltip" text="Комбайн вызовет разгрузчика на первом мысе, даже когда он будете двигаться за пределы поля. При выключении этого параметра, комбайн сначала создает карман, прежде чем вызывать разгрузчика."/>
     <text name="CP_vehicle_setting_strawSwath_title" text="Валкование соломы"/>
     <text name="CP_vehicle_setting_strawSwath_tooltip" text="Включает/отключает валок соломы или отключает его только на поворотной полосе."/>
     <text name="CP_vehicle_setting_strawSwath_onlyCenter" text="откл. на поворотной полосе"/>
@@ -419,6 +453,7 @@
     <text name="CP_infoTexts_drivingToSelfUnload" text="Двигается к прицепу"/>
     <text name="CP_infoTexts_outOfMoney" text="Закончились деньги"/>
     <text name="CP_infoTexts_waitForRainToFinish" text="Ожидает пока закончится дождь"/>
+    <text name="CP_infoTexts_waitForSnowToClear" text="Ожидает, пока сойдёт снег"/>
     <text name="CP_infoTexts_waitForUnloader" text="В ожидании разгружающего"/>
     <text name="CP_infoTexts_errorStopped" text="Покинул курс, остановился"/>
     <text name="CP_infoTexts_wrongBaleWrapType" text="Неправильный тип тюка"/>
@@ -426,6 +461,8 @@
     <text name="CP_infoTexts_errorGroundUnloadNotSupported" text="Выгрузка на землю не возможна"/>
     <text name="CP_infoTexts_errorCutterNotSupported" text="Жатка не поддерживается"/>
     <text name="CP_infoTexts_errorAutomaticCutterAttachNotActive" text="Присоединение жатки не активно"/>
+    <text name="CP_infoTexts_errorWrongSeason" text="Неправильный сезон для культуры"/>
+    <text name="CP_infoTexts_errorWrongMissionFruitType" text="Неправильная культура для выбранной миссии"/>
     <!---->
     <!--Custom field manager-->
     <!---->
@@ -795,7 +832,7 @@ R: Удаляет скопированный курс из буфера обме
 Если маркер указывает на уже существующую кучу,
 тогда эта куча используется для разгрузки.
 Направление маркера используется для направления выгрузки.
-Кроме того, для прицепов необходимо выбрать сторону вынрузки.
+Кроме того, для прицепов необходимо выбрать сторону выгрузки.
 "/>
     <text name="CP_help_page_bunker_title" text="Работник в силосной яме"/>
     <text name="CP_help_page_bunkerGeneral_text" text="
@@ -824,15 +861,42 @@ Courseplay способен прессовать или распределять
 Маркер обнаруживает кучи или бункеры и выделяет их на карте.
 Теперь можно запускать помощника.
 "/>
-    <text name="CP_help_page_shovelLoader_title" text="Wheelloader Driver"/>
+    <text name="CP_help_page_shovelLoader_title" text="Погрузчики"/>
     <text name="CP_help_page_shovelLoaderGeneral_text" text="
-WIP
+Этот режим включает в себя колёсные и фронтальные погрузчики. 
+С помощью прикреплённого ковша можно подобрать с земли кучу или же загрузиться из бункера и 
+разгрузить в ближайший прицеп или выбранную станцию разгрузки, такую как BGA.
+Ковш будет автоматически устанавливаться в правильные положения загрузки, разгрузки и так далее.
+В случае, если режим не виден напрямую на HUD, вы можете переключать &quot;Стартовая позиция&quot; пока не появится режим лопаты.
+
+Значок цели на HUD может использоваться для открытия карты ИИ, чтобы указать место загрузки и разгрузки.
+HUD также показывает оставшийся уровень заполнения кучи или бункера, в то время как работает помощник.
+Если точкой загрузки является силосная яма, тогда, возможно, придётся отрегулировать рабочую ширину, чтобы избежать удара по боковым стенам ямы.
+
+Настройка смещения высоты используется для регулировки высоты лопаты над землёй, так как не все лопаты могут быть рассчитаны правильно.
+Это следует проверить, если лопата находится слишком низко для загрузки и водитель не может поворачивать, или лопата поднята слишком высоко и её содержимое высыпается на землю.
+Если значение будет изменено, лопата автоматически перейдёт в положение загрузки, чтобы отобразить влияние смещения.
+Чтобы сбросить смещение, вам нужно нажать на текст настроек в HUD. Значение может быть скорректировано от +1 до -1 с шагом 0.1.
+
+Ковш с силосными вилами откроется и автоматически закрывается для загрузки и разгрузки.
+Ковш для измельчения сахарной свёклы также полностью работает.
 "/>
     <text name="CP_help_page_shovelLoaderBasic_text" text="
-WIP
+Чтобы запустить помощника на погрузчике, вам нужно установить позиции загрузки и выгрузки, нажав на целевой значок на HUD.
+Положение загрузки работает так же, как и в режиме загрузчика. Будет создан синий квадрат.
+
+От того, куда вы хотите разгружать, в прицеп или на станцию разгрузки, будет зависеть положение разгрузки.
+Если выбрана выгрузка в прицеп, то в меню ИИ необходимо выбрать область, где будет припаркован прицеп.
+Помощник поедет к любому припаркованному прицепу в этом районе. Направление маркера не имеет реального смысла.
+Если вы хотите разгрузить в станцию разгрузки, вам нужно переключить цель, а затем отметить триггер с положением разгрузки.
 "/>
     <text name="CP_help_page_shovelLoaderTrigger_text" text="
-WIP
+Поначалу выбор триггера выглядит немного сложным, но на самом деле это действительно легко.
+В каждом здании может быть больше одного триггера, поэтому вам нужно выбрать именно тот, на который вы хотите разгрузить.
+Все доступные триггеры будут показаны с оранжевым крестиком на карте ИИ.
+Чтобы выбрать один из них, поместите середину круглого маркера в середине крестика.
+Направление стрелки сообщает помощнику, с какой стороны он приблизится к триггеру для разгрузки.
+Теперь ваш выбор должен выглядеть похожим на изображение.
 "/>
     <!---->
     <!--Input bindings-->

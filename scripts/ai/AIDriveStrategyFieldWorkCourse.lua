@@ -101,8 +101,8 @@ function AIDriveStrategyFieldWorkCourse:start(course, startIx, jobParameters)
 end
 
 --- Event raised when the driver has finished.
-function AIDriveStrategyFieldWorkCourse:onFinished()
-    AIDriveStrategyFieldWorkCourse:superClass().onFinished(self)
+function AIDriveStrategyFieldWorkCourse:onFinished(hasFinished)
+    AIDriveStrategyFieldWorkCourse:superClass().onFinished(self, hasFinished)
     self.remainingTime:reset()
 end
 
@@ -247,6 +247,7 @@ function AIDriveStrategyFieldWorkCourse:initializeImplementControllers(vehicle)
     self:addImplementController(vehicle, APalletAutoLoaderController, nil, {}, "spec_aPalletAutoLoader")
     self:addImplementController(vehicle, UniversalAutoloadController, nil, {}, "spec_universalAutoload")
 
+    self:addImplementController(vehicle, CombineController, Combine, defaultDisabledStates)
     self:addImplementController(vehicle, FertilizingSowingMachineController, FertilizingSowingMachine, defaultDisabledStates)
     self:addImplementController(vehicle, ForageWagonController, ForageWagon, defaultDisabledStates)
     self:addImplementController(vehicle, SowingMachineController, SowingMachine, defaultDisabledStates)
@@ -268,6 +269,7 @@ function AIDriveStrategyFieldWorkCourse:initializeImplementControllers(vehicle)
 
     self:addImplementController(vehicle, SoilSamplerController, nil, defaultDisabledStates, "spec_soilSampler")
     self:addImplementController(vehicle, StumpCutterController, StumpCutter, defaultDisabledStates)
+
 
 end
 

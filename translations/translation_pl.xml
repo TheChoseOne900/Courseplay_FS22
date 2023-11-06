@@ -118,6 +118,36 @@
     <text name="CP_ai_messageErrorGroundUnloadNotSupported" text="Pomocnik SI  %s niespodziewanie przerwał pracę - rozładunek na polu niemożliwy!"/>
     <text name="CP_ai_messageErrorCutterNotSupported" text="Pomocnik SI %s niespodziewanie przerwał pracę - podczepienie hederu niemożliwe!"/>
     <text name="CP_ai_messageErrorAutomaticCutterAttachNotActive" text="Pomocnik SI %s niespodziewanie przerwał pracę - automatyczne podczepienie hederu wyłączone!"/>
+    <text name="CP_ai_messageErrorWrongMissionFruitType" text="Pomocnik SI %s niespodziewanie przerwał pracę - wybrano zły typ ładunku!"/>
+    <!---->
+    <!--AI fieldwork task descriptions-->
+    <!---->
+    <text name="CP_ai_taskDescriptionAttachHeader" text="Podczepianie hederu"/>
+    <!---->
+    <!--AI bale finder task descriptions-->
+    <!---->
+    <text name="CP_ai_taskDescriptionCollectsBales" text="Zbieranie bel"/>
+    <text name="CP_ai_taskDescriptionWrapsBales" text="Owijanie bel"/>
+    <!---->
+    <!--AI combine unloader task descriptions-->
+    <!---->
+    <text name="CP_ai_taskDescriptionUnloadCombine" text="Rozładowywanie kombajnu"/>
+    <text name="CP_ai_taskDescriptionWaitsForTargetCombine" text="Oczekiwanie na kombajn"/>
+    <text name="CP_ai_taskDescriptionUnloadSiloLoader" text="Rozładowywanie łyżki"/>
+    <text name="CP_ai_taskDescriptionWaitsForTargetSiloLoader" text="Oczekiwanie na rozładowującego"/>
+    <text name="CP_ai_taskDescriptionUnloadingToHeap" text="Wyładowywanie na pryzmę"/>
+    <text name="CP_ai_taskDescriptionUnloadingToTrailer" text="Wyładowywanie na przyczepę"/>
+    <text name="CP_ai_taskDescriptionUnloadingWithGiants" text="Wyładowywanie przez pomocnika Giants"/>
+    <!---->
+    <!--AI silo worker task descriptions-->
+    <!---->
+    <text name="CP_ai_taskDescriptionWorksInTheSilo" text="Praca w silosie"/>
+    <text name="CP_ai_taskDescriptionWaitsForUnloaders" text="Oczekiwanie na rozładunek"/>
+    <!---->
+    <!--AI silo loader task descriptions-->
+    <!---->
+    <text name="CP_ai_taskDescriptionWaitsForTrailer" text="Oczekiwanie na przyczepę"/>
+    <text name="CP_ai_taskDescriptionUnloadingToTrigger" text="Wyładowywanie do triggera"/>
     <!---->
     <!--Vehicle settings-->
     <!---->
@@ -164,8 +194,10 @@
     <text name="CP_vehicle_setting_toolOffsetX_tooltip" text="Przesunięcie horyzontalne (poziome) dla narzędzi."/>
     <text name="CP_vehicle_setting_baleCollectorOffset_title" text="Przes. podbieracza bel"/>
     <text name="CP_vehicle_setting_baleCollectorOffset_tooltip" text="Przesunięcie dla podbieracza bel."/>
-    <text name="CP_vehicle_setting_toolOffsetZ_title" text="Przes. pionowe dla narzędzi"/>
-    <text name="CP_vehicle_setting_toolOffsetZ_tooltip" text="Przesunięcie wertykalne (pionowe) dla narzędzi."/>
+    <text name="CP_vehicle_setting_combineOffsetX_title" text="Przes. prawo/lewo"/>
+    <text name="CP_vehicle_setting_combineOffsetX_tooltip" text="Przesunięcie dla rury kombajnu w prawo (+) i w lewo(-)"/>
+    <text name="CP_vehicle_setting_combineOffsetZ_title" text="Przes. przód/tył"/>
+    <text name="CP_vehicle_setting_combineOffsetZ_tooltip" text="Przesunięcie dla rury kombajnu w przód (+) i w tył(-)"/>
     <text name="CP_vehicle_setting_fullThreshold_title" text="Opróżnij, gdy ponad:"/>
     <text name="CP_vehicle_setting_fullThreshold_tooltip" text="Ustala po osiągnięciu jakiego poziomu wypełnienia pomocnik ma rozładować przyczepę."/>
     <text name="CP_vehicle_setting_useAdditiveFillUnit_title" text="Sprawdź dodatek do kiszenia"/>
@@ -182,6 +214,8 @@
     <text name="CP_vehicle_setting_subTitle_bunkerSilo" text="Ustawienia pracownika silosu"/>
     <text name="CP_vehicle_setting_bunkerSiloWorkWidth_title" text="Szerokość robocza"/>
     <text name="CP_vehicle_setting_bunkerSiloWorkWidth_tooltip" text="Szerokość robocza. Zakres: 0 - 50"/>
+    <text name="CP_vehicle_setting_levelerHeightOffset_title" text="Przes. wys. lemiesza"/>
+    <text name="CP_vehicle_setting_levelerHeightOffset_tooltip" text="Przesunięcie odległości lemiesza od ziemi. Zakres: 0 - 1"/>
     <text name="CP_vehicle_setting_loadingShovelHeightOffset_title" text="Przes. załadunku łyżki. Zakres: -1 - 1"/>
     <text name="CP_vehicle_setting_loadingShovelHeightOffset_tooltip" text="Przesunięcie załadunku łyżki. Zakres: -1 - 1"/>
     <!---->
@@ -419,6 +453,7 @@ Kurs jest automatycznie zapisywany po zamknięciu edytora i nadpisuje wybrany ku
     <text name="CP_infoTexts_drivingToSelfUnload" text="Przejazd do przyczepy"/>
     <text name="CP_infoTexts_outOfMoney" text="Brak pieniędzy"/>
     <text name="CP_infoTexts_waitForRainToFinish" text="Oczekuje na koniec opadów"/>
+    <text name="CP_infoTexts_waitForSnowToClear" text="Oczekiwanie na stopnienie śniegu"/>
     <text name="CP_infoTexts_waitForUnloader" text="Oczekiwanie na rozładowującego"/>
     <text name="CP_infoTexts_errorStopped" text="Opuścił kurs, zatrzymał się"/>
     <text name="CP_infoTexts_wrongBaleWrapType" text="Niewłaściwy typ beli"/>
@@ -426,6 +461,8 @@ Kurs jest automatycznie zapisywany po zamknięciu edytora i nadpisuje wybrany ku
     <text name="CP_infoTexts_errorGroundUnloadNotSupported" text="Kiprowanie na ziemię niemożliwe"/>
     <text name="CP_infoTexts_errorCutterNotSupported" text="Nieobsługiwany heder"/>
     <text name="CP_infoTexts_errorAutomaticCutterAttachNotActive" text="Podczepianie hederu nieaktywne"/>
+    <text name="CP_infoTexts_errorWrongSeason" text="Zła pora roku dla tej uprawy"/>
+    <text name="CP_infoTexts_errorWrongMissionFruitType" text="Zły rodzaj uprawy dla tej pracy"/>
     <!---->
     <!--Custom field manager-->
     <!---->
@@ -812,15 +849,42 @@ Aby rozpocząć załadunek, punkt załadunkowy musi zostać ustawiony w menu SI.
 Znacznik wykrywa pryzmę lub silos i podświetla to na mapie.
 Terze możesz rozpocząć pracę pomocnika.
 "/>
-    <text name="CP_help_page_shovelLoader_title" text="Kierowca ładowarki"/>
+    <text name="CP_help_page_shovelLoader_title" text="Ładowarka"/>
     <text name="CP_help_page_shovelLoaderGeneral_text" text="
-WIP
+W tym trybie można pracować ładowarką kołową oraz ciągnikami z ładowaczem czołowym.
+Za pomocą podczepionej łyżki można zebrać ładunek z ziemi lub silosu bunkrowego.
+Zebrany ładunek może zostać automatycznie wyładowany na pobliską przyczepę lub wybrany punkt rozładunku, np. BGA.
+Łyżka zostanie automatycznie ustawiona we właściwe pozycje do załadunku, rozładunku itd.
+W przypadku, gdy tryb nie jest bezpośrednio widoczny na HUDzie, możesz przełączyć &quot;Pozycję początkową&quot; aż tryb ładowarki się pojawi.
+
+Ikony celu na HUDzie można użyć do otwarcia mapy AI w celu wybrania celów ładowania i rozładowywania.
+HUD pokazuje również pozostałą zawartość pryzmy lub silosu, gdy pracownik pracuje.
+Jeśli celem załadunku jest silos bunkrowy, może być konieczne dostosowanie szerokości roboczej, aby uniknąć uderzenia w boczne ściany silosu.
+
+Ustawienie przesunięcia wysokości służy do regulacji wysokości nad poziomem gruntu, ponieważ nie dla wszystkich łyżek można obliczyć to poprawnie.
+Należy sprawdzić, czy jeśli łyżka jest w pozycji do załadunku, kierowca może swobodnie skręcać oraz czy łyżka jest zbyt wysoko co uniemożliwia podebrania ładunku z gruntu.
+Jeśli zmienisz wartość przesunięcia, łyżka automatycznie ustawi się w pozycji załadunku, aby zobrazować wpływ wprowadzonej zmiany.
+Aby zresetować przesunięcie, kliknij tekst ustawień w HUD. Wartość można regulować w zakresie od +1 do -1 z dokładnością do kroku co 0,1.
+
+Łyżki z chwytakiem do kiszonki otwierają się i zamykają automatycznie podczas załadunku i rozładunku.
+Łyżka do rozdrabniania buraków cukrowych również jest w pełni obsługiwana.
 "/>
     <text name="CP_help_page_shovelLoaderBasic_text" text="
-WIP
+Aby uruchomić kierowcę ładowarki kołowej, musisz ustawić pozycje załadunku i rozładunku, klikając ikonę celu na HUDzie.
+Pozycja ładowania działa identycznie jak ta z trybu &quot;Załadunek pryzmy&quot;. Wokół pryzmy zostanie utworzony niebieski kwadrat.
+
+Pozycja rozładunku zależy od tego, czy chcesz rozładować towar na przyczepę, czy w punkcie rozładunku.
+W przypadku wybrania rozładunku do przyczepy należy w menu AI wybrać obszar, w którym przyczepa będzie zaparkowana.
+Pomocnik podjedzie do dowolnej zaparkowanej przyczepy w okolicy. Kierunek znacznika nie ma w tym przypadku znaczenia.
+Jeśli chcesz rozładować do punktu rozładunku, musisz przełączyć cel, a następnie oznaczyć trigger pozycją rozładunku.
 "/>
     <text name="CP_help_page_shovelLoaderTrigger_text" text="
-WIP
+Wybór triggeru na pierwszy rzut oka wydaje się nieco skomplikowany, ale w rzeczywistości jest naprawdę łatwy.
+Każdy budynek może mieć więcej niż jeden trigger, więc musisz wybrać ten, do którego chcesz się rozładować.
+Wszystkie dostępne triggery zostaną pokazane z pomarańczowym krzyżykiem na mapie AI.
+Aby wybrać jedno, umieść środek okrągłego znacznika na środku krzyża.
+Kierunek strzałki mówi pomocnikowi, z której strony podejdzie do triggera w celu rozładunku.
+Twój wybór powinien wyglądać podobnie do tego zdjęcia.
 "/>
     <!---->
     <!--Input bindings-->

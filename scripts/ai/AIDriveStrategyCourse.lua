@@ -111,6 +111,10 @@ function AIDriveStrategyCourse:setAIVehicle(vehicle, jobParameters)
     self:initializeImplementControllers(vehicle)
     self.ppc = PurePursuitController(vehicle)
     self.ppc:registerListeners(self, 'onWaypointPassed', 'onWaypointChange')
+
+    self.pathfinderController = PathfinderController(vehicle)
+    self.pathfinderController:registerListeners(self, self.onPathfindingFinished, self.onPathfindingRetry)
+
     self.storage = vehicle.spec_cpAIWorker
 
     self.settings = vehicle:getCpSettings()
@@ -120,7 +124,6 @@ function AIDriveStrategyCourse:setAIVehicle(vehicle, jobParameters)
     self.allowReversePathfinding = AIUtil.getFirstReversingImplementWithWheels(self.vehicle) == nil
     self.turningRadius = AIUtil.getTurningRadius(vehicle)
 
-    self:enableCollisionDetection()
     self:setAllStaticParameters()
 
     -- TODO: this may or may not be the course we need for the strategy
@@ -164,15 +167,19 @@ function AIDriveStrategyCourse:getGeneratedCourse(jobParameters)
         self.vehicle:setOffsetFieldWorkCourse(nil)
         return course
     else
-        self:debug('Multitool course, non-center vehicle, generating offset course for lane number %d', position)
         --- only one vehicle can have position zero (center)
-        local offsetCourse, previousPosition = self.vehicle:getOffsetFieldWorkCourse()
-        if offsetCourse == nil or position ~= previousPosition then
+        local symmetricLaneChange = self.settings.symmetricLaneChange:getValue()
+        local offsetCourse = self.vehicle:getOffsetFieldWorkCourse()
+        if offsetCourse == nil or not offsetCourse:hasSameMultiToolSettings(numMultiTools, position, symmetricLaneChange) then
+            self:debug('Multitool course, non-center vehicle, generating offset course for lane number %d, symmetric lane change %s',
+                    position, tostring(symmetricLaneChange))
             --- Work width of a single vehicle.
             local width = course:getWorkWidth() / numMultiTools
-            offsetCourse = course:calculateOffsetCourse(numMultiTools, position, width,
-                    self.settings.symmetricLaneChange:getValue())
+            offsetCourse = course:calculateOffsetCourse(numMultiTools, position, width, symmetricLaneChange)
             self.vehicle:setOffsetFieldWorkCourse(offsetCourse, position)
+        else
+            self:debug('Multitool course, non-center vehicle, offset course for lane number %d, symmetric lane change %s already exists, reusing',
+                    position, tostring(symmetricLaneChange))
         end
         return offsetCourse
     end
@@ -222,16 +229,46 @@ function AIDriveStrategyCourse:addImplementController(vehicle, class, spec, stat
     local lastImplement, lastController
     for _, childVehicle in pairs(AIUtil.getAllChildVehiclesWithSpecialization(vehicle, spec, specReference)) do
         local controller = class(vehicle, childVehicle)
-        controller:setDisabledStates(states)
-        controller:setDriveStrategy(self)
-        table.insert(self.controllers, controller)
+        self:appendImplementController(controller, states)
         lastImplement, lastController = childVehicle, controller
     end
     return lastImplement, lastController
 end
 
-function AIDriveStrategyCourse:appendImplementController(controller)
+--- Appends an implement controller
+---@param controller ImplementController
+---@param disabledStates table|nil
+function AIDriveStrategyCourse:appendImplementController(controller, disabledStates)
+    if disabledStates then
+        controller:setDisabledStates(disabledStates)
+    end
+    controller:setDriveStrategy(self)
     table.insert(self.controllers, controller)
+end
+
+--- Gets all registered implement controller of a given type.
+---@param controllerClass ImplementController
+---@return boolean found?
+---@return table all found implement controllers
+function AIDriveStrategyCourse:getRegisteredImplementControllersByClass(controllerClass)
+    local foundControllers = {}
+    for _, controller in pairs(self.controllers) do
+        if controller:is_a(controllerClass) then
+            table.insert(foundControllers, controller)
+        end
+    end
+    return #foundControllers > 0, foundControllers
+end
+
+--- Gets the first found registered implement controller and it's implement.
+---@param controllerClass ImplementController
+---@return ImplementController|nil found implement controller
+---@return table|nil found implement
+function AIDriveStrategyCourse:getFirstRegisteredImplementControllerByClass(controllerClass)
+    local found, controllers = self:getRegisteredImplementControllersByClass(controllerClass)
+    if found then
+        return controllers[1], controllers[1]:getImplement()
+    end
 end
 
 --- Checks if any controller disables fuel save, for example a round baler that is dropping a bale.
@@ -250,6 +287,7 @@ function AIDriveStrategyCourse:isFuelSaveAllowed()
 end
 
 function AIDriveStrategyCourse:initializeImplementControllers(vehicle)
+    --- override
 end
 
 --- Normal update function called every frame.
@@ -398,8 +436,9 @@ function AIDriveStrategyCourse:getCurrentCourse()
     return self.ppc:getCourse() or self.course
 end
 
-function AIDriveStrategyCourse:update()
+function AIDriveStrategyCourse:update(dt)
     self.ppc:update()
+    self.pathfinderController:update(dt)
     self:updatePathfinding()
     self:updateInfoTexts()
 end
@@ -549,6 +588,24 @@ end
 function AIDriveStrategyCourse:onWaypointPassed(ix, course)
 end
 
+--- Pathfinding has finished
+---@param controller PathfinderController
+---@param success boolean
+---@param course Course|nil
+---@param goalNodeInvalid boolean|nil
+function AIDriveStrategyCourse:onPathfindingFinished(controller, success, course, goalNodeInvalid)
+    -- override
+end
+
+--- Pathfinding failed, but a retry attempt is leftover.
+---@param controller PathfinderController
+---@param lastContext PathfinderControllerContext
+---@param wasLastRetry boolean
+---@param currentRetryAttempt number
+function AIDriveStrategyCourse:onPathfindingRetry(controller, lastContext, wasLastRetry, currentRetryAttempt)
+    -- override
+end
+
 ------------------------------------------------------------------------------------------------------------------------
 --- Pathfinding
 ---------------------------------------------------------------------------------------------------------------------------
@@ -597,21 +654,6 @@ function AIDriveStrategyCourse:getRememberedCourseAndIx()
 end
 
 ------------------------------------------------------------------------------------------------------------------------
---- Collision
----------------------------------------------------------------------------------------------------------------------------
-function AIDriveStrategyCourse:disableCollisionDetection()
-    if self.vehicle then
-        CpAIWorker.disableCollisionDetection(self.vehicle)
-    end
-end
-
-function AIDriveStrategyCourse:enableCollisionDetection()
-    if self.vehicle then
-        CpAIWorker.enableCollisionDetection(self.vehicle)
-    end
-end
-
-------------------------------------------------------------------------------------------------------------------------
 --- Course helpers
 ---------------------------------------------------------------------------------------------------------------------------
 
@@ -625,10 +667,15 @@ function AIDriveStrategyCourse:isCloseToCourseStart(distance)
     return self.course:getDistanceFromFirstWaypoint(self.ppc:getCurrentWaypointIx()) < distance
 end
 
---- Event raised when the driver has finished.
---- This gets called in the :stopCurrentAIJob(), as the giants code might stop the driver and not the active strategy.
-function AIDriveStrategyCourse:onFinished()
-    self:raiseControllerEvent(self.onFinishedEvent)
+--- Event raised when the driver was stopped.
+---@param hasFinished boolean|nil flag passed by the info text
+function AIDriveStrategyCourse:onFinished(hasFinished)
+    self:raiseControllerEvent(self.onFinishedEvent, hasFinished)
+    if hasFinished and self.settings.foldImplementAtEnd:getValue() then
+        --- Folds implements at the end if the setting is active.
+        self:debug("Finished with folding implements of the implements.")
+        self.vehicle:prepareForAIDriving()
+    end
 end
 
 --- This is to set the offsets on the course at start, or update those values
