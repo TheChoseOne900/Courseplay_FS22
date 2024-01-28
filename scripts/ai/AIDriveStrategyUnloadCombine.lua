@@ -75,8 +75,7 @@ This is currently screwed up...
 ---@field combineUnloadStates table
 ---@field trailerUnloadStates table
 ---@field fieldUnloadStates table
-AIDriveStrategyUnloadCombine = {}
-local AIDriveStrategyUnloadCombine_mt = Class(AIDriveStrategyUnloadCombine, AIDriveStrategyCourse)
+AIDriveStrategyUnloadCombine = CpObject(AIDriveStrategyCourse)
 
 -- when moving out of way of another vehicle, move at least so many meters
 AIDriveStrategyUnloadCombine.minDistanceWhenMovingOutOfWay = 5
@@ -84,6 +83,9 @@ AIDriveStrategyUnloadCombine.minDistanceWhenMovingOutOfWay = 5
 AIDriveStrategyUnloadCombine.maxDistanceWhenMovingOutOfWay = 25
 AIDriveStrategyUnloadCombine.safeManeuveringDistance = 30 -- distance to keep from a combine not ready to unload
 AIDriveStrategyUnloadCombine.pathfindingRange = 5 -- won't do pathfinding if target is closer than this
+-- The normal limit to apply a penalty for the pathfinder. This is relatively low to keep the unloader further
+-- away from the fruit.
+AIDriveStrategyUnloadCombine.maxFruitPercent = 10
 AIDriveStrategyUnloadCombine.proximitySensorRange = 15
 AIDriveStrategyUnloadCombine.maxDirectionDifferenceDeg = 35 -- under this angle the unloader considers itself aligned with the combine
 -- Add a short straight section to align with the combine's course in case it is late for the rendezvous
@@ -177,12 +179,11 @@ AIDriveStrategyUnloadCombine.myFieldUnloadStates = {
     DRIVE_TO_FIELD_UNLOAD_PARK_POSITION = {},
 }
 
-function AIDriveStrategyUnloadCombine.new(customMt)
-    if customMt == nil then
-        customMt = AIDriveStrategyUnloadCombine_mt
-    end
-    local self = AIDriveStrategyCourse.new(customMt)
+--- Register all active unloaders here to access them fast.
+AIDriveStrategyUnloadCombine.activeUnloaders = {}
 
+function AIDriveStrategyUnloadCombine:init(task, job)
+    AIDriveStrategyCourse.init(self, task, job)
     self.combineUnloadStates = CpUtil.initStates(self.combineUnloadStates, AIDriveStrategyUnloadCombine.myCombineUnloadStates)
     self.trailerUnloadStates = CpUtil.initStates(self.trailerUnloadStates, AIDriveStrategyUnloadCombine.myTrailerUnloadStates)
     self.fieldUnloadStates = CpUtil.initStates(self.fieldUnloadStates, AIDriveStrategyUnloadCombine.myFieldUnloadStates)
@@ -208,9 +209,10 @@ function AIDriveStrategyUnloadCombine.new(customMt)
     self.driveUnloadNowRequested = CpTemporaryObject(false)
     self.movingAwayDelay = CpTemporaryObject(false)
     self.checkForTrailerToUnloadTo = CpTemporaryObject(true)
-    self:resetPathfinder()
     self.unloadTargetType = self.UNLOAD_TYPES.COMBINE
-    return self
+
+    --- Register all active unloaders here to access them fast.
+    AIDriveStrategyUnloadCombine.activeUnloaders[self] = self.vehicle
 end
 
 function AIDriveStrategyUnloadCombine:delete()
@@ -220,7 +222,8 @@ function AIDriveStrategyUnloadCombine:delete()
         CpUtil.destroyNode(self.fieldUnloadTurnEndNode)
     end
     self:releaseCombine()
-    AIDriveStrategyUnloadCombine:superClass().delete(self)
+    AIDriveStrategyUnloadCombine.activeUnloaders[self] = nil
+    AIDriveStrategyCourse.delete(self)
 end
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -243,10 +246,13 @@ function AIDriveStrategyUnloadCombine:getGeneratedCourse(jobParameters)
     return nil
 end
 
+function AIDriveStrategyUnloadCombine:setFieldPolygon(fieldPolygon)
+    self.fieldPolygon = fieldPolygon
+end
+
 function AIDriveStrategyUnloadCombine:setJobParameterValues(jobParameters)
     self.jobParameters = jobParameters
     local x, z = jobParameters.fieldPosition:getPosition()
-    self.fieldPolygon = CpFieldUtil.getFieldPolygonAtWorldPosition(x, z)
     x, z = jobParameters.startPosition:getPosition()
     local angle = jobParameters.startPosition:getAngle()
     if x ~= nil and z ~= nil and angle ~= nil then
@@ -281,6 +287,9 @@ function AIDriveStrategyUnloadCombine:setJobParameterValues(jobParameters)
         self.unloadTargetType = self.UNLOAD_TYPES.SILO_LOADER
         self:debug("Unload target is a silo loader.")
     end
+
+    self.useUnloadOnField = jobParameters.useFieldUnload:getValue() and not jobParameters.useFieldUnload:getIsDisabled()
+    self.useGiantsUnload = jobParameters.useGiantsUnload:getValue() and not jobParameters.useGiantsUnload:getIsDisabled()
 end
 
 --- Gets the unload target drive strategy target.
@@ -289,7 +298,8 @@ function AIDriveStrategyUnloadCombine:getUnloadTargetType()
 end
 
 function AIDriveStrategyUnloadCombine:setAIVehicle(vehicle, jobParameters)
-    AIDriveStrategyUnloadCombine:superClass().setAIVehicle(self, vehicle)
+    AIDriveStrategyCourse.setAIVehicle(self, vehicle)
+    self:setJobParameterValues(jobParameters)
     self.reverser = AIReverseDriver(self.vehicle, self.ppc)
     self.collisionAvoidanceController = CollisionAvoidanceController(self.vehicle, self)
     self.proximityController = ProximityController(self.vehicle, self:getProximitySensorWidth())
@@ -298,7 +308,6 @@ function AIDriveStrategyUnloadCombine:setAIVehicle(vehicle, jobParameters)
     self.proximityController:registerIgnoreObjectCallback(self, AIDriveStrategyUnloadCombine.ignoreProximityObject)
     -- remove any course already loaded (for instance to not to interfere with the fieldworker proximity controller)
     vehicle:resetCpCourses()
-    self:resetPathfinder()
     --- Target nodes for unloading into the trailer.
     self.trailerNodes = SelfUnloadHelper:getTrailersTargetNodes(vehicle)
 
@@ -312,14 +321,6 @@ function AIDriveStrategyUnloadCombine:initializeImplementControllers(vehicle)
     self:addImplementController(vehicle, WearableController, Wearable, {}, nil)
     self:addImplementController(vehicle, CoverController, Cover, {}, nil)
     self:addImplementController(vehicle, FoldableController, Foldable, {})
-end
-
-function AIDriveStrategyUnloadCombine:resetPathfinder()
-    self.maxFruitPercent = 10
-    -- prefer driving on field, don't do this too aggressively until we take into account the field owner
-    -- otherwise we'll be driving through others' fields
-    self.offFieldPenalty = PathfinderContext.defaultOffFieldPenalty
-    self.pathfinderFailureCount = 0
 end
 
 function AIDriveStrategyUnloadCombine:isProximitySpeedControlEnabled()
@@ -388,7 +389,7 @@ function AIDriveStrategyUnloadCombine:getDriveData(dt, vX, vY, vZ)
     elseif self.state == self.states.INITIAL then
         if not self.startTimer then
             --- Only create one instance of the timer and wait until it finishes.
-            self.startTimer = Timer.createOneshot(50, function ()
+            self.startTimer = Timer.createOneshot(50, function()
                 --- Pipe measurement seems to be buggy with a few over loaders, like bergman RRW 500,
                 --- so a small delay of 50 ms is inserted here before unfolding starts.
                 self.vehicle:raiseAIEvent("onAIFieldWorkerStart", "onAIImplementStart")
@@ -518,36 +519,36 @@ function AIDriveStrategyUnloadCombine:driveBesideCombine()
         local fillType = self.combineToUnload:getCpDriveStrategy():getFillType()
         if not targetNode.trailer:getFillUnitAllowsFillType(targetNode.fillUnitIx, fillType) then
             self:debugSparse("Fill node %d of trailer %s doesn't accept fillType %s!",
-                targetNode.fillUnitIx, targetNode.trailer, g_fillTypeManager:getFillTypeNameByIndex(fillType))
+                    targetNode.fillUnitIx, targetNode.trailer, g_fillTypeManager:getFillTypeNameByIndex(fillType))
             return false
         end
-        if targetNode.trailer:getFillUnitFreeCapacity(targetNode.fillUnitIx) <= 0 then 
+        if targetNode.trailer:getFillUnitFreeCapacity(targetNode.fillUnitIx) <= 0 then
             self:debugSparse("Fill node %d of trailer %s is completely filled!",
-                targetNode.fillUnitIx, targetNode.trailer)
+                    targetNode.fillUnitIx, targetNode.trailer)
             return false
         end
         return true
     end
     if not self.trailerNodes then
-       self:debugSparse("Warning no valid trailer nodes found!")
-       return
+        self:debugSparse("Warning no valid trailer nodes found!")
+        return
     end
 
     local bestTargetNode
-    for i, targetNode in pairs(self.trailerNodes) do 
+    for i, targetNode in pairs(self.trailerNodes) do
         if isValidNode(targetNode) then
             bestTargetNode = targetNode
             break
         end
     end
-    if not bestTargetNode then 
+    if not bestTargetNode then
         --- TODO: Check if the driver is released correctly form the combine?
         return
     end
     local _, offsetZ = self:getPipeOffset(self.combineToUnload)
     -- TODO: this - 1 is a workaround the fact that we use a simple P controller instead of a PI
-    local dx, _, dz = localToLocal(bestTargetNode.trailer.rootNode, 
-        self.combineToUnload:getAIDirectionNode(), 0, 0, -offsetZ + bestTargetNode.trailerOffset )
+    local dx, _, dz = localToLocal(bestTargetNode.trailer.rootNode,
+            self.combineToUnload:getAIDirectionNode(), 0, 0, -offsetZ + bestTargetNode.trailerOffset)
     -- use a factor to make sure we reach the pipe fast, but be more gentle while discharging
     local factor = self.combineToUnload:getCpDriveStrategy():isDischarging() and 0.5 or 2
     local speed = self.combineToUnload.lastSpeedReal * 3600 + MathUtil.clamp(-dz * factor, -10, 15)
@@ -558,7 +559,7 @@ function AIDriveStrategyUnloadCombine:driveBesideCombine()
     end
 
     self:renderText(0, 0.02, "%s: driveBesideCombine: tZ = %.1f, dz = %.1f, speed = %.1f, factor = %.1f",
-        CpUtil.getName(self.vehicle), bestTargetNode.trailerOffset, dz, speed, factor)
+            CpUtil.getName(self.vehicle), bestTargetNode.trailerOffset, dz, speed, factor)
 
     if CpUtil.isVehicleDebugActive(self.vehicle) and CpDebug:isChannelActive(self.debugChannel) then
         DebugUtil.drawDebugNode(bestTargetNode.node, 'target')
@@ -595,7 +596,7 @@ function AIDriveStrategyUnloadCombine:onLastWaypointPassed()
         self:startWaitingForSomethingToDo()
     elseif self.state == self.states.DRIVING_BACK_TO_START_POSITION_WHEN_FULL then
         self:debug('Inverted goal position reached, so give control back to the job.')
-        self.vehicle:getJob():onTrailerFull(self.vehicle, self)
+        self:onTrailerFull()
         ---------------------------------------------
         --- Self unload
         ---------------------------------------------
@@ -792,10 +793,14 @@ function AIDriveStrategyUnloadCombine:isBehindAndAlignedToCombine(debugEnabled)
         self:debugIf(debugEnabled, 'isBehindAndAlignedToCombine: dz > 0')
         return false
     end
+    -- allow more offset when further away from the pipe, this is +- 25 cm at the pipe and grows
+    -- 25 cm with every meter, which is about 30 degrees (15 left and 15 right)
+    local tolerance = 0.25 + 0.25 * math.abs(dz)
     -- TODO: this does not take the pipe's side into account, and will return true when we are at the
-    -- wrong side of the combine. That happens rarely as we
-    if not self:isLinedUpWithPipe(dx, pipeOffset, 0.5) then
-        self:debugIf(debugEnabled, 'isBehindAndAlignedToCombine: dx > 1.5 pipe offset (%.1f > 1.5 * %.1f)', dx, pipeOffset)
+    -- wrong side of the combine.
+    if not self:isLinedUpWithPipe(dx, pipeOffset, tolerance) then
+        self:debugIf(debugEnabled, 'isBehindAndAlignedToCombine: dx > pipe offset + tolerance (%.1f > %.1f + %.1f) at dz: %.1f',
+                dx, pipeOffset, tolerance, dz)
         return false
     end
     local d = MathUtil.vector2Length(dx, dz)
@@ -892,8 +897,16 @@ function AIDriveStrategyUnloadCombine:startUnloadingTrailers()
         else
             --- No valid start position was set, so release the driver and give control to giants or AD.
             self:debug('Full and have no auger wagon, stop, so eventually AD can take over.')
-            self.vehicle:getJob():onTrailerFull(self.vehicle, self)
+            self:onTrailerFull()
         end
+    end
+end
+
+function AIDriveStrategyUnloadCombine:onTrailerFull()
+    if self.useGiantsUnload then 
+        self:setCurrentTaskFinished()
+    else 
+        self.vehicle:stopCurrentAIJob(AIMessageErrorIsFull.new())
     end
 end
 
@@ -965,34 +978,6 @@ function AIDriveStrategyUnloadCombine:startCourseFollowingCombine()
     self:setNewState(self.states.UNLOADING_MOVING_COMBINE)
 end
 
----@param dontRelax boolean do not relax pathfinder constraint on failure
-function AIDriveStrategyUnloadCombine:isPathFound(path, goalNodeInvalid, goalDescriptor, dontRelax)
-    if path and #path > 2 then
-        self:debug('Found path (%d waypoints, %d ms)', #path, g_time - (self.pathfindingStartedAt or 0))
-        self:resetPathfinder()
-        return true
-    else
-        if goalNodeInvalid then
-            self:error('No path found to %s, goal occupied by a vehicle, waiting...', goalDescriptor)
-            return false
-        elseif not dontRelax then
-            self.pathfinderFailureCount = self.pathfinderFailureCount + 1
-            if self.pathfinderFailureCount > 1 then
-                self:error('No path found to %s in %d ms, pathfinder failed at least twice, trying a path through crop and relaxing pathfinder field constraint...',
-                        goalDescriptor,
-                        g_time - (self.pathfindingStartedAt or 0))
-                self.maxFruitPercent = math.huge
-            elseif self.pathfinderFailureCount == 1 then
-                self.offFieldPenalty = self.offFieldPenalty / 2
-                self:error('No path found to %s in %d ms, pathfinder failed once, relaxing pathfinder field constraint (%.1f)...',
-                        goalDescriptor,
-                        g_time - (self.pathfindingStartedAt or 0),
-                        self.offFieldPenalty)
-            end
-            return false
-        end
-    end
-end
 function AIDriveStrategyUnloadCombine:getCombineToUnload()
     return self.combineToUnload
 end
@@ -1003,55 +988,67 @@ function AIDriveStrategyUnloadCombine:getCombineRootNode()
     return self.combineToUnload:getCpDriveStrategy():getCombine().rootNode
 end
 
-function AIDriveStrategyUnloadCombine:onPathfindingDoneToMovingCombine(path, goalNodeInvalid)
-    if self:isPathFound(path, goalNodeInvalid, CpUtil.getName(self.combineToUnload)) and self.state == self.states.WAITING_FOR_PATHFINDER then
-        local driveToCombineCourse = Course(self.vehicle, CourseGenerator.pointsToXzInPlace(path), true)
+------------------------------------------------------------------------------------------------------------------------
+-- Pathfinding to moving combine (to a rendezvous waypoint)
+------------------------------------------------------------------------------------------------------------------------
+function AIDriveStrategyUnloadCombine:startPathfindingToMovingCombine(waypoint, xOffset, zOffset)
+    local context = PathfinderContext(self.vehicle)
+    context:maxFruitPercent(self:getMaxFruitPercent())
+    context:offFieldPenalty(self:getOffFieldPenalty(self.combineToUnload))
+    context:useFieldNum(CpFieldUtil.getFieldNumUnderVehicle(self.combineToUnload))
+    context:areaToAvoid(nil):vehiclesToIgnore({ self.combineToUnload })
+    self.pathfinderController:registerListeners(self, self.onPathfindingDoneToMovingCombine)
+    -- TODO: consider creating a variation of findPathToWaypoint() which accepts a Waypoint instead of Course/ix
+    self.pathfinderController:findPathToGoal(
+            context,
+    -- getWaypointAsState3D expects the offset in waypoint coordinate system
+            PathfinderUtil.getWaypointAsState3D(waypoint, -xOffset, zOffset))
+end
+
+function AIDriveStrategyUnloadCombine:onPathfindingDoneToMovingCombine(controller, success, course, goalNodeInvalid)
+    if success and self.state == self.states.WAITING_FOR_PATHFINDER then
+        self:debug('Pathfinding to moving combine successful.')
         -- add a short straight section to align in case we get there before the combine
         -- pathfinding does not guarantee the last section points into the target direction so we may
         -- end up not parallel to the combine's course when we extend the pathfinder course in the direction of the
         -- last waypoint. Therefore, use the rendezvousWaypoint's direction instead
         local dx = self.rendezvousWaypoint and self.rendezvousWaypoint.dx
         local dz = self.rendezvousWaypoint and self.rendezvousWaypoint.dz
-        driveToCombineCourse:extend(AIDriveStrategyUnloadCombine.driveToCombineCourseExtensionLength, dx, dz)
-        self:startCourse(driveToCombineCourse, 1)
+        course:extend(AIDriveStrategyUnloadCombine.driveToCombineCourseExtensionLength, dx, dz)
+        self:startCourse(course, 1)
         self:setNewState(self.states.DRIVING_TO_MOVING_COMBINE)
         return true
     else
+        self:debug('Pathfinding to moving combine failed.')
         self:startWaitingForSomethingToDo()
         return false
     end
 end
 
 ------------------------------------------------------------------------------------------------------------------------
--- Pathfinding to combine
+-- Pathfinding to waiting (not moving) combine
 ------------------------------------------------------------------------------------------------------------------------
-function AIDriveStrategyUnloadCombine:startPathfindingToCombine(onPathfindingDoneFunc, xOffset, zOffset)
-    local x, z = self:getPipeOffset(self.combineToUnload)
-    xOffset = xOffset or x
-    zOffset = zOffset or z
-    -- TODO: here we may have to pass in the combine to ignore once we start driving to a moving combine, at least
-    -- when it is on the headland.
-    if self:isPathfindingNeeded(self.vehicle, self:getCombineRootNode(), xOffset, zOffset) then
-        self:setNewState(self.states.WAITING_FOR_PATHFINDER)
-        self:startPathfinding(self:getCombineRootNode(), xOffset, zOffset,
-                CpFieldUtil.getFieldNumUnderVehicle(self.combineToUnload), {}, onPathfindingDoneFunc)
-    else
-        self:debug('Can\'t start pathfinding, too close?')
-        if self:isOkToStartUnloadingCombine() then
-            self:startUnloadingCombine()
-        else
-            self:startWaitingForSomethingToDo()
-        end
-    end
+function AIDriveStrategyUnloadCombine:startPathfindingToWaitingCombine(xOffset, zOffset)
+    local context = PathfinderContext(self.vehicle)
+    local maxFruitPercent = self:getMaxFruitPercent(self:getCombineRootNode(), xOffset, zOffset)
+    context:maxFruitPercent(maxFruitPercent)
+    context:offFieldPenalty(self:getOffFieldPenalty(self.combineToUnload))
+    context:useFieldNum(CpFieldUtil.getFieldNumUnderVehicle(self.combineToUnload))
+    context:areaToAvoid(self.combineToUnload:getCpDriveStrategy():getAreaToAvoid())
+    context:vehiclesToIgnore({})
+    self.pathfinderController:registerListeners(self, self.onPathfindingDoneToWaitingCombine)
+    self.pathfinderController:findPathToNode(context, self:getCombineRootNode(), xOffset or 0, zOffset or 0)
 end
 
-function AIDriveStrategyUnloadCombine:onPathfindingDoneToCombine(path, goalNodeInvalid)
-    if self:isPathFound(path, goalNodeInvalid, CpUtil.getName(self.combineToUnload)) and self.state == self.states.WAITING_FOR_PATHFINDER then
-        local driveToCombineCourse = Course(self.vehicle, CourseGenerator.pointsToXzInPlace(path), true)
-        self:startCourse(driveToCombineCourse, 1)
+function AIDriveStrategyUnloadCombine:onPathfindingDoneToWaitingCombine(controller, success, course, goalNodeInvalid)
+    if success and self.state == self.states.WAITING_FOR_PATHFINDER then
+        self:debug('Pathfinding to waiting combine successful')
+        course:adjustForReversing(math.max(1, -AIUtil.getDirectionNodeToReverserNodeOffset(self.vehicle)))
+        self:startCourse(course, 1)
         self:setNewState(self.states.DRIVING_TO_COMBINE)
         return true
     else
+        self:debug('Pathfinding to waiting combine failed')
         self:startWaitingForSomethingToDo()
         return false
     end
@@ -1102,9 +1099,9 @@ end
 --- unloader to come to the combine.
 ---@return boolean true if the unloader has accepted the request
 function AIDriveStrategyUnloadCombine:call(combine, waypoint)
+    local xOffset, zOffset = self:getPipeOffset(combine)
     if waypoint then
         -- combine set up a rendezvous waypoint for us, go there
-        local xOffset, zOffset = self:getPipeOffset(combine)
         if self:isPathfindingNeeded(self.vehicle, waypoint, xOffset, zOffset, 25) then
             self.rendezvousWaypoint = waypoint
             self.combineToUnload = combine
@@ -1113,9 +1110,8 @@ function AIDriveStrategyUnloadCombine:call(combine, waypoint)
             -- where it is full, make sure we are behind the combine
             zOffset = -self:getCombinesMeasuredBackDistance() - 5
             self:debug('call: Start pathfinding to rendezvous waypoint, xOffset = %.1f, zOffset = %.1f', xOffset, zOffset)
-            self:startPathfinding(self.rendezvousWaypoint, xOffset, zOffset,
-                    CpFieldUtil.getFieldNumUnderVehicle(self.combineToUnload),
-                    { self.combineToUnload }, self.onPathfindingDoneToMovingCombine)
+            self:setNewState(self.states.WAITING_FOR_PATHFINDER)
+            self:startPathfindingToMovingCombine(self.rendezvousWaypoint, xOffset, zOffset)
             return true
         else
             self:debug('call: Rendezvous waypoint to moving combine too close, wait a bit')
@@ -1126,7 +1122,6 @@ function AIDriveStrategyUnloadCombine:call(combine, waypoint)
         -- combine wants us to drive directly to it
         self:debug('call: Combine is waiting for unload, start finding path to combine')
         self.combineToUnload = combine
-        local zOffset
         if self.combineToUnload:getCpDriveStrategy():isWaitingForUnloadAfterPulledBack() then
             -- combine pulled back so it's pipe is now out of the fruit. In this case, if the unloader is in front
             -- of the combine, it sometimes finds a path between the combine and the fruit to the pipe, we are trying to
@@ -1140,7 +1135,17 @@ function AIDriveStrategyUnloadCombine:call(combine, waypoint)
             -- allow for more align space for shorter pipes
             zOffset = -self:getCombinesMeasuredBackDistance() - (pipeLength > 6 and 2 or 10)
         end
-        self:startPathfindingToCombine(self.onPathfindingDoneToCombine, nil, zOffset)
+        if self:isPathfindingNeeded(self.vehicle, self:getCombineRootNode(), xOffset, zOffset) then
+            self:setNewState(self.states.WAITING_FOR_PATHFINDER)
+            self:startPathfindingToWaitingCombine(xOffset, zOffset)
+        else
+            self:debug('Can\'t start pathfinding to waiting combine, too close?')
+            if self:isOkToStartUnloadingCombine() then
+                self:startUnloadingCombine()
+            else
+                self:startWaitingForSomethingToDo()
+            end
+        end
         return true
     end
 end
@@ -1167,8 +1172,24 @@ function AIDriveStrategyUnloadCombine:getTargetNode(target)
     return targetNode
 end
 
+---@param targetNode number|nil if a target node is given, will check for fruit there (accounting for xOffset and
+--- zOffset), and if there is, will return math.huge to disable fruit avoidance, even if it is otherwise allowed
+---@param xOffset number|nil
+---@param zOffset number|nil
+function AIDriveStrategyUnloadCombine:getMaxFruitPercent(targetNode, xOffset, zOffset)
+    if targetNode and self:isFruitAt(targetNode, xOffset or 0, zOffset or 0) then
+        self:info('There is fruit at the target, disabling fruit avoidance')
+        return math.huge
+    end
+    if self.settings.avoidFruit:getValue() then
+        return AIDriveStrategyUnloadCombine.maxFruitPercent
+    else
+        return math.huge
+    end
+end
+
 function AIDriveStrategyUnloadCombine:getOffFieldPenalty(combineToUnload)
-    local offFieldPenalty = self.offFieldPenalty
+    local offFieldPenalty = PathfinderContext.defaultOffFieldPenalty
     if combineToUnload then
         if combineToUnload:getCpDriveStrategy():isOnHeadland(1) then
             -- when the combine is on the first headland, chances are that we have to drive off-field to it,
@@ -1219,60 +1240,6 @@ function AIDriveStrategyUnloadCombine:isFruitAt(target, xOffset, zOffset)
     local hasFruit = PathfinderUtil.hasFruit(x, z, 1, 1)
     self:debug('isFruitAt %s, x = %.1f, z = %.1f (xOffset = %.1f, zOffset = %.1f', tostring(hasFruit), x, z, xOffset, zOffset)
     return hasFruit
-end
-
-------------------------------------------------------------------------------------------------------------------------
--- Generic pathfinder wrapper
-------------------------------------------------------------------------------------------------------------------------
-function AIDriveStrategyUnloadCombine:startPathfinding(
-        target, xOffset, zOffset, fieldNum, vehiclesToIgnore,
-        pathfindingCallbackFunc, areaToAvoid)
-    if not self.pathfinder or not self.pathfinder:isActive() then
-
-        if self:isFruitAt(target, xOffset, zOffset) then
-            self:info('There is fruit at the target, disabling fruit avoidance')
-            self.maxFruitPercent = math.huge
-        end
-
-        self.offFieldPenalty = self:getOffFieldPenalty(self.combineToUnload)
-        local maxFruitPercent
-        if self.settings.avoidFruit:getValue() then
-            maxFruitPercent = self.maxFruitPercent
-        else
-            maxFruitPercent = math.huge
-        end
-        self:debug('Start pathfinding, fieldNum %d, maxFruitPercent %.1f, offFieldPenalty %.1f, xOffset %.1f, zOffset %.1f',
-                fieldNum, maxFruitPercent, self.offFieldPenalty, xOffset, zOffset)
-
-        local done, path, goalNodeInvalid
-        self.pathfindingStartedAt = g_time
-
-        areaToAvoid = areaToAvoid ~= nil and areaToAvoid or self.combineToUnload and self.combineToUnload:getCpDriveStrategy():getAreaToAvoid()
-
-        local context = PathfinderContext(self.vehicle):vehiclesToIgnore(vehiclesToIgnore)
-        context:maxFruitPercent(maxFruitPercent):offFieldPenalty(self.offFieldPenalty)
-        context:useFieldNum(fieldNum):areaToAvoid(areaToAvoid):allowReverse(self:getAllowReversePathfinding())
-
-        if type(target) ~= 'number' then
-            -- TODO: clarify this xOffset thing, it looks like the course interprets the xOffset differently (left < 0) than
-            -- the Giants coordinate system and the waypoint uses the course's conventions. This is confusing, should use
-            -- the same reference everywhere
-            local goal = PathfinderUtil.getWaypointAsState3D(target, -xOffset or 0, zOffset or 0)
-            self.pathfinder, done, path, goalNodeInvalid = PathfinderUtil.startPathfindingFromVehicleToGoal(goal, context)
-        else
-            self.pathfinder, done, path, goalNodeInvalid = PathfinderUtil.startPathfindingFromVehicleToNode(
-                    target, xOffset or 0, zOffset or 0, context)
-        end
-        if done then
-            return pathfindingCallbackFunc(self, path, goalNodeInvalid)
-        else
-            self:setPathfindingDoneCallback(self, pathfindingCallbackFunc)
-            return true
-        end
-    else
-        self:debug('Pathfinder already active')
-    end
-    return false
 end
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -1534,9 +1501,17 @@ function AIDriveStrategyUnloadCombine:unloadMovingCombine()
         return
     end
 
-    -- when the combine is turning just don't move
     if self.combineToUnload:getCpDriveStrategy():isManeuvering() then
+        -- when the combine is turning just don't move
         self:setMaxSpeed(0)
+    elseif self.followCourse:isTurnStartAtIx(self.followCourse:getCurrentWaypointIx()) then
+        -- big rigs may reach the turn before the combine, add a small straight course here so we have
+        -- something to follow until the combine reaches the turn (so we don't try to make the turn
+        -- also apply an offset as the followCourse is assumed to be the combine's course
+        -- TODO: #3029
+        self.followCourse = Course.createStraightForwardCourse(self.vehicle, 20, -self.combineOffset)
+        self.followCourse:setOffset(-self.combineOffset, 0)
+        self:startCourse(self.followCourse, 1)
     elseif not self:isBehindAndAlignedToCombine() and not self:isInFrontAndAlignedToMovingCombine() then
         -- call these again just to log the reason
         self:isBehindAndAlignedToCombine(true)
@@ -1583,29 +1558,19 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 -- Set up a course to move out of the way of a blocking vehicle
 ------------------------------------------------------------------------------------------------------------------------
-function AIDriveStrategyUnloadCombine:createMoveAwayCourse(blockingVehicle)
-    local trailer = AIUtil.getImplementOrVehicleWithSpecialization(self.vehicle, Trailer)
-    -- if we look straight left or right out of the window, is blockingVehicle in front of us or behind us?
-    -- if in front, move back, if behind, move forward
-    -- but since we have a trailer, don't use the tractor's direction node directly, instead, a point behind it
-    -- about the half length of the rig.
-    local _, frontMarkerOffset = Markers.getFrontMarkerNode(self.vehicle)
-    local _, backMarkerOffset = Markers.getBackMarkerNode(self.vehicle)
-    local _, _, dz = localToLocal(blockingVehicle.rootNode, self.vehicle:getAIDirectionNode(), 0, 0, 0)
-    if dz > (frontMarkerOffset + backMarkerOffset) / 2 then
-        self:debug('%s is in front, moving back (dz %.1f, front %.1f, back %.1f)', CpUtil.getName(blockingVehicle),
-                dz, frontMarkerOffset, backMarkerOffset)
+function AIDriveStrategyUnloadCombine:createMoveAwayCourse(blockingVehicle, isAheadOfUs, trailer)
+    if isAheadOfUs then
+        self:debug('%s is in front, moving back', CpUtil.getName(blockingVehicle))
         -- blocking vehicle in front of us, move back, calculate course from the trailer's root node
         return Course.createFromNode(self.vehicle, trailer.rootNode, 0, -2, -27, -5, true)
     else
         -- blocking vehicle behind, move forward
-        self:debug('%s is behind us, moving forward (dz: %.1f, front %.1f, back %.1f)', CpUtil.getName(blockingVehicle),
-                dz, frontMarkerOffset, backMarkerOffset)
+        local _, frontMarkerOffset = Markers.getFrontMarkerNode(self.vehicle)
+        self:debug('%s is behind us, moving forward', CpUtil.getName(blockingVehicle))
         return Course.createFromNode(self.vehicle, self.vehicle:getAIDirectionNode(), 0,
                 frontMarkerOffset, frontMarkerOffset + self.maxDistanceWhenMovingOutOfWay, 5, false)
     end
 end
-
 
 ------------------------------------------------------------------------------------------------------------------------
 -- Is there another vehicle blocking us?
@@ -1627,18 +1592,20 @@ function AIDriveStrategyUnloadCombine:onBlockingVehicle(blockingVehicle, isBack)
             not self:isBeingHeld() then
         self:debug('%s has been blocking us for a while, move a bit', CpUtil.getName(blockingVehicle))
         local course
+        local isBlockingVehicleAheadOfUs = AIUtil.isOtherVehicleAhead(self.vehicle, blockingVehicle)
+        local trailer = AIUtil.getImplementOrVehicleWithSpecialization(self.vehicle, Trailer)
         if AIDriveStrategyCombineCourse.isActiveCpCombine(blockingVehicle) then
             -- except we are blocking our buddy, so set up a course parallel to the combine's direction,
             -- with an offset from the combine that makes sure we are clear. Use the trailer's root node (and not
             -- the tractor's) as when we reversing, it is easier when the trailer remains on the same side of the combine
-            local trailer = AIUtil.getImplementOrVehicleWithSpecialization(self.vehicle, Trailer)
             local dx, _, _ = localToLocal(trailer.rootNode, blockingVehicle:getAIDirectionNode(), 0, 0, 0)
             local xOffset = self.vehicle.size.width / 2 + blockingVehicle:getCpDriveStrategy():getWorkWidth() / 2 + 2
             xOffset = dx > 0 and xOffset or -xOffset
             self:setNewState(self.states.MOVING_AWAY_FROM_OTHER_VEHICLE)
             self.state.properties.vehicle = blockingVehicle
             self.state.properties.dx = nil
-            if CpMathUtil.isOppositeDirection(self.vehicle:getAIDirectionNode(), blockingVehicle:getAIDirectionNode(), 30) then
+            if isBlockingVehicleAheadOfUs and
+                    CpMathUtil.isOppositeDirection(self.vehicle:getAIDirectionNode(), blockingVehicle:getAIDirectionNode(), 30) then
                 -- we are head on with the combine, so reverse
                 -- we will generate a straight reverse course relative to the blocking vehicle, but we want the course start
                 -- approximately where our back marker is, as we will be reversing
@@ -1649,7 +1616,8 @@ function AIDriveStrategyUnloadCombine:onBlockingVehicle(blockingVehicle, isBack)
                         from + self.maxDistanceWhenMovingOutOfWay, 5, true)
                 -- we will stop reversing when we are far enough from the combine's path
                 self.state.properties.dx = xOffset
-            elseif CpMathUtil.isSameDirection(self.vehicle:getAIDirectionNode(), blockingVehicle:getAIDirectionNode(), 30) then
+            elseif not isBlockingVehicleAheadOfUs and
+                    CpMathUtil.isSameDirection(self.vehicle:getAIDirectionNode(), blockingVehicle:getAIDirectionNode(), 30) then
                 -- we are in front of the combine, same direction
                 -- we will generate a straight forward course relative to the blocking vehicle, but we want the course start
                 -- approximately where our front marker is
@@ -1663,7 +1631,7 @@ function AIDriveStrategyUnloadCombine:onBlockingVehicle(blockingVehicle, isBack)
             else
                 self:debug('%s is a CP combine, not head on, not same direction', CpUtil.getName(blockingVehicle))
                 self.state.properties.dx = nil
-                course = self:createMoveAwayCourse(blockingVehicle)
+                course = self:createMoveAwayCourse(blockingVehicle, isBlockingVehicleAheadOfUs, trailer)
             end
         elseif (AIDriveStrategyUnloadCombine.isActiveCpCombineUnloader(blockingVehicle) or
                 AIDriveStrategyUnloadCombine.isActiveCpSiloLoader(blockingVehicle)) and
@@ -1673,8 +1641,9 @@ function AIDriveStrategyUnloadCombine:onBlockingVehicle(blockingVehicle, isBack)
             -- no state change, wait for the other unloader to move
             return
         else
+            self:debug('%s is not a combine and not an idle unloader, moving out of their way.', CpUtil.getName(blockingVehicle))
             -- straight back or forward
-            course = self:createMoveAwayCourse(blockingVehicle)
+            course = self:createMoveAwayCourse(blockingVehicle, isBlockingVehicleAheadOfUs, trailer)
             self:setNewState(self.states.MOVING_AWAY_FROM_OTHER_VEHICLE)
             self.state.properties.vehicle = blockingVehicle
             self.state.properties.dx = nil
@@ -1819,25 +1788,42 @@ function AIDriveStrategyUnloadCombine:findOtherUnloaderAroundCombine(combine, co
     end
 end
 
+-----------------------------------------------------------------------------------------------------------------------
 --- Find a path to the start position marker, but in the opposite direction of the marker and an offset of 4.5 m to the side.
+-----------------------------------------------------------------------------------------------------------------------
 function AIDriveStrategyUnloadCombine:startPathfindingToInvertedGoalPositionMarker()
     self:setNewState(self.states.WAITING_FOR_PATHFINDER)
-    self.pathfindingStartedAt = g_currentMission.time
     local fieldNum = CpFieldUtil.getFieldNumUnderVehicle(self.vehicle)
-    self:startPathfinding(self.invertedStartPositionMarkerNode, self.invertedGoalPositionOffset,
-            -1.5 * AIUtil.getLength(self.vehicle), fieldNum, nil,
-            self.onPathfindingDoneToInvertedGoalPositionMarker)
+
+    local context = PathfinderContext(self.vehicle)
+    context:maxFruitPercent(self:getMaxFruitPercent()):offFieldPenalty(PathfinderContext.defaultOffFieldPenalty)
+    context:useFieldNum(fieldNum):allowReverse(self:getAllowReversePathfinding())
+    self.pathfinderController:registerListeners(self, self.onPathfindingDoneToInvertedGoalPositionMarker,
+            self.onPathfindingFailedToInvertedGoalPositionMarker)
+    self.pathfinderController:findPathToNode(context, self.invertedStartPositionMarkerNode,
+            self.invertedGoalPositionOffset, -1.5 * AIUtil.getLength(self.vehicle), 2)
+end
+
+function AIDriveStrategyUnloadCombine:onPathfindingFailedToInvertedGoalPositionMarker(controller, lastContext,
+                                                                                      wasLastRetry, currentRetryAttempt)
+    if currentRetryAttempt == 1 then
+        self:debug('First attempt to find path to the start position failed, trying with reduced off-field penalty')
+        lastContext:offFieldPenalty(PathfinderContext.defaultOffFieldPenalty / 2)
+        controller:retry(lastContext)
+    elseif currentRetryAttempt == 2 then
+        self:debug('Second attempt to find path to the start position failed, trying with reduced off-field penalty and fruit percent')
+        lastContext:maxFruitPercent(self:getMaxFruitPercent() / 2):offFieldPenalty(PathfinderContext.defaultOffFieldPenalty / 2)
+        controller:retry(lastContext)
+    end
 end
 
 --- Path to the start position was found.
 ---@param path table
 ---@param goalNodeInvalid boolean
-function AIDriveStrategyUnloadCombine:onPathfindingDoneToInvertedGoalPositionMarker(path, goalNodeInvalid)
-    if self:isPathFound(path, goalNodeInvalid, "Inverted start position", false) and self.state == self.states.WAITING_FOR_PATHFINDER then
+function AIDriveStrategyUnloadCombine:onPathfindingDoneToInvertedGoalPositionMarker(controller, success, course, goalNodeInvalid)
+    if success and self.state == self.states.WAITING_FOR_PATHFINDER then
         self:debug("Found a path to the inverted goal position marker. Appending the missing straight segment.")
         self:setNewState(self.states.DRIVING_BACK_TO_START_POSITION_WHEN_FULL)
-        local course = Course(self.vehicle, CourseGenerator.pointsToXzInPlace(path), true)
-
         --- Append a straight alignment segment
         local x, _, z = course:getWaypointPosition(course:getNumberOfWaypoints())
         local dx, _, dz = localToWorld(self.invertedStartPositionMarkerNode, self.invertedGoalPositionOffset, 0, 0)
@@ -1847,14 +1833,13 @@ function AIDriveStrategyUnloadCombine:onPathfindingDoneToInvertedGoalPositionMar
         self:startCourse(course, 1)
     else
         self:debug("Could not find a path to the start position marker, pass over to the job!")
-        self.vehicle:getJob():onTrailerFull(self.vehicle, self)
+        self:onTrailerFull()
     end
 end
 
 -----------------------------------------------------------------------------------------------------------------------
 --- Self unload
 -----------------------------------------------------------------------------------------------------------------------
----
 function AIDriveStrategyUnloadCombine:getSelfUnloadTargetParameters()
     return SelfUnloadHelper:getTargetParameters(
             self.fieldPolygon,
@@ -1868,7 +1853,6 @@ end
 function AIDriveStrategyUnloadCombine:startSelfUnload(ignoreFruit)
 
     if not self.pathfinder or not self.pathfinder:isActive() then
-        self.pathfindingStartedAt = g_currentMission.time
         local alignLength, offsetX, unloadTrailer
         self.selfUnloadTargetNode, alignLength, offsetX, unloadTrailer = self:getSelfUnloadTargetParameters()
         if not self.selfUnloadTargetNode then
@@ -1889,45 +1873,41 @@ function AIDriveStrategyUnloadCombine:startSelfUnload(ignoreFruit)
         self:setNewState(self.states.WAITING_FOR_PATHFINDER)
         local fieldNum = CpFieldUtil.getFieldNumUnderVehicle(self.vehicle)
         local context = PathfinderContext(self.vehicle)
-        -- use a low field penalty to encourage the pathfinder to bridge that gap between the field and the trailer
         -- require full accuracy from pathfinder as we must exactly line up with the trailer
-        context:maxFruitPercent(ignoreFruit and math.huge or 50):offFieldPenalty(0.1):mustBeAccurate(true)
+        context:maxFruitPercent(self:getMaxFruitPercent()):offFieldPenalty(PathfinderContext.defaultOffFieldPenalty):mustBeAccurate(true)
         context:useFieldNum(fieldNum):allowReverse(self:getAllowReversePathfinding())
-        local done, path
-        self.pathfinder, done, path = PathfinderUtil.startPathfindingFromVehicleToNode(
-                self.selfUnloadTargetNode, offsetX, -alignLength, context)
-        if done then
-            return self:onPathfindingDoneBeforeSelfUnload(path)
-        else
-            self:setPathfindingDoneCallback(self, self.onPathfindingDoneBeforeSelfUnload)
-        end
+        -- ignore off-field penalty around the trailer to encourage the pathfinder to bridge that gap between the
+        -- field and the trailer
+        context:areaToIgnoreOffFieldPenalty(
+                PathfinderUtil.NodeArea.createVehicleArea(self.unloadTrailer, 1.5 * SelfUnloadHelper.maxDistanceFromField))
+        self.pathfinderController:registerListeners(self,
+                self.onPathfindingDoneBeforeSelfUnload,
+                self.onPathfindingFailedBeforeSelfUnload)
+        self.pathfinderController:findPathToNode(context, self.selfUnloadTargetNode, offsetX, -alignLength, 1)
     else
         self:debug('Pathfinder already active')
     end
     return true
 end
 
-function AIDriveStrategyUnloadCombine:onPathfindingDoneBeforeSelfUnload(path)
-    if path and #path > 2 then
-        self.retryingSelfUnloadPathfinding = false
-        self:debug('Pathfinding to self unload finished with %d waypoints (%d ms)',
-                #path, g_currentMission.time - (self.pathfindingStartedAt or 0))
-        local selfUnloadCourse = Course(self.vehicle, CourseGenerator.pointsToXzInPlace(path), true)
-        if self.selfUnloadAlignCourse then
-            selfUnloadCourse:append(self.selfUnloadAlignCourse)
-            self.selfUnloadAlignCourse = nil
-        end
+function AIDriveStrategyUnloadCombine:onPathfindingDoneBeforeSelfUnload(controller, lastContext,
+                                                                        wasLastRetry, currentRetryAttempt)
+    if currentRetryAttempt == 1 then
+        self:debug('Pathfinding to self unload failed once, retry with fruit avoidance disabled')
+        lastContext:maxFruitPercent(math.huge)
+        controller:retry(lastContext)
+    end
+end
+
+
+function AIDriveStrategyUnloadCombine:onPathfindingDoneBeforeSelfUnload(controller, success, course, goalNodeInvalid)
+    if success then
+        course:append(self.selfUnloadAlignCourse)
         self:setNewState(self.states.DRIVING_TO_SELF_UNLOAD)
-        self:startCourse(selfUnloadCourse, 1)
+        self:startCourse(course, 1)
         return true
-    elseif not self.retryingSelfUnloadPathfinding then
-        self.retryingSelfUnloadPathfinding = true
-        self:info('No path found to self unload in %d ms, retrying once with fruit avoidance disabled',
-                g_currentMission.time - (self.pathfindingStartedAt or 0))
-        self:startSelfUnload(true)
     else
-        self.retryingSelfUnloadPathfinding = false
-        self:debug('No path found to self unload in %d ms', g_currentMission.time - (self.pathfindingStartedAt or 0))
+        self:debug('No path found to self unload, stopping job.')
         self.vehicle:stopCurrentAIJob(AIMessageCpErrorNoPathFound.new())
         return false
     end
@@ -2162,10 +2142,13 @@ function AIDriveStrategyUnloadCombine:startUnloadingOnField(controller, allowRev
     --- Callback when the unloading has finished.
     self.fieldUnloadData.controller:setFinishDischargeCallback(self.onFieldUnloadingFinished)
     self:setNewState(self.states.WAITING_FOR_PATHFINDER)
-    local fieldNum = CpFieldUtil.getFieldNumUnderVehicle(self.vehicle)
-    self:startPathfinding(self.fieldUnloadPositionNode, -self.fieldUnloadData.xOffset,
-            -AIUtil.getLength(self.vehicle) * 1.3, fieldNum, nil,
-            self.onPathfindingDoneBeforeUnloadingOnField)
+    local context = PathfinderContext(self.vehicle)
+    context:maxFruitPercent(self:getMaxFruitPercent()):offFieldPenalty(PathfinderContext.defaultOffFieldPenalty)
+    context:useFieldNum(CpFieldUtil.getFieldNumUnderVehicle(self.vehicle))
+    context:allowReverse(self:getAllowReversePathfinding())
+    self.pathfinderController:registerListeners(self, self.onPathfindingDoneBeforeUnloadingOnField)
+    self.pathfinderController:findPathToNode(context, self.fieldUnloadPositionNode,
+            -self.fieldUnloadData.xOffset, -AIUtil.getLength(self.vehicle) * 1.3)
 end
 
 --- Moves the field unload position to the center front of the heap.
@@ -2182,13 +2165,9 @@ function AIDriveStrategyUnloadCombine:updateFieldPositionByHeapSilo(heapSilo)
 end
 
 --- Path to the field unloading position was found.
----@param path table
----@param goalNodeInvalid boolean
-function AIDriveStrategyUnloadCombine:onPathfindingDoneBeforeUnloadingOnField(path, goalNodeInvalid)
-    if self:isPathFound(path, goalNodeInvalid, "Field unload position", false) and self.state == self.states.WAITING_FOR_PATHFINDER then
+function AIDriveStrategyUnloadCombine:onPathfindingDoneBeforeUnloadingOnField(controller, success, course, goalNodeInvalid)
+    if success and self.state == self.states.WAITING_FOR_PATHFINDER then
         self:setNewState(self.states.DRIVE_TO_FIELD_UNLOAD_POSITION)
-        local course = Course(self.vehicle, CourseGenerator.pointsToXzInPlace(path), true)
-
         --- Append straight alignment segment
         local x, _, z = course:getWaypointPosition(course:getNumberOfWaypoints())
         local _, _, dz = worldToLocal(self.fieldUnloadPositionNode, x, 0, z)
@@ -2209,16 +2188,12 @@ end
 --- Checks if the silo is clear for unloading and not another unloader is currently unloading there.
 function AIDriveStrategyUnloadCombine:waitingUntilFieldUnloadIsAllowed()
     self:setMaxSpeed(0)
-    for _, unloader in pairs(CpAICombineUnloader.activeUnloaders) do
-        if unloader ~= self.vehicle then
-            ---@type AIDriveStrategyUnloadCombine
-            local strategy = unloader:getCpDriveStrategy()
-            if strategy then
-                if strategy:isUnloadingOnTheField(true) then
-                    if self.fieldUnloadData.heapSilo and self.fieldUnloadData.heapSilo:isOverlappingWith(strategy:getFieldUnloadHeap()) then
-                        self:debug("Is waiting for unloader: %s", CpUtil.getName(unloader))
-                        return
-                    end
+    for strategy, unloader in pairs(self.activeUnloaders) do
+        if strategy ~= self then
+            if strategy:isUnloadingOnTheField(true) then
+                if self.fieldUnloadData.heapSilo and self.fieldUnloadData.heapSilo:isOverlappingWith(strategy:getFieldUnloadHeap()) then
+                    self:debug("Is waiting for unloader: %s", CpUtil.getName(unloader))
+                    return
                 end
             end
         end
@@ -2338,7 +2313,9 @@ function AIDriveStrategyUnloadCombine:prepareForFieldUnload()
     end
 end
 
+------------------------------------------------------------------------------------------------------------------------
 --- Finished unloading and search for a park course that is on the opposite xOffset from the heap.
+------------------------------------------------------------------------------------------------------------------------
 function AIDriveStrategyUnloadCombine:onFieldUnloadingFinished()
     local x, _, z = localToWorld(self.fieldUnloadPositionNode, 0, 0, 0)
     setTranslation(self.fieldUnloadTurnEndNode, x, 0, z)
@@ -2370,20 +2347,20 @@ function AIDriveStrategyUnloadCombine:onFieldUnloadingFinished()
     end
 
     self:setNewState(self.states.WAITING_FOR_PATHFINDER)
-    local fieldNum = CpFieldUtil.getFieldNumUnderVehicle(self.vehicle)
     self:debug("Disabling off-field penalty for driving to the park position.")
-    self.offFieldPenalty = 0
-    self:startPathfinding(self.fieldUnloadTurnEndNode, -self.fieldUnloadData.xOffset * 1.5,
-            -AIUtil.getLength(self.vehicle), fieldNum, nil,
-            self.onPathfindingDoneBeforeDrivingToFieldUnloadParkPosition)
+    local context = PathfinderContext(self.vehicle)
+    context:maxFruitPercent(self:getMaxFruitPercent()):offFieldPenalty(0)
+    context:useFieldNum(CpFieldUtil.getFieldNumUnderVehicle(self.vehicle))
+    context:allowReverse(self:getAllowReversePathfinding())
+    self.pathfinderController:registerListeners(self, self.onPathfindingDoneBeforeDrivingToFieldUnloadParkPosition)
+    self.pathfinderController:findPathToNode(context, self.fieldUnloadTurnEndNode,
+            -self.fieldUnloadData.xOffset * 1.5, -AIUtil.getLength(self.vehicle))
 end
 
 --- Course to the park position found.
-function AIDriveStrategyUnloadCombine:onPathfindingDoneBeforeDrivingToFieldUnloadParkPosition(path, goalNodeInvalid)
-    if self:isPathFound(path, goalNodeInvalid, "Field unload position park position", false) and self.state == self.states.WAITING_FOR_PATHFINDER then
+function AIDriveStrategyUnloadCombine:onPathfindingDoneBeforeDrivingToFieldUnloadParkPosition(controller, success, course, goalNodeInvalid)
+    if success and self.state == self.states.WAITING_FOR_PATHFINDER then
         self:setNewState(self.states.DRIVE_TO_FIELD_UNLOAD_PARK_POSITION)
-        local course = Course(self.vehicle, CourseGenerator.pointsToXzInPlace(path), true)
-
         --- Append straight alignment segment
         local x, _, z = course:getWaypointPosition(course:getNumberOfWaypoints())
         local _, _, dz = worldToLocal(self.fieldUnloadTurnEndNode, x, 0, z)
@@ -2413,7 +2390,7 @@ function AIDriveStrategyUnloadCombine:debug(...)
 end
 
 function AIDriveStrategyUnloadCombine:update(dt)
-    AIDriveStrategyUnloadCombine:superClass().update(self)
+    AIDriveStrategyCourse.update(self)
     if CpUtil.isVehicleDebugActive(self.vehicle) and CpDebug:isChannelActive(self.debugChannel) then
         if self.course then
             self.course:draw()
@@ -2439,10 +2416,10 @@ function AIDriveStrategyUnloadCombine:update(dt)
         if self.state == self.states.DRIVING_BACK_TO_START_POSITION_WHEN_FULL and self.invertedStartPositionMarkerNode then
             CpUtil.drawDebugNode(self.invertedStartPositionMarkerNode, true, 3);
         end
-        for i, nodeData in pairs(self.trailerNodes) do 
-            CpUtil.drawDebugNode(nodeData.node, false, 
-                0, string.format("%s -> Fill node %d", 
-                CpUtil.getName(nodeData.trailer), i))
+        for i, nodeData in pairs(self.trailerNodes) do
+            CpUtil.drawDebugNode(nodeData.node, false,
+                    0, string.format("%s -> Fill node %d",
+                            CpUtil.getName(nodeData.trailer), i))
         end
     end
     self:updateImplementControllers(dt)

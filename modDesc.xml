@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="79">
-    <version>7.4.0.0</version>
+    <version>7.4.0.2</version>
 	<author><![CDATA[Courseplay.devTeam]]></author>
 	<title>
 		<en>CoursePlay</en>
@@ -393,6 +393,7 @@ Changelog 7.1.0.0:
 		<sourceFile filename="scripts/ai/jobs/CpAIJobBunkerSilo.lua"/>
 		<sourceFile filename="scripts/ai/jobs/CpAIJobSiloLoader.lua"/>
 
+		<sourceFile filename="scripts/ai/tasks/CpAITask.lua"/>
 		<sourceFile filename="scripts/ai/tasks/CpAITaskFieldWork.lua"/>
 		<sourceFile filename="scripts/ai/tasks/CpAITaskBaleFinder.lua"/>
 		<sourceFile filename="scripts/ai/tasks/CpAITaskCombineUnloader.lua"/>
@@ -415,6 +416,7 @@ Changelog 7.1.0.0:
 		<sourceFile filename="scripts/gui/CpCourseManagerFrame.lua"/>
 		<sourceFile filename="scripts/gui/CourseDisplay.lua"/>
 		<sourceFile filename="scripts/gui/CpGamePadHudScreen.lua"/>
+		<sourceFile filename="scripts/gui/CpOptionToggleElement.lua"/>
 
 		<sourceFile filename="scripts/gui/hud/HudElements.lua"/>
 		<sourceFile filename="scripts/gui/hud/CpBaseHud.lua"/>

@@ -114,7 +114,7 @@ function ImplementUtil.isWheeledImplement(implement)
         end
     end
 
-    local activeInputAttacherJoint = implement:getActiveInputAttacherJoint()
+    local activeInputAttacherJoint = implement.getActiveInputAttacherJoint and implement:getActiveInputAttacherJoint()
     if activeInputAttacherJoint and allowedJointTypes[activeInputAttacherJoint.jointType] and
             implement.spec_wheels and implement.spec_wheels.wheels and #implement.spec_wheels.wheels > 0 then
         -- Attempt to find the pivot node.
@@ -518,7 +518,12 @@ function ImplementUtil.getCanLoadTo(loadTargetImplement, implementToLoadFrom, di
                 fillUnitIndex, loadTargetImplement:getOwnerFarmId(), implementToLoadFrom:getActiveFarm())
             return false
         end
-        return true, fillUnitIndex, loadTargetImplement:getFillUnitExactFillRootNode(fillUnitIndex)
+        local exactFillRootNode = loadTargetImplement:getFillUnitExactFillRootNode(fillUnitIndex)
+        if not exactFillRootNode then 
+            debug("Fill unit(%d) has no valid exact fill root node!", fillUnitIndex)
+            return false
+        end
+        return true, fillUnitIndex, exactFillRootNode
     end
 
     local validTarget, targetFillUnitIndex, exactFillRootNode

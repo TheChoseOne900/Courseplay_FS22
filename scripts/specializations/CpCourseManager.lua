@@ -69,6 +69,7 @@ function CpCourseManager.registerEventListeners(vehicleType)
     SpecializationUtil.registerEventListener(vehicleType, "onUpdate", CpCourseManager)
     SpecializationUtil.registerEventListener(vehicleType, 'onCpShowCourseSettingChanged', CpCourseManager)
     SpecializationUtil.registerEventListener(vehicleType, 'onCpFieldworkWaypointChanged', CpCourseManager)
+    SpecializationUtil.registerEventListener(vehicleType, 'onCpFinished', CpCourseManager)
 end
 
 function CpCourseManager.registerEvents(vehicleType)
@@ -337,6 +338,11 @@ function CpCourseManager:onCpCourseChange(newCourse,noEventSend)
     end
 end
 
+function CpCourseManager:onCpFinished()
+    --- The course was completely finished, so we delete the remembered waypoint.
+    self:rememberCpLastWaypointIx()
+end
+
 function CpCourseManager:drawCpCoursePlot(map, isHudMap)
     if self:hasCpCourse() then
         local spec = self.spec_cpCourseManager
@@ -420,11 +426,14 @@ function CpCourseManager:appendLoadedCourse(file)
 end
 
 function CpCourseManager:saveCourses(file,text)
-    file:save(CpCourseManager.rootKeyFileManager,CpCourseManager.xmlSchema,
-    CpCourseManager.xmlKeyFileManager,CpCourseManager.saveAssignedCourses,self,text)
-    --- Updates the course name, so multi tool courses are working correctly.
-    CourseSaveNameEvent.sendEvent(self, text)
-    self:setCpCourseName(text)
+    if file:save(CpCourseManager.rootKeyFileManager,CpCourseManager.xmlSchema,
+        CpCourseManager.xmlKeyFileManager,CpCourseManager.saveAssignedCourses,self,text) then
+        --- Updates the course name, so multi tool courses are working correctly.
+        CourseSaveNameEvent.sendEvent(self, text)
+        self:setCpCourseName(text)
+        return true
+    end
+    return false
 end
 
 function CpCourseManager:setCpCourseName(name)

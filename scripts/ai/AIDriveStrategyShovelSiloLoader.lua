@@ -29,8 +29,7 @@ This drive strategy implements:
 
 ---@class AIDriveStrategyShovelSiloLoader : AIDriveStrategyCourse
 ---@field shovelController ShovelController
-AIDriveStrategyShovelSiloLoader = {}
-local AIDriveStrategyShovelSiloLoader_mt = Class(AIDriveStrategyShovelSiloLoader, AIDriveStrategyCourse)
+AIDriveStrategyShovelSiloLoader = CpObject(AIDriveStrategyCourse)
 
 ----------------------------------------------------------------
 --- State properties
@@ -82,11 +81,8 @@ AIDriveStrategyShovelSiloLoader.siloAreaToAvoidForBunkerSiloOffsets = {
     width = 4
 }
 
-function AIDriveStrategyShovelSiloLoader.new(customMt)
-    if customMt == nil then
-        customMt = AIDriveStrategyShovelSiloLoader_mt
-    end
-    local self = AIDriveStrategyCourse.new(customMt)
+function AIDriveStrategyShovelSiloLoader:init(task, job)
+    AIDriveStrategyCourse.init(self, task, job)
     AIDriveStrategyCourse.initStates(self, AIDriveStrategyShovelSiloLoader.myStates)
     self.state = self.states.INITIAL
     self.debugChannel = CpDebug.DBG_SILO
@@ -94,8 +90,8 @@ function AIDriveStrategyShovelSiloLoader.new(customMt)
 end
 
 function AIDriveStrategyShovelSiloLoader:delete()
-    AIDriveStrategyShovelSiloLoader:superClass().delete(self)
-    if self.siloController then
+    AIDriveStrategyCourse.delete(self)
+    if self.siloController then 
         self.siloController:delete()
         self.siloController = nil
     end
@@ -439,11 +435,19 @@ function AIDriveStrategyShovelSiloLoader:hasTrailerValidSpecializations(trailer)
         --- All normal trailers
         return true
     end
-    if SpecializationUtil.hasSpecialization(Sprayer, trailer.specializations)
-            and trailer.spec_sprayer.isManureSpreader then
-        --- Manure spreader
+    if SpecializationUtil.hasSpecialization(Sprayer, trailer.specializations) then
+        --- Sprayers
         return true
     end
+    if SpecializationUtil.hasSpecialization(MixerWagon, trailer.specializations) then
+        --- Mixer wagon
+        return true
+    end
+    if trailer["spec_pdlc_goeweilPack.balerStationary"] then 
+        --- Goeweil 
+        return true
+    end
+
     return false
 end
 
@@ -471,7 +475,7 @@ function AIDriveStrategyShovelSiloLoader:isValidTrailer(trailer, trailerToIgnore
     end
     local canLoad, fillUnitIndex, fillType, exactFillRootNode = ImplementUtil.getCanLoadTo(trailer, self.shovelImplement,
             nil, debug)
-    if not canLoad or exactFillRootNode == nil then
+    if not canLoad then
         debug("can't be used!")
         return false
     end
@@ -522,6 +526,7 @@ function AIDriveStrategyShovelSiloLoader:searchForTrailerToUnloadInto()
     local dirX, _, dirZ = localDirectionToWorld(trailer.rootNode, 0, 0, 1)
     local yRot = MathUtil.getYRotationFromDirection(dirX, dirZ)
     local dx, _, dz = localToLocal(self.shovelController:getShovelNode(), trailer.rootNode, 0, 0, 0)
+    local distRootNodeToExactFillRootNode = calcDistanceFrom(trailer.rootNode, trailerData.exactFillRootNode)
     if dx > 0 then
         local x, y, z = localToWorld(trailer.rootNode, math.abs(distShovelDirectionNode) + self.distShovelTrailerPreUnload, 0, 0)
         setTranslation(self.unloadPositionNode, x, y, z)
@@ -530,6 +535,12 @@ function AIDriveStrategyShovelSiloLoader:searchForTrailerToUnloadInto()
         local x, y, z = localToWorld(trailer.rootNode, -math.abs(distShovelDirectionNode) - self.distShovelTrailerPreUnload, 0, 0)
         setTranslation(self.unloadPositionNode, x, y, z)
         setRotation(self.unloadPositionNode, 0, MathUtil.getValidLimit(yRot + math.pi / 2), 0)
+    end
+    if trailer["spec_pdlc_goeweilPack.balerStationary"] or trailer.size.length < 4 then 
+        --- Goeweil needs to be approached from behind
+        local x, y, z = localToWorld(trailer.rootNode, 0, 0, - math.abs(distShovelDirectionNode) - distRootNodeToExactFillRootNode - self.distShovelTrailerPreUnload)
+        setTranslation(self.unloadPositionNode, x, y, z)
+        setRotation(self.unloadPositionNode, 0, yRot, 0)
     end
     self:startPathfindingToTrailer()
 end
@@ -682,7 +693,12 @@ function AIDriveStrategyShovelSiloLoader:approachTrailerForUnloading()
     local firstWpIx = course:getNearestWaypoints(self.vehicle:getAIDirectionNode())
     self:startCourse(course, firstWpIx)
     self:setNewState(self.states.DRIVING_TO_UNLOAD)
-    self.shovelController:calculateMinimalUnloadingHeight(self.targetTrailer.exactFillRootNode)
+    if self.targetTrailer.trailer["spec_pdlc_goeweilPack.balerStationary"] then
+        --- Minimal height calculation is not working for Goeweil balers
+        self.shovelController:setMinimalUnloadingHeight(2.5)
+    else
+        self.shovelController:calculateMinimalUnloadingHeight(self.targetTrailer.exactFillRootNode)
+    end
 end
 
 --- Drives from the position node in front of the trigger to the unload trigger, so the unloading can begin after that.
@@ -730,3 +746,21 @@ function AIDriveStrategyShovelSiloLoader:startReversingAwayFromUnloading()
     self:startCourse(course, 1)
     self:setNewState(self.states.REVERSING_AWAY_FROM_UNLOAD)
 end
+
+--- The hud trigger of an mixer wagon has the same collision flag as an vehicle,
+--- so we need to explicitly ignore this trigger for the pathfinder. 
+local function addMixerWagonTriggers(mixerWagon)
+    local spec = mixerWagon.spec_mixerWagon
+    if spec.hudTrigger then 
+        PathfinderUtil.CollisionDetector.addNodeToIgnore(spec.hudTrigger)
+    end
+end
+MixerWagon.onLoad = Utils.appendedFunction(MixerWagon.onLoad, addMixerWagonTriggers)
+
+local function deleteMixerWagonTrigger(mixerWagon)
+    local spec = mixerWagon.spec_mixerWagon
+    if spec.hudTrigger then 
+        PathfinderUtil.CollisionDetector.removeNodeToIgnore(spec.hudTrigger)
+    end
+end
+MixerWagon.onDelete = Utils.prependedFunction(MixerWagon.onDelete, deleteMixerWagonTrigger)
