@@ -15,7 +15,7 @@ function CpAIJobCombineUnloader.new(isServer, customMt)
 
 	self.lastPositionX, self.lastPositionZ = math.huge, math.huge
 
-    self.selectedFieldPlot = FieldPlot(g_currentMission.inGameMenu.ingameMap)
+    self.selectedFieldPlot = FieldPlot(true)
     self.selectedFieldPlot:setVisible(false)
 	self.selectedFieldPlot:setBrightColor(true)
 
@@ -228,9 +228,12 @@ function CpAIJobCombineUnloader:validate(farmId)
 	return isValid, errorMessage
 end
 
-function CpAIJobCombineUnloader:drawSelectedField(map)
-	self.selectedFieldPlot:draw(map)
-    self.heapPlot:draw(map)
+function CpAIJobCombineUnloader:draw(map, isOverviewMap)
+	CpAIJob.draw(self, map, isOverviewMap)
+	if not isOverviewMap then
+		self.selectedFieldPlot:draw(map)
+		self.heapPlot:draw(map)
+	end
 end
 
 ------------------------------------

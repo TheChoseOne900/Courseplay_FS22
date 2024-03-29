@@ -30,28 +30,28 @@
     <!---->
     <!--AI job parameters-->
     <!---->
-    <text name="CP_jobParameters_fieldPosition_title" text="Umístění pole:"/>
-    <text name="CP_jobParameters_bunkerSiloPosition_title" text="Umístění jámy:"/>
-    <text name="CP_jobParameters_parkPosition_title" text="Parkovací pozice:"/>
-    <text name="CP_jobParameters_subTitle_startAt" text="Začátek trasy:"/>
-    <text name="CP_jobParameters_startAt_title" text="Začátek trasy:"/>
-    <text name="CP_jobParameters_startAt_tooltip" text="Kde začít polní práce"/>
-    <text name="CP_jobParameters_startAt_nearest" text="Na nejbližším bodě"/>
-    <text name="CP_jobParameters_startAt_first" text="Na prvním bodě"/>
-    <text name="CP_jobParameters_startAt_last" text="Na posledním bodě"/>
-    <text name="CP_jobParameters_startAt_bunkerSilo" text="Mód pro silážní jámy"/>
-    <text name="CP_jobParameters_startAt_siloLoader" text="Mód pro odvoz do/z jámy"/>
-    <text name="CP_jobParameters_startAt_unload" text="Vykládání"/>
-    <text name="CP_jobParameters_startAt_unload_siloLoader" text="Vykládání dovozce"/>
-    <text name="CP_jobParameters_startAt_bales" text="Ovíjení/sběr balíků"/>
-    <text name="CP_jobParameters_subTitle_laneOffset" text="Odsazení jízdního pruhu:"/>
-    <text name="CP_jobParameters_laneOffset_title" text="Odsazení jízdního pruhu:"/>
-    <text name="CP_jobParameters_laneOffset_tooltip" text="Odsazení jízdního pruhu"/>
-    <text name="CP_jobParameters_laneOffset_center" text="Střed"/>
-    <text name="CP_jobParameters_laneOffset_left" text="Vlevo(1)"/>
-    <text name="CP_jobParameters_laneOffset_right" text="Vpravo(1)"/>
-    <text name="CP_jobParameters_laneOffset_left_2" text="Vlevo(2)"/>
-    <text name="CP_jobParameters_laneOffset_right_2" text="Vpravo(2)"/>
+    <text name="CP_fieldWorkJobParameters_fieldPosition_title" text="Umístění pole:"/>
+    <text name="CP_fieldWorkJobParameters_bunkerSiloPosition_title" text="Umístění jámy:"/>
+    <text name="CP_fieldWorkJobParameters_parkPosition_title" text="Parkovací pozice:"/>
+    <text name="CP_fieldWorkJobParameters_subTitle_startAt" text="Začátek trasy:"/>
+    <text name="CP_fieldWorkJobParameters_startAt_title" text="Začátek trasy:"/>
+    <text name="CP_fieldWorkJobParameters_startAt_tooltip" text="Kde začít polní práce"/>
+    <text name="CP_fieldWorkJobParameters_startAt_nearest" text="Na nejbližším bodě"/>
+    <text name="CP_fieldWorkJobParameters_startAt_first" text="Na prvním bodě"/>
+    <text name="CP_fieldWorkJobParameters_startAt_last" text="Na posledním bodě"/>
+    <text name="CP_fieldWorkJobParameters_startAt_bunkerSilo" text="Mód pro silážní jámy"/>
+    <text name="CP_fieldWorkJobParameters_startAt_siloLoader" text="Mód pro odvoz do/z jámy"/>
+    <text name="CP_fieldWorkJobParameters_startAt_unload" text="Vykládání"/>
+    <text name="CP_fieldWorkJobParameters_startAt_unload_siloLoader" text="Vykládání dovozce"/>
+    <text name="CP_fieldWorkJobParameters_startAt_bales" text="Ovíjení/sběr balíků"/>
+    <text name="CP_fieldWorkJobParameters_subTitle_laneOffset" text="Odsazení jízdního pruhu:"/>
+    <text name="CP_fieldWorkJobParameters_laneOffset_title" text="Odsazení jízdního pruhu:"/>
+    <text name="CP_fieldWorkJobParameters_laneOffset_tooltip" text="Odsazení jízdního pruhu"/>
+    <text name="CP_fieldWorkJobParameters_laneOffset_center" text="Střed"/>
+    <text name="CP_fieldWorkJobParameters_laneOffset_left" text="Vlevo(1)"/>
+    <text name="CP_fieldWorkJobParameters_laneOffset_right" text="Vpravo(1)"/>
+    <text name="CP_fieldWorkJobParameters_laneOffset_left_2" text="Vlevo(2)"/>
+    <text name="CP_fieldWorkJobParameters_laneOffset_right_2" text="Vpravo(2)"/>
     <!---->
     <!--AI bale finder job parameters-->
     <!---->
@@ -255,8 +255,8 @@
     <text name="CP_vehicle_setting_unloadOnFirstHeadland_tooltip" text="Kombajn si přivolá odvozce na první souvrati."/>
     <text name="CP_vehicle_setting_strawSwath_title" text="Pokos slámy"/>
     <text name="CP_vehicle_setting_strawSwath_tooltip" text="Aktivuje/deaktivuje pokos slámy nebo jej pouze zakáže na souvratích."/>
-    <text name="CP_vehicle_setting_callUnloaderPercent_title" text="Call unloader at"/>
-    <text name="CP_vehicle_setting_callUnloaderPercent_tooltip" text="Call unloader when the harvester fill level is above this value."/>
+    <text name="CP_vehicle_setting_callUnloaderPercent_title" text="Zavolat odvozce při"/>
+    <text name="CP_vehicle_setting_callUnloaderPercent_tooltip" text="Zavolá odvozce, když je úroveň naplnění sklízecí řezačky vyšší než tato hodnota."/>
     <text name="CP_vehicle_setting_strawSwath_onlyCenter" text="Zakázáno na souvratích"/>
     <!---->
     <!--Course generator settings-->
@@ -479,6 +479,7 @@ Trasa se automaticky uloží při zavření editoru a přepíše vybranou trasu.
     <text name="CP_customFieldManager_edit" text="Upravit vlastní pole"/>
     <text name="CP_customFieldManager_draw" text="Kreslit vlastní pole"/>
     <text name="CP_customFieldManager_draw_header" text="Nakreslí vlastní trasy na poli kliknutím pravým tlačítkem"/>
+    <text name="CP_customFieldManager_draw_sub_header" text="Podržte levou klávesu Shift, abyste vytvořili rovnou čáru."/>
     <text name="CP_customFieldManager_save" text="Uložit vlastní pole"/>
     <text name="CP_controllerGui_startRecording" text="Spustit nahrávání vlastního pole"/>
     <text name="CP_controllerGui_stopRecording" text="Ukončit nahrávání vlastního pole"/>

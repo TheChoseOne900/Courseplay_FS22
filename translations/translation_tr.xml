@@ -30,28 +30,28 @@
     <!---->
     <!--AI job parameters-->
     <!---->
-    <text name="CP_jobParameters_fieldPosition_title" text="Alan konumu:"/>
-    <text name="CP_jobParameters_bunkerSiloPosition_title" text="Silo konumu:"/>
-    <text name="CP_jobParameters_parkPosition_title" text="Park konumu:"/>
-    <text name="CP_jobParameters_subTitle_startAt" text="Başlangıç:"/>
-    <text name="CP_jobParameters_startAt_title" text="Başlangıç:"/>
-    <text name="CP_jobParameters_startAt_tooltip" text="Saha çalışmasına nereden başlanır"/>
-    <text name="CP_jobParameters_startAt_nearest" text="en yakın yol noktası"/>
-    <text name="CP_jobParameters_startAt_first" text="ilk yol noktası"/>
-    <text name="CP_jobParameters_startAt_last" text="son yol noktası"/>
-    <text name="CP_jobParameters_startAt_bunkerSilo" text="Bunker silo modu"/>
-    <text name="CP_jobParameters_startAt_siloLoader" text="Silo load mode"/>
-    <text name="CP_jobParameters_startAt_unload" text="boşaltma biçerdöver/kıyıcı"/>
-    <text name="CP_jobParameters_startAt_unload_siloLoader" text="Unload Silo loader"/>
-    <text name="CP_jobParameters_startAt_bales" text="balya toplama/sarma"/>
-    <text name="CP_jobParameters_subTitle_laneOffset" text="Şerit ofseti:"/>
-    <text name="CP_jobParameters_laneOffset_title" text="Şerit ofseti:"/>
-    <text name="CP_jobParameters_laneOffset_tooltip" text="Şerit ofseti"/>
-    <text name="CP_jobParameters_laneOffset_center" text="merkez"/>
-    <text name="CP_jobParameters_laneOffset_left" text="sol(1)"/>
-    <text name="CP_jobParameters_laneOffset_right" text="sağ(1)"/>
-    <text name="CP_jobParameters_laneOffset_left_2" text="sol(2)"/>
-    <text name="CP_jobParameters_laneOffset_right_2" text="sağ(2)"/>
+    <text name="CP_fieldWorkJobParameters_fieldPosition_title" text="Alan konumu:"/>
+    <text name="CP_fieldWorkJobParameters_bunkerSiloPosition_title" text="Silo konumu:"/>
+    <text name="CP_fieldWorkJobParameters_parkPosition_title" text="Park konumu:"/>
+    <text name="CP_fieldWorkJobParameters_subTitle_startAt" text="Başlangıç:"/>
+    <text name="CP_fieldWorkJobParameters_startAt_title" text="Başlangıç:"/>
+    <text name="CP_fieldWorkJobParameters_startAt_tooltip" text="Saha çalışmasına nereden başlanır"/>
+    <text name="CP_fieldWorkJobParameters_startAt_nearest" text="en yakın yol noktası"/>
+    <text name="CP_fieldWorkJobParameters_startAt_first" text="ilk yol noktası"/>
+    <text name="CP_fieldWorkJobParameters_startAt_last" text="son yol noktası"/>
+    <text name="CP_fieldWorkJobParameters_startAt_bunkerSilo" text="Bunker silo modu"/>
+    <text name="CP_fieldWorkJobParameters_startAt_siloLoader" text="Silo load mode"/>
+    <text name="CP_fieldWorkJobParameters_startAt_unload" text="boşaltma biçerdöver/kıyıcı"/>
+    <text name="CP_fieldWorkJobParameters_startAt_unload_siloLoader" text="Unload Silo loader"/>
+    <text name="CP_fieldWorkJobParameters_startAt_bales" text="balya toplama/sarma"/>
+    <text name="CP_fieldWorkJobParameters_subTitle_laneOffset" text="Şerit ofseti:"/>
+    <text name="CP_fieldWorkJobParameters_laneOffset_title" text="Şerit ofseti:"/>
+    <text name="CP_fieldWorkJobParameters_laneOffset_tooltip" text="Şerit ofseti"/>
+    <text name="CP_fieldWorkJobParameters_laneOffset_center" text="merkez"/>
+    <text name="CP_fieldWorkJobParameters_laneOffset_left" text="sol(1)"/>
+    <text name="CP_fieldWorkJobParameters_laneOffset_right" text="sağ(1)"/>
+    <text name="CP_fieldWorkJobParameters_laneOffset_left_2" text="sol(2)"/>
+    <text name="CP_fieldWorkJobParameters_laneOffset_right_2" text="sağ(2)"/>
     <!---->
     <!--AI bale finder job parameters-->
     <!---->
@@ -479,6 +479,7 @@ Editör kapatıldığında kurs otomatik olarak kaydedilir ve seçilen kursu ge�
     <text name="CP_customFieldManager_edit" text="Özel alanı düzenle"/>
     <text name="CP_customFieldManager_draw" text="Özel alan çiz"/>
     <text name="CP_customFieldManager_draw_header" text="Sağ tıklama ile özel alan çizgileri çizin."/>
+    <text name="CP_customFieldManager_draw_sub_header" text="Hold the left shift key for a straight line."/>
     <text name="CP_customFieldManager_save" text="Özel alanı kaydet"/>
     <text name="CP_controllerGui_startRecording" text="Özel alan kaydını başlatın."/>
     <text name="CP_controllerGui_stopRecording" text="Özel alan kaydını durdurun."/>

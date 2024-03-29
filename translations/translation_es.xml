@@ -30,28 +30,28 @@
     <!---->
     <!--AI job parameters-->
     <!---->
-    <text name="CP_jobParameters_fieldPosition_title" text="Posición en campo:"/>
-    <text name="CP_jobParameters_bunkerSiloPosition_title" text="Posición en Silo:"/>
-    <text name="CP_jobParameters_parkPosition_title" text="Pos. Estac."/>
-    <text name="CP_jobParameters_subTitle_startAt" text="Comience en:"/>
-    <text name="CP_jobParameters_startAt_title" text="Comience en:"/>
-    <text name="CP_jobParameters_startAt_tooltip" text="Dónde comenzar el trabajo de campo"/>
-    <text name="CP_jobParameters_startAt_nearest" text="Punto más cercano"/>
-    <text name="CP_jobParameters_startAt_first" text="Primer punto"/>
-    <text name="CP_jobParameters_startAt_last" text="Último punto"/>
-    <text name="CP_jobParameters_startAt_bunkerSilo" text="Modo Trabajo en Silo"/>
-    <text name="CP_jobParameters_startAt_siloLoader" text="Modo Carga de silo"/>
-    <text name="CP_jobParameters_startAt_unload" text="Descargando Cosechadora/Picadora"/>
-    <text name="CP_jobParameters_startAt_unload_siloLoader" text="Descargar cargador de silo"/>
-    <text name="CP_jobParameters_startAt_bales" text="Recogiendo/Envolviendo fardos"/>
-    <text name="CP_jobParameters_subTitle_laneOffset" text="Desplazamiento de carril:"/>
-    <text name="CP_jobParameters_laneOffset_title" text="Desplazamiento de carril:"/>
-    <text name="CP_jobParameters_laneOffset_tooltip" text="Desplazamiento de carril"/>
-    <text name="CP_jobParameters_laneOffset_center" text="Centro"/>
-    <text name="CP_jobParameters_laneOffset_left" text="Izquierdo(1)"/>
-    <text name="CP_jobParameters_laneOffset_right" text="Derecho(1)"/>
-    <text name="CP_jobParameters_laneOffset_left_2" text="Izquierdo(2)"/>
-    <text name="CP_jobParameters_laneOffset_right_2" text="Derecho(2)"/>
+    <text name="CP_fieldWorkJobParameters_fieldPosition_title" text="Posición en campo:"/>
+    <text name="CP_fieldWorkJobParameters_bunkerSiloPosition_title" text="Posición en Silo:"/>
+    <text name="CP_fieldWorkJobParameters_parkPosition_title" text="Pos. Estac."/>
+    <text name="CP_fieldWorkJobParameters_subTitle_startAt" text="Comience en:"/>
+    <text name="CP_fieldWorkJobParameters_startAt_title" text="Comience en:"/>
+    <text name="CP_fieldWorkJobParameters_startAt_tooltip" text="Dónde comenzar el trabajo de campo"/>
+    <text name="CP_fieldWorkJobParameters_startAt_nearest" text="Punto más cercano"/>
+    <text name="CP_fieldWorkJobParameters_startAt_first" text="Primer punto"/>
+    <text name="CP_fieldWorkJobParameters_startAt_last" text="Último punto"/>
+    <text name="CP_fieldWorkJobParameters_startAt_bunkerSilo" text="Modo Trabajo en Silo"/>
+    <text name="CP_fieldWorkJobParameters_startAt_siloLoader" text="Modo Carga de silo"/>
+    <text name="CP_fieldWorkJobParameters_startAt_unload" text="Descargando Cosechadora/Picadora"/>
+    <text name="CP_fieldWorkJobParameters_startAt_unload_siloLoader" text="Descargar cargador de silo"/>
+    <text name="CP_fieldWorkJobParameters_startAt_bales" text="Recogiendo/Envolviendo fardos"/>
+    <text name="CP_fieldWorkJobParameters_subTitle_laneOffset" text="Desplazamiento de carril:"/>
+    <text name="CP_fieldWorkJobParameters_laneOffset_title" text="Desplazamiento de carril:"/>
+    <text name="CP_fieldWorkJobParameters_laneOffset_tooltip" text="Desplazamiento de carril"/>
+    <text name="CP_fieldWorkJobParameters_laneOffset_center" text="Centro"/>
+    <text name="CP_fieldWorkJobParameters_laneOffset_left" text="Izquierdo(1)"/>
+    <text name="CP_fieldWorkJobParameters_laneOffset_right" text="Derecho(1)"/>
+    <text name="CP_fieldWorkJobParameters_laneOffset_left_2" text="Izquierdo(2)"/>
+    <text name="CP_fieldWorkJobParameters_laneOffset_right_2" text="Derecho(2)"/>
     <!---->
     <!--AI bale finder job parameters-->
     <!---->
@@ -255,8 +255,8 @@
     <text name="CP_vehicle_setting_unloadOnFirstHeadland_tooltip" text="La cosechadora llamará al descargador en primera cabecera."/>
     <text name="CP_vehicle_setting_strawSwath_title" text="Franja de paja"/>
     <text name="CP_vehicle_setting_strawSwath_tooltip" text="Habilitar/Deshabilitar la franja de paja en cabeceras."/>
-    <text name="CP_vehicle_setting_callUnloaderPercent_title" text="Call unloader at"/>
-    <text name="CP_vehicle_setting_callUnloaderPercent_tooltip" text="Call unloader when the harvester fill level is above this value."/>
+    <text name="CP_vehicle_setting_callUnloaderPercent_title" text="Llame al descargador al"/>
+    <text name="CP_vehicle_setting_callUnloaderPercent_tooltip" text="Llame al descargador cuando el nivel de llenado de la cosechadora esté por encima de este valor."/>
     <text name="CP_vehicle_setting_strawSwath_onlyCenter" text="Cabeceras deshabilitadas"/>
     <!---->
     <!--Course generator settings-->
@@ -479,6 +479,7 @@ El curso se guarda automáticamente al cerrar el editor y anula el curso selecci
     <text name="CP_customFieldManager_edit" text="Editar Campo Personalizado"/>
     <text name="CP_customFieldManager_draw" text="Dibujar Campo Personalizado"/>
     <text name="CP_customFieldManager_draw_header" text="Dibujar las líneas del Campo con el Botón Derecho del Mouse."/>
+    <text name="CP_customFieldManager_draw_sub_header" text="Mantenga presionada la tecla Mayús izquierda para obtener una línea recta."/>
     <text name="CP_customFieldManager_save" text="Guardar Campo Personalizado"/>
     <text name="CP_controllerGui_startRecording" text="Iniciar grabación del campo personalizado."/>
     <text name="CP_controllerGui_stopRecording" text="Parar grabación del campo personalizado."/>

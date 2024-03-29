@@ -558,6 +558,21 @@ function AIDriveStrategyUnloadCombine:hasToWaitForAssignedCombine()
     return false
 end
 
+---@param combine table
+---@param combineDriver AIDriveStrategyCombineCourse
+function AIDriveStrategyUnloadCombine:areThereAnyCombinesOrLoaderLeftoverOnTheField(combine, combineDriver)
+    for _, vehicle in pairs(g_currentMission.vehicles) do 
+        if vehicle ~= combine and AIDriveStrategyCombineCourse.isActiveCpCombine(vehicle) then
+            local x, _, z = getWorldTranslation(combine.rootNode)
+            if self:isServingPosition(x, z, 10) then
+                --- At least one more combine oder loader is working on this field.
+                return true
+            end
+        end
+    end
+    return false
+end
+
 function AIDriveStrategyUnloadCombine:startWaitingForSomethingToDo()
     if self.state ~= self.states.IDLE then
         self:releaseCombine()
@@ -1509,7 +1524,7 @@ function AIDriveStrategyUnloadCombine:onPathfindingFailed(giveUpFunc, controller
         controller:retry(lastContext)
     elseif currentRetryAttempt == 2 then
         self:debug('Second attempt to find path failed, trying with reduced off-field penalty and fruit percent')
-        lastContext:maxFruitPercent(self:getMaxFruitPercent() / 2):offFieldPenalty(PathfinderContext.defaultOffFieldPenalty / 2)
+        lastContext:maxFruitPercent(self:getMaxFruitPercent() / 2):offFieldPenalty(PathfinderContext.defaultOffFieldPenalty / 2):ignoreFruitHeaps()
         controller:retry(lastContext)
     elseif currentRetryAttempt == 3 then
         self:debug('Third attempt to find path failed, trying with reduced off-field penalty and no fruit avoidance')
@@ -1542,6 +1557,10 @@ end
 --- Am I ready to be assigned to a combine in need?
 function AIDriveStrategyUnloadCombine:isIdle()
     return self.state == self.states.IDLE
+end
+
+function AIDriveStrategyUnloadCombine:isAllowedToBeCalled()
+    return self:isIdle() or self:hasToWaitForAssignedCombine()
 end
 
 --- Get the Dubins path length and the estimated seconds en-route to gaol
@@ -1913,10 +1932,17 @@ function AIDriveStrategyUnloadCombine:unloadStoppedCombine()
     if combineDriver:isUnloadFinished() then
         if combineDriver:isWaitingForUnloadAfterCourseEnded() then
             if combineDriver:getFillLevelPercentage() < 0.1 then
-                self:debug('Finished unloading combine at end of fieldwork, changing to unload course')
-                self.ppc:setNormalLookaheadDistance()
-                self:releaseCombine()
-                self:startMovingBackFromCombine(self.states.MOVING_BACK_WITH_TRAILER_FULL, self.combineJustUnloaded)
+                if self:areThereAnyCombinesOrLoaderLeftoverOnTheField(self.combineToUnload, combineDriver) then
+                    self:debug('Finished unloading combine at end of fieldwork, but there are more unload targets left over on the field.')
+                    self.ppc:setNormalLookaheadDistance()
+                    self:releaseCombine()
+                    self:startMovingBackFromCombine(self.states.MOVING_BACK, self.combineJustUnloaded)
+                else
+                    self:debug('Finished unloading combine at end of fieldwork, changing to unload course')
+                    self.ppc:setNormalLookaheadDistance()
+                    self:releaseCombine()
+                    self:startMovingBackFromCombine(self.states.MOVING_BACK_WITH_TRAILER_FULL, self.combineJustUnloaded)
+                end
             else
                 gx, gz = self:driveBesideCombine()
             end
@@ -1964,6 +1990,10 @@ function AIDriveStrategyUnloadCombine:unloadMovingCombine()
 
     if combineStrategy:isTurning() then
         if not combineStrategy:isFinishingRow() then
+            -- harvester is now about the start the turn after it finished the row
+            -- in any case, we stop here, don't want to follow it through the turn.
+            -- We expect it to stop here as well until empty (see shouldHoldInTurnManeuver())
+            self:setMaxSpeed(0)
             if combineStrategy:alwaysNeedsUnloader() then
                 if not combineStrategy:isProcessingFruit() then
                     self:debug('Harvester stopped processing fruit, finish unloading')
@@ -1974,9 +2004,7 @@ function AIDriveStrategyUnloadCombine:unloadMovingCombine()
                     self:debugSparse('Waiting for harvester to stop processing fruit')
                 end
             else
-                self:debug('Combine turning, finish unloading.')
-                self:onUnloadingMovingCombineFinished(combineStrategy)
-                return
+                self:debugSparse('Combine turning, wait until it stops discharging.')
             end
         end
     elseif combineStrategy:isManeuvering() then

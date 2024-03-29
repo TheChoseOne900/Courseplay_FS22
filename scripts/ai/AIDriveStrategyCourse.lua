@@ -124,7 +124,7 @@ function AIDriveStrategyCourse:setAIVehicle(vehicle, jobParameters)
     self.turningRadius = AIUtil.getTurningRadius(vehicle)
 
     self.pathfinderController = PathfinderController(vehicle, self.turningRadius)
-    self.pathfinderController:registerListeners(self, self.onPathfindingFinished, self.onPathfindingRetry)
+    self.pathfinderController:registerListeners(self, self.onPathfindingFinished, self.onPathfindingFailed)
 
     self:setAllStaticParameters()
 
@@ -187,11 +187,11 @@ function AIDriveStrategyCourse:getGeneratedCourse(jobParameters)
 end
 
 function AIDriveStrategyCourse:getStartingPointWaypointIx(course, startAt)
-    if startAt == CpJobParameters.START_AT_NEAREST_POINT then
+    if startAt == CpFieldWorkJobParameters.START_AT_NEAREST_POINT then
         local _, _, ixClosestRightDirection, _ = course:getNearestWaypoints(self.vehicle:getAIDirectionNode())
         self:debug('Starting course at the closest waypoint in the right direction %d', ixClosestRightDirection)
         return ixClosestRightDirection
-    elseif startAt == CpJobParameters.START_AT_LAST_POINT then
+    elseif startAt == CpFieldWorkJobParameters.START_AT_LAST_POINT then
         local lastWpIx = self.vehicle:getCpLastRememberedWaypointIx()
         if lastWpIx then
             self:debug('Starting course at the last waypoint %d', lastWpIx)
@@ -611,7 +611,7 @@ end
 ---@param lastContext PathfinderContext
 ---@param wasLastRetry boolean
 ---@param currentRetryAttempt number
-function AIDriveStrategyCourse:onPathfindingRetry(controller, lastContext, wasLastRetry, currentRetryAttempt)
+function AIDriveStrategyCourse:onPathfindingFailed(controller, lastContext, wasLastRetry, currentRetryAttempt)
     -- override
 end
 
