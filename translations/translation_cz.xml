@@ -14,7 +14,7 @@
     <text name="CP_unit_meter" text="m"/>
     <text name="CP_unit_foot" text="st"/>
     <text name="CP_copy" text="Kopírovat trasu: "/>
-    <text name="CP_infoText" text="Courseplay(%s): Pro pomoc, chyby nebo poznámky o opravách se prosím navštivte: https://github.com/Courseplay/Courseplay_FS22. Překlad: SniperKittenCZ"/>
+    <text name="CP_infoText" text="Courseplay(%s): Pro pomoc, chyby nebo poznámky o opravách navštivte: https://github.com/Courseplay/Courseplay_FS22. Překlad: SniperKittenCZ"/>
     <text name="CP_error_no_course" text="Před zahájením práce vygenerujte trasu."/>
     <text name="CP_error_could_not_generate_course" text="Trasu se nepodařilo vygenerovat. Log může obsahovat více informací."/>
     <text name="CP_error_not_on_field" text="Cíl není na poli."/>
@@ -42,7 +42,7 @@
     <text name="CP_fieldWorkJobParameters_startAt_bunkerSilo" text="Mód pro silážní jámy"/>
     <text name="CP_fieldWorkJobParameters_startAt_siloLoader" text="Mód pro odvoz do/z jámy"/>
     <text name="CP_fieldWorkJobParameters_startAt_unload" text="Vykládání"/>
-    <text name="CP_fieldWorkJobParameters_startAt_unload_siloLoader" text="Vykládání dovozce"/>
+    <text name="CP_fieldWorkJobParameters_startAt_unload_siloLoader" text="Vykládání odvozce"/>
     <text name="CP_fieldWorkJobParameters_startAt_bales" text="Ovíjení/sběr balíků"/>
     <text name="CP_fieldWorkJobParameters_subTitle_laneOffset" text="Odsazení jízdního pruhu:"/>
     <text name="CP_fieldWorkJobParameters_laneOffset_title" text="Odsazení jízdního pruhu:"/>
@@ -102,7 +102,7 @@
     <!--AI jobs-->
     <!---->
     <text name="CP_job_fieldWork" text="CP: Polní práce"/>
-    <text name="CP_job_baleCollect" text="CP: Ovíjení/sběr balíků"/>
+    <text name="CP_job_baleCollect" text="CP: Sběr/ovíjení balíků"/>
     <text name="CP_job_combineUnload" text="CP: Vykládka kombajnu"/>
     <text name="CP_job_bunkerSilo" text="CP: Práce v silážní jámě"/>
     <text name="CP_job_siloLoader" text="CP: Plnění silážní jámy"/>
@@ -111,14 +111,14 @@
     <!---->
     <!--AI error messages-->
     <!---->
-    <text name="CP_ai_messageErrorIsFull" text="Pracovník %s přestal neočekávaně pracovat – zásobník je plný!"/>
-    <text name="CP_ai_messageError" text="Pracovník %s přestal neočekávaně pracovat - opustil trasu!"/>
-    <text name="CP_ai_messageErrorWrongBaleWrapType" text="Pracovník %s přestal neočekávaně pracovat – nebyl nalezen zvolený typ balíků!"/>
-    <text name="CP_ai_messageErrorNoPathFound" text="Pracovník AI %s neočekávaně ukončil práci - nebyla nalezena žádná cesta!"/>
-    <text name="CP_ai_messageErrorGroundUnloadNotSupported" text="AI pracovník %s přestal neočekávaně pracovat - vykládání na poli není možné!"/>
-    <text name="CP_ai_messageErrorCutterNotSupported" text="Pracovník AI %s neočekávaně zastavil práci - připojení lišty není možné!"/>
-    <text name="CP_ai_messageErrorAutomaticCutterAttachNotActive" text="Pracovník AI %s přestal neočekávaně pracovat - automatické připojení lišty deaktivováno!"/>
-    <text name="CP_ai_messageErrorWrongMissionFruitType" text="Pracovník AI %s přestal neočekávaně pracovat - zvolen nesprávný typ materiálu pro misi!"/>
+    <text name="CP_ai_messageErrorIsFull" text="Pracovník %s přestal pracovat – zásobník je plný!"/>
+    <text name="CP_ai_messageError" text="Pracovník %s přestal pracovat - opustil trasu!"/>
+    <text name="CP_ai_messageErrorWrongBaleWrapType" text="Pracovník %s přestal pracovat – nebyl nalezen zvolený typ balíků!"/>
+    <text name="CP_ai_messageErrorNoPathFound" text="Pracovník AI %s přestal pracovat - nebyla nalezena žádná cesta!"/>
+    <text name="CP_ai_messageErrorGroundUnloadNotSupported" text="AI pracovník %s přestal pracovat - vykládání na poli není možné!"/>
+    <text name="CP_ai_messageErrorCutterNotSupported" text="Pracovník AI %s přestal pracovat - připojení lišty není možné!"/>
+    <text name="CP_ai_messageErrorAutomaticCutterAttachNotActive" text="Pracovník AI %s přestal pracovat - automatické připojení lišty deaktivováno!"/>
+    <text name="CP_ai_messageErrorWrongMissionFruitType" text="Pracovník AI %s přestal pracovat - zvolen nesprávný typ materiálu pro misi!"/>
     <!---->
     <!--AI fieldwork task descriptions-->
     <!---->
@@ -149,6 +149,10 @@
     <text name="CP_ai_taskDescriptionWaitsForTrailer" text="Čeká na vlečku"/>
     <text name="CP_ai_taskDescriptionUnloadingToTrigger" text="Vykládání do trigeru"/>
     <!---->
+    <!--Hud settings-->
+    <!---->
+    <text name="CP_hud_settings_selectedJob_title" text="Vybraná práce:"/>
+    <!---->
     <!--Vehicle settings-->
     <!---->
     <text name="CP_vehicle_setting_title" text="Nastavení pro vozidlo (%s)"/>
@@ -164,7 +168,7 @@
     <text name="CP_vehicle_setting_showCourse_startStop" text="Pouze start/stop"/>
     <text name="CP_vehicle_setting_showCourse_currentWaypoint" text="Aktuální průjezdní body"/>
     <text name="CP_vehicle_setting_showCourse_all" text="Všechny průjezdní body."/>
-    <text name="CP_vehicle_setting_openHudWithMouse_title" text="Otevřete nabídku (Hud) pomocí myši"/>
+    <text name="CP_vehicle_setting_openHudWithMouse_title" text="Otevřít nabídku (Hud) pomocí myši"/>
     <text name="CP_vehicle_setting_openHudWithMouse_tooltip" text="Když je nabídka (Hud) deaktivována, lze jej otevřít pouze pomocí klávesové zkratky."/>
     <text name="CP_vehicle_setting_fuelSave_title" text="Úspora paliva"/>
     <text name="CP_vehicle_setting_fuelSave_tooltip" text="Během čekání vypne motor vozidla."/>
@@ -172,7 +176,7 @@
     <text name="CP_vehicle_setting_stopAtEnd_tooltip" text="Zastavit na konci trasy."/>
     <text name="CP_vehicle_setting_allowReversePathfinding_title" text="Povolit couvání pro hledání trasy"/>
     <text name="CP_vehicle_setting_allowReversePathfinding_tooltip" text="Pokud je aktivní, použije se při generování trasy i couvání."/>
-    <text name="CP_vehicle_setting_allowPathfinderTurns_title" text="Umožňuje používání generování trasy v zatáčkách"/>
+    <text name="CP_vehicle_setting_allowPathfinderTurns_title" text="Umožnit používání generování trasy v zatáčkách"/>
     <text name="CP_vehicle_setting_allowPathfinderTurns_tooltip" text="Umožňuje používat generování trasy v zatáčkách, například k vyhýbání se překážkám a plodinám."/>
     <text name="CP_vehicle_setting_foldImplementAtEnd_title" text="Složit nářadí na konci trasy"/>
     <text name="CP_vehicle_setting_foldImplementAtEnd_tooltip" text="Zapnout/vypnout složení nářadí do transportní pozice po ukončení práce."/>
@@ -610,25 +614,51 @@ Pro smazání trasy nebo adresáře klikněte na tlačítko smazat a poté na sl
 Adresáře musí být prázdné, pokud je chcete smazat.
 "/>
     <text name="CP_help_page_minihud_title" text="Mini HUD"/>
-    <text name="CP_help_page_minihud_text" text="
-A: Kliknutím na název vozidla se otevře stránka konfigurace vozidla.
-B: Jedním kliknutím vyberte, kde má začít trasa.
-C: Kliknutím na název trasy otevřete nabídku AI s otevřeným generátorem trasy.
-D: Spusťte pomocníka Courseplay.
-E: Zobrazuje aktuální trasový bod / celkový počet trasových bodů. Kliknutím otevřete správce trasy.
-F: Kliknutím na ikonu se otevře stránka obecných nastavení.
-G: Zavře Hud.
-H: Snižte a zvětšete pracovní šířku. Červená čára na vašem vozidle ukazuje aktuální nastavení.
-I: Hodnota pro horizontální posun, + vlevo, - vpravo.
-J: Zkopírujte a vložte trasu do jiného vozidla.
-      Jakmile bylo stisknuto tlačítko kopírování, lze trasu vložit do vozidla bez trasy, když se ikona změní na zelenou.
-K a L: Kliknutím na text resetujete změny na automatické hodnoty.
-M: Zobrazuje zkopírovanou trasu.
-N: Tato oblast zobrazuje odsazení jízdního pruhu, pokud máte načtenou trasu s více nástroji. Kliknutím na text přepnete pozice.
-O: Spuštění/zastavení záznamu vlastní trasy na poli.
-P: Odstraňuje trasu z vozidla
-Q: Mění viditelnost trasy mezi: zapnuto, vypnuto a pouze start/stop.
-R: Odebere zkopírovanou trasu ze schránky.
+    <text name="CP_help_page_minihud_general_title" text="Obecné"/>
+    <text name="CP_help_page_minihud_general_text" text="
+A: Podržením levého tlačítka myši na titulku přetáhněte HUD do požadované polohy. Na pravé straně se zobrazí nainstalovaná verze a kliknutím myši se HUD zavře křížkem.
+B: Kliknutím na ikonu Courseplay získáte přístup k obecným nastavením.
+C: V této poloze se zobrazí název vozidla. Kliknutím na něj se dostanete do nabídky nastavení vozidla.
+D: Tyto symboly slouží k: (1) odstranit aktuálně načtenou trasu, (2a) přepnout způsob zobrazení trasy, (2b) pokud není načtena žádná trasa, zobrazí se tlačítko pro záznam trasy na hranici pole, (3) spustit nebo zastavit pomocníka.
+E: Tato ikona cíle má různé možnosti v závislosti na zvoleném režimu, otevírá nabídku AI s úlohou a umožňuje umístit značku a další nastavení úlohy. Na levé straně ikony se při spuštěné terénní práci zobrazuje zbývající čas trasy.
+F: Kliknutím na text přepnete dostupné režimy pro aktuální nástroje.
+G: Nastavení zobrazená pod tímto řádkem závisí na aktuální úloze. Budou vysvětlena na následujících obrázcích.
+"/>
+    <text name="CP_help_page_minihud_fieldwork_title" text="Polní práce"/>
+    <text name="CP_help_page_minihud_fieldwork_text" text="
+A: Klepnutím na tlačítko vyberte místo, kde má být práce zahájena. Pokud je načtena trasa s více nástroji, můžete na pravé straně vybrat jízdní pruh.
+B: Zobrazí název načtené trasy. Pokud jste trasu právě vygenerovali, zobrazí se Dočasná trasa. Na pravé straně se po spuštění úlohy zobrazí aktuální/celkové body trasy.
+C: Kliknutím na text se přepočítá pracovní šířka, nebo ji můžete nastavit ručně vpravo kliknutím na +/- nebo kolečkem myši nad číslem.
+D: Některé nástroje potřebují odsazení do strany. Courseplay jej vypočítá automaticky při kliknutí na text nebo jej můžete změnit ručně stejně jako pracovní šířku.
+E: Symbol na pravé straně slouží ke zkopírování aktuální trasy do schránky. Název zkopírované trasy se pak zobrazí vlevo. Zkopírovanou trasu můžete načíst do jiného vozidla, které zatím žádnou trasu nemá. Chcete-li trasu ze schránky odstranit, klikněte na symbol pro odstranění.
+"/>
+    <text name="CP_help_page_minihud_combineunload_title" text="Vykládka kombajnu"/>
+    <text name="CP_help_page_minihud_combineunload_text" text="
+A: Vyberte, jaký typ vozidla má pracovník vyložit. To je užitečné, pokud na stejném poli pracují různé typy, například kombajn a nakladač, jako je ROPA Maus.
+B: Nastavte úroveň naplnění (40 % - 100 %), při které má pracovník dojet na místo vykládky. Pro změnu klikněte na +/- nebo použijte rolovací kolečko nad číslem.
+C: Někdy není poloha odvozce pod rourou ideální. To může být způsobeno přívěsem nebo rourou sklízecí mlátičky, někdy je to způsobeno sklonem pole. Zde můžete vzdálenost ke kombajnu ručně korigovat.
+D: Stejné jako výše, ale zde můžete nastavit polohu vykládacího zařízení vzhledem k rouře dopředu nebo dozadu.
+E: Podobně jako při kopírování trasy můžete i zde zkopírovat načtenou trasu do jiného vozidla.
+"/>
+    <text name="CP_help_page_minihud_balecollect_title" text="Sběr/ovíjení balíků"/>
+    <text name="CP_help_page_minihud_balecollect_text" text="
+A: Zbývající balíky na poli.
+B: Typ balíků ke sběru/ovíjení.
+C: Posun mezi osou traktoru a osou ramene nakladače. U větších traktorů (např. se širšími pneumatikami) může být nutné tento parametr upravit.
+"/>
+    <text name="CP_help_page_minihud_siloloader_title" text="Plnění silážní jámy"/>
+    <text name="CP_help_page_minihud_siloloader_text" text="
+A: Zbývající objem hromady v litrech.
+B: Pracovní šířka, stejná jako u práce v terénu.
+C: Pro Courseplay je třeba správně nastavit přesnou výšku lžíce nad zemí. Protože tato výška může být pro každý nástroj jiná, můžete ji zkontrolovat a upravit pomocí tohoto nastavení.
+D: Stejně jako u vykládacího zařízení můžete i zde zkopírovat načtenou trasu do jiného vozidla.
+"/>
+    <text name="CP_help_page_minihud_siloworker_title" text="Práce v silážní jámě"/>
+    <text name="CP_help_page_minihud_siloworker_text" text="
+A: Podobně jako u Plnění silážní jámy je rozhodující výška nahrnovače. Zde ji můžete nastavit.
+B: Zobrazuje průběh zhutňování. Kliknutím na něj se přepne možnost zastavení pracovníka po dosažení úplného zhutnění.
+C: Zde můžete v případě potřeby změnit pracovní šířku.
+D: Toto nastavení říká pracovníkovi, že má čekat v sile nebo na zvoleném parkovacím místě, když se k silu blíží vykladač.
 "/>
     <text name="CP_help_page_customField_title" text="Vlastní pole"/>
     <text name="CP_help_page_customFieldRecord_text" text="
@@ -894,6 +924,7 @@ Nyní by váš výběr měl vypadat podobně jako na obrázku.
     <text name="input_CP_DBG_CHANNEL_MENU_VISIBILITY" text="CP: Zobrazit nabídku kanálu ladění ano/ne"/>
     <text name="input_CP_OPEN_CLOSE_VEHICLE_SETTING_DISPLAY" text="CP: Otevřt/zavřít nastavení vozidla"/>
     <text name="input_CP_START_STOP" text="CP: Spustit mini GUI"/>
+    <text name="input_CP_CHANGE_SELECTED_JOB" text="CP: Změnit aktuální úlohu"/>
     <text name="input_CP_CHANGE_STARTING_POINT" text="CP: Změnit startovní bod"/>
     <text name="input_CP_CLEAR_COURSE" text="CP: Vymazat aktuálně nahranou trasu"/>
     <text name="input_CP_CHANGE_COURSE_VISIBILITY" text="Zobrazit aktuální trasu vozidla"/>

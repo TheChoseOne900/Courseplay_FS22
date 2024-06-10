@@ -363,7 +363,11 @@ end
 
 PathfinderUtil.collisionDetector = PathfinderUtil.CollisionDetector()
 
+--- Is there harvestable fruit at x, z?
 ---@param areaToIgnoreFruit PathfinderUtil.Area|nil
+---@return boolean true if there's fruit in the length * width area around x, z
+---@return number percentage of area covered by fruit
+---@return string name of fruit
 function PathfinderUtil.hasFruit(x, z, length, width, areaToIgnoreFruit)
     if areaToIgnoreFruit and areaToIgnoreFruit:contains(x, z) then
         return false
@@ -379,12 +383,12 @@ function PathfinderUtil.hasFruit(x, z, length, width, areaToIgnoreFruit)
         end
         if not ignoreThis then
             -- if the last boolean parameter is true then it returns fruitValue > 0 for fruits/states ready for forage also
-            local fruitValue, a, b, c = FSDensityMapUtil.getFruitArea(fruitType.index, x - width / 2, z - length / 2, x + width / 2, z, x, z + length / 2, true, true)
+            local fruitValue, numPixels, totalNumPixels, c = FSDensityMapUtil.getFruitArea(fruitType.index, x - width / 2, z - length / 2, x + width / 2, z, x, z + length / 2, true, true)
             --if g_updateLoopIndex % 200 == 0 then
             --CpUtil.debugFormat(CpDebug.DBG_PATHFINDER, '%.1f, %s, %s, %s %s', fruitValue, tostring(a), tostring(b), tostring(c), g_fruitTypeManager:getFruitTypeByIndex(fruitType.index).name)
             --end
             if fruitValue > 0 then
-                return true, fruitValue, g_fruitTypeManager:getFruitTypeByIndex(fruitType.index).name
+                return true, 100 * numPixels / totalNumPixels, g_fruitTypeManager:getFruitTypeByIndex(fruitType.index).name
             end
         end
     end
@@ -554,10 +558,11 @@ end
 ---@param goal State3D goal node
 ---@param constraints PathfinderConstraints
 ---@param allowReverse boolean allow reverse driving
----@param mustBeAccurate boolean must be accurately find the goal position/angle (optional)
-function PathfinderUtil.startPathfinding(vehicle, start, goal, constraints, allowReverse, mustBeAccurate)
+---@param mustBeAccurate boolean must be accurately find the goal position/angle
+---@param maxIterations number maximum number of iterations
+function PathfinderUtil.startPathfinding(vehicle, start, goal, constraints, allowReverse, mustBeAccurate, maxIterations)
     PathfinderUtil.overlapBoxes = {}
-    local pathfinder = HybridAStarWithAStarInTheMiddle(vehicle, constraints.turnRadius * 4, 100, 40000, mustBeAccurate)
+    local pathfinder = HybridAStarWithAStarInTheMiddle(vehicle, constraints.turnRadius * 4, 100, maxIterations, mustBeAccurate)
     return pathfinder, pathfinder:start(start, goal, constraints.turnRadius, allowReverse,
             constraints, constraints.trailerHitchLength)
 end
@@ -703,7 +708,8 @@ function PathfinderUtil.startPathfindingFromVehicleToGoal(goal, context)
     local constraints = PathfinderConstraints(context)
     PathfinderUtil.initializeTrailerHeading(start, constraints.vehicleData)
 
-    return PathfinderUtil.startPathfinding(context._vehicle, start, goal, constraints, context._allowReverse, context._mustBeAccurate)
+    return PathfinderUtil.startPathfinding(context._vehicle, start, goal, constraints, context._allowReverse,
+            context._mustBeAccurate, context._maxIterations)
 end
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -758,6 +764,21 @@ function PathfinderUtil.startAStarPathfindingFromVehicleToNode(goalNode, xOffset
 
     local pathfinder = AStar(context._vehicle, 100, 10000)
     return pathfinder, pathfinder:start(start, goal, constraints.turnRadius, false, constraints, constraints.trailerHitchLength)
+end
+
+--- Helper function to find a reasonable number of maximum iterations based on a field polygon
+---@param fieldPolygon Polygon
+---@return number maximum iterations we think has a good chance to succeed on the above polygon
+function PathfinderUtil.getMaxIterationsForFieldPolygon(fieldPolygon)
+    if fieldPolygon then
+        local circumference = fieldPolygon.circumference
+        if not circumference then
+            circumference = CpMathUtil.getCircumferenceOfPolygon(fieldPolygon)
+        end
+        return math.floor(math.max(HybridAStar.defaultMaxIterations, 20 * circumference))
+    else
+        return HybridAStar.defaultMaxIterations
+    end
 end
 
 ------------------------------------------------------------------------------------------------------------------------

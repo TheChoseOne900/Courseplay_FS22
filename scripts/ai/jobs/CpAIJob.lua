@@ -18,7 +18,6 @@
 CpAIJob = {
 	name = "",
 	jobName = "",
-	targetPositionParameterText = "ai_parameterGroupTitlePosition"
 }
 local AIJobCp_mt = Class(CpAIJob, AIJob)
 
@@ -75,6 +74,10 @@ function CpAIJob:getStartTaskIndex()
 	if self.currentTaskIndex ~= 0 or self.isDirectStart or self:isTargetReached() then
 		-- skip Giants driveTo
 		-- TODO: this isn't very nice as we rely here on the derived classes to add more tasks
+		return 2
+	end
+	if self.driveToTask.x == nil then 
+		CpUtil.info("Drive to task was skipped, as no valid start position is set!")
 		return 2
 	end
 	return 1
