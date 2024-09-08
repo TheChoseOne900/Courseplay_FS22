@@ -104,6 +104,7 @@ end
 --- Apply auto work width after everything is loaded.
 function CpCourseGeneratorSettings:onLoadFinished()
     CpCourseGeneratorSettings.setAutomaticWorkWidthAndOffset(self)
+    CpCourseGeneratorSettings.setDefaultTurningRadius(self)
 end
 
 --- Resets the work width to a saved value after all implements are loaded and attached.
@@ -113,6 +114,35 @@ function CpCourseGeneratorSettings:onUpdate(savegame)
         spec.workWidth:resetToLoadedValue()
     end
     spec.finishedFirstUpdate = true
+end
+
+function CpCourseGeneratorSettings:isRowsToSkipVisible()
+    local spec = self.spec_cpCourseGeneratorSettings
+    local rowPatternNumber = spec.centerMode:getValue()
+    return rowPatternNumber == CourseGenerator.RowPattern.ALTERNATING
+end
+
+function CpCourseGeneratorSettings:isNumberOfCirclesVisible()
+    local spec = self.spec_cpCourseGeneratorSettings
+    local rowPatternNumber = spec.centerMode:getValue()
+    return rowPatternNumber == CourseGenerator.RowPattern.RACETRACK
+end
+
+function CpCourseGeneratorSettings:isRowsPerLandVisible()
+    local spec = self.spec_cpCourseGeneratorSettings
+    local rowPatternNumber = spec.centerMode:getValue()
+    return rowPatternNumber == CourseGenerator.RowPattern.LANDS
+end
+
+function CpCourseGeneratorSettings:isSpiralFromInsideVisible()
+    local spec = self.spec_cpCourseGeneratorSettings
+    local rowPatternNumber = spec.centerMode:getValue()
+    return rowPatternNumber == CourseGenerator.RowPattern.SPIRAL
+end
+
+function CpCourseGeneratorSettings:isManualRowAngleVisible()
+    local spec = self.spec_cpCourseGeneratorSettings
+    return spec.autoRowAngle:getValue() == false
 end
 
 --- Makes sure the automatic work width gets recalculated after the variable work width was changed by the user.
@@ -133,12 +163,17 @@ function CpCourseGeneratorSettings:setAutomaticWorkWidthAndOffset()
     self:getCpSettings().toolOffsetX:setFloatValue(offset)
 end
 
+function CpCourseGeneratorSettings:setDefaultTurningRadius()
+    local spec = self.spec_cpCourseGeneratorSettings
+    spec.turningRadius:setFloatValue(AIUtil.getTurningRadius(self))
+end
+
 --- Loads the generic settings setup from an xmlFile.
 function CpCourseGeneratorSettings.loadSettingsSetup()
     local filePath = Utils.getFilename("config/CourseGeneratorSettingsSetup.xml", g_Courseplay.BASE_DIRECTORY)
     CpSettingsUtil.loadSettingsFromSetup(CpCourseGeneratorSettings,filePath)
     CpCourseGeneratorSettings.vineSettings = {}
-    local filePath = Utils.getFilename("config/VineCourseGeneratorSettingsSetup.xml", g_Courseplay.BASE_DIRECTORY)
+    filePath = Utils.getFilename("config/VineCourseGeneratorSettingsSetup.xml", g_Courseplay.BASE_DIRECTORY)
     CpSettingsUtil.loadSettingsFromSetup(CpCourseGeneratorSettings.vineSettings,filePath)
 end
 
@@ -223,7 +258,13 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 function CpCourseGeneratorSettings:hasHeadlandsSelected()
     local spec = self.spec_cpCourseGeneratorSettings
-    return spec.numberOfHeadlands:getValue()>0
+    return spec.numberOfHeadlands:getValue() > 0
+end
+
+function CpCourseGeneratorSettings:canStartOnRows()
+    local spec = self.spec_cpCourseGeneratorSettings
+    -- start on rows does not work for narrow field patterns
+    return spec.numberOfHeadlands:getValue() > 0 and not spec.narrowField:getValue()
 end
 
 --- Only show the work width, if the bale finder can't be started.

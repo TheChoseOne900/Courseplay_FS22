@@ -261,11 +261,22 @@ end
 function CpUtil.try(func, ...)
 	local data = {xpcall(func, function(err) printCallstack(); return err end, ...)}
 	local status = data[1]
-	if not status then 
+	if not status then
 		CpUtil.info(data[2])
 		return status, tostring(data[2])
 	end
 	return unpack(data)
+end
+
+--- Same as the Giants xmlFile:setValue() function, but won't crash if it gets a nil value,
+--- instead just silently ignores it
+---@param xmlFile
+---@param key string
+---@param value any|nil
+function CpUtil.setXmlValue(xmlFile, key, value)
+	if value ~= nil then
+		xmlFile:setValue(key, value)
+	end
 end
 
 --- Gets the saved values from an xml string.
@@ -310,6 +321,57 @@ function CpUtil.getXmlVectorString(data)
 	end
 	return table.concat(values, " ")
 end
+
+--- Helper functions to write and read optional values to the stream (until Giants implements a proper serialization/
+--- deserialization API), written by GitHub Copilot
+function CpUtil.streamWriteBool(streamId, value)
+	if value == nil then
+		streamWriteBool(streamId, false)
+	else
+		streamWriteBool(streamId, true)
+		streamWriteBool(streamId, value)
+	end
+end
+
+function CpUtil.streamReadBool(streamId)
+	if streamReadBool(streamId) then
+		return streamReadBool(streamId)
+	end
+	return nil
+end
+
+function CpUtil.streamWriteString(streamId, value)
+	if value == nil then
+		streamWriteBool(streamId, false)
+	else
+		streamWriteBool(streamId, true)
+		streamWriteString(streamId, value)
+	end
+end
+
+function CpUtil.streamReadString(streamId)
+	if streamReadBool(streamId) then
+		return streamReadString(streamId)
+	end
+	return nil
+end
+
+function CpUtil.streamWriteInt32(streamId, value)
+	if value == nil then
+		streamWriteBool(streamId, false)
+	else
+		streamWriteBool(streamId, true)
+		streamWriteInt32(streamId, value)
+	end
+end
+
+function CpUtil.streamReadInt32(streamId)
+	if streamReadBool(streamId) then
+		return streamReadInt32(streamId)
+	end
+	return nil
+end
+
 
 --- Gets a class from a global class name.
 ---@param className string
