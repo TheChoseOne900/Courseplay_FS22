@@ -31,7 +31,7 @@ end
 
 --- For a given number of rows, the same pattern always result in the same sequence. Therefore,
 --- before calling _generateSequence() we always check if we have already generated it for this number of rows.
-function RowPattern:_getSequence(nRows)
+function RowPattern:getSequence(nRows)
     if #self.sequence == nRows  then
         return self.sequence
     else
@@ -58,7 +58,7 @@ end
 ---@param rows CourseGenerator.Row[] rows to work on
 function RowPattern:iterator(rows)
     local i = 0
-    local sequence = self:_getSequence(#rows)
+    local sequence = self:getSequence(#rows)
     return function()
         i = i + 1
         if i <= #sequence then
@@ -230,28 +230,19 @@ end
 ---@param rows CourseGenerator.Row[]
 ---@return CourseGenerator.RowPattern.Entry[] list of entries usable for this pattern
 function RowPatternSkip:getPossibleEntries(rows)
-    local sequence = self:_getSequence(#rows)
+    local sequence = self:getSequence(#rows)
     self.logger:debug('%d rows, first row is %d, last %d', #rows, sequence[1], sequence[#sequence])
     local firstRowBefore, lastRowBefore = rows[1], rows[#rows]
     -- last row when we start at either end of rows[1]
     local lastRowAfter = rows[sequence[#sequence]]
-    -- last row whe we start at either end of rows[#rows]
+    -- last row when we start at either end of rows[#rows]
     local lastRowAfterReversed = rows[#rows - sequence[#sequence] + 1]
     local entries = {
         -- we can start at either end of the first or the last row
         CourseGenerator.RowPattern.Entry(firstRowBefore[1], false, false, false),
         CourseGenerator.RowPattern.Entry(firstRowBefore[#firstRowBefore], false, false, true),
         CourseGenerator.RowPattern.Entry(lastRowBefore[1], true, false, false),
-        CourseGenerator.RowPattern.Entry(lastRowBefore[#lastRowBefore], true, false, true),
-        -- as opposed to the alternating pattern, where all four entry points are also
-        -- exits (on the diagonally opposite corner), where do we exit when using one of the
-        -- above entries, depends on the total number of rows and the number of rows skipped
-        -- now, we can also drive the whole pattern in the opposite direction, that is what
-        -- these entries are for.
-        CourseGenerator.RowPattern.Entry(lastRowAfterReversed[1], true, true, false),
-        CourseGenerator.RowPattern.Entry(lastRowAfterReversed[#lastRowAfterReversed], true, true, true),
-        CourseGenerator.RowPattern.Entry(lastRowAfter[1], false, true, false),
-        CourseGenerator.RowPattern.Entry(lastRowAfter[#lastRowAfter], false, true, true),
+        CourseGenerator.RowPattern.Entry(lastRowBefore[#lastRowBefore], true, false, true)
     }
     return entries
 end
@@ -345,7 +336,7 @@ function RowPatternSpiral:getPossibleEntries(rows)
             row:reverse()
         end
     end
-    local sequence = self:_getSequence(#rows)
+    local sequence = self:getSequence(#rows)
     local odd = #rows % 2 ~= 0
     local firstRow = rows[sequence[1]]
     local secondRow = rows[sequence[2]]
@@ -510,7 +501,7 @@ end
 ---@param rows CourseGenerator.Row[]
 ---@return CourseGenerator.RowPattern.Entry[] list of entries usable for this pattern
 function RowPatternLands:getPossibleEntries(rows)
-    local sequence = self:_getSequence(#rows)
+    local sequence = self:getSequence(#rows)
     local firstRow = rows[sequence[1]]
     local lastRow = rows[#rows - sequence[1] + 1]
     if not firstRow or not lastRow then

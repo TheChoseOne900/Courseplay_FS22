@@ -19,7 +19,7 @@ function CourseGeneratorInterface.generate(fieldPolygon,
     CourseGenerator.clearDebugObjects()
     local field = CourseGenerator.Field('', 0, CpMathUtil.pointsFromGame(fieldPolygon))
 
-    local context = CourseGenerator.FieldworkContext(field, settings.workWidth:getValue() * settings.multiTools:getValue(),
+    local context = CourseGenerator.FieldworkContext(field, settings.workWidth:getValue(),
             settings.turningRadius:getValue(), settings.numberOfHeadlands:getValue())
     local rowPatternNumber = settings.centerMode:getValue()
     if rowPatternNumber == CourseGenerator.RowPattern.ALTERNATING and settings.rowsToSkip:getValue() == 0 then
@@ -49,8 +49,10 @@ function CourseGeneratorInterface.generate(fieldPolygon,
     -- the Course Generator UI uses the geographical direction angles (0 - North, 90 - East, etc), convert it to
     -- the mathematical angle (0 - x+, 90 - y+, etc)
     context:setRowAngle(math.rad(-(settings.manualRowAngleDeg:getValue() - 90)))
+    context:setEvenRowDistribution(settings.evenRowWidth:getValue())
     context:setBypassIslands(settings.bypassIslands:getValue())
     context:setIslandHeadlands(settings.nIslandHeadlands:getValue())
+    context:setIslandHeadlandClockwise(settings.islandHeadlandClockwise:getValue())
     if settings.bypassIslands:getValue() then
         context.field:findIslands()
         context.field:setupIslands()
@@ -63,6 +65,20 @@ function CourseGeneratorInterface.generate(fieldPolygon,
         status, CourseGeneratorInterface.generatedCourse = xpcall(
                 function()
                     return CourseGenerator.FieldworkCourseTwoSided(context)
+                end,
+                function(err)
+                    printCallstack();
+                    return err
+                end
+        )
+    elseif settings.multiTools:getValue() > 1 then
+        context:setNumberOfVehicles(settings.multiTools:getValue())
+        context:setHeadlands(settings.multiTools:getValue() * settings.numberOfHeadlands:getValue())
+        context:setIslandHeadlands(settings.multiTools:getValue() * settings.nIslandHeadlands:getValue())
+        context:setUseSameTurnWidth(settings.useSameTurnWidth:getValue())
+        status, CourseGeneratorInterface.generatedCourse = xpcall(
+                function()
+                    return CourseGenerator.FieldworkCourseMultiVehicle(context)
                 end,
                 function(err)
                     printCallstack();
@@ -89,11 +105,11 @@ function CourseGeneratorInterface.generate(fieldPolygon,
     -- the actual number of headlands generated may be less than the requested
     local numberOfHeadlands = CourseGeneratorInterface.generatedCourse:getNumberOfHeadlands()
 
-    CourseGeneratorInterface.logger:debug('Generated course: %d/%d headland/center waypoints',
-            #CourseGeneratorInterface.generatedCourse:getHeadlandPath(), #CourseGeneratorInterface.generatedCourse:getCenterPath())
+    CourseGeneratorInterface.logger:debug('Generated course: %s', CourseGeneratorInterface.generatedCourse)
 
-    local course = Course.createFromGeneratedCourse(nil, CourseGeneratorInterface.generatedCourse,
-            settings.workWidth:getValue(), numberOfHeadlands, settings.multiTools:getValue())
+    local course = Course.createFromGeneratedCourse(vehicle, CourseGeneratorInterface.generatedCourse,
+            settings.workWidth:getValue(), numberOfHeadlands, settings.multiTools:getValue(),
+            settings.headlandClockwise:getValue(), settings.islandHeadlandClockwise:getValue(), not settings.useBaseLineEdge:getValue())
     course:setFieldPolygon(fieldPolygon)
     return true, course
 end
@@ -119,7 +135,7 @@ function CourseGeneratorInterface.generateVineCourse(
     CourseGenerator.clearDebugObjects()
     local field = CourseGenerator.Field('', 0, CpMathUtil.pointsFromGame(fieldPolygon))
 
-    local context = CourseGenerator.FieldworkContext(field, workWidth * multiTools, turningRadius, 0)
+    local context = CourseGenerator.FieldworkContext(field, workWidth, turningRadius, 0)
     if rowsToSkip == 0 then
         context:setRowPattern(CourseGenerator.RowPatternAlternating())
     else
@@ -151,7 +167,7 @@ function CourseGeneratorInterface.generateVineCourse(
             #CourseGeneratorInterface.generatedCourse:getCenterPath())
 
     local course = Course.createFromGeneratedCourse(nil, CourseGeneratorInterface.generatedCourse,
-            workWidth, 0, multiTools)
+            workWidth, 0, multiTools, true, true, true)
     course:setFieldPolygon(fieldPolygon)
     return true, course
 end

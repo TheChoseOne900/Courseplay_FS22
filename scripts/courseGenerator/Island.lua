@@ -116,14 +116,14 @@ function Island:generateHeadlands(context, mustNotCross)
     local headlands = {}
     self.boundary = CourseGenerator.FieldworkCourseHelper.createUsableBoundary(self.boundary, self.context.islandHeadlandClockwise)
     -- innermost headland is offset from the island by half width
-    headlands[1] = CourseGenerator.IslandHeadland(self, self.boundary, self.context.islandHeadlandClockwise, 1, self.context.headlandWorkingWidth / 2)
+    headlands[1] = CourseGenerator.IslandHeadland(self, self.boundary, self.context.islandHeadlandClockwise, 1, self.context:getHeadlandWorkingWidth() / 2)
     for i = 2, self.context.nIslandHeadlands do
         if not headlands[i - 1]:isValid() then
             self.logger:warning('headland %d is invalid, removing', i - 1)
             headlands[i - 1] = nil
             break
         end
-        headlands[i] = CourseGenerator.IslandHeadland(self, headlands[i - 1]:getPolygon(), self.context.islandHeadlandClockwise, i, self.context.headlandWorkingWidth)
+        headlands[i] = CourseGenerator.IslandHeadland(self, headlands[i - 1]:getPolygon(), self.context.islandHeadlandClockwise, i, self.context:getHeadlandWorkingWidth())
     end
     if headlands[1]:getPolygon():intersects(mustNotCross) then
         self.logger:error('First headland intersects field boundary!')
@@ -170,7 +170,7 @@ function Island:isTooBigToBypass(width)
     end
 end
 
-------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------- ---------------
 -- Find islands in the game.
 ------------------------------------------------------------------------------------------------------------------------
 function Island.findIslands(field)
@@ -178,11 +178,15 @@ function Island.findIslands(field)
     -- to end up with a 1x1 grid of nodes covering the islands of the field.
     Island.logger:debug('Generating grid for field with grid spacing %.1f', Island.gridSpacing)
     local context = CourseGenerator.FieldworkContext(field, Island.gridSpacing, 5, 0)
-    context:setAutoRowAngle(false):setRowAngle(0):setRowWaypointDistance(1)
-    local course = CourseGenerator.FieldworkCourse(context)
+    context:setAutoRowAngle(false):setRowAngle(0):setRowWaypointDistance(Island.gridSpacing)
+    context:_setGenerateBlocksOnly()
+    local boundary = CourseGenerator.FieldworkCourseHelper.createUsableBoundary(context.field:getBoundary(), context.headlandClockwise)
+    local center = CourseGenerator.Center(context, boundary, nil, context.startLocation, {})
+    center:generate()
     local islandVertices = {}
-    for _, b in ipairs(course:getCenter():getBlocks()) do
-        for _, r in ipairs(b:getRows()) do
+    for _, b in ipairs(center:getBlocks()) do
+        for _, r in ipairs(b:getUnsequencedRows()) do
+            r:splitEdges(Island.gridSpacing)
             for _, v in ipairs(r) do
                 local isOnField, _ = FSDensityMapUtil.getFieldDataAtWorldPosition(v.x, 0, -v.y)
                 if not isOnField then
@@ -198,5 +202,6 @@ function Island.findIslands(field)
             end
         end
     end
+    Island.logger:debug('    Found %d island vertices', #islandVertices)
     return islandVertices
 end

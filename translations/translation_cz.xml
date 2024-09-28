@@ -328,6 +328,8 @@
     <text name="CP_vehicle_courseGeneratorSetting_startOnHeadland_up_down_rows" text="Řádku"/>
     <text name="CP_vehicle_courseGeneratorSetting_multiTools_title" text="Více strojů"/>
     <text name="CP_vehicle_courseGeneratorSetting_multiTools_tooltip" text="Počet vozidel na stejné trase."/>
+    <text name="CP_vehicle_courseGeneratorSetting_useSameTurnWidth_title" text="Střídání jízdních pruhů"/>
+    <text name="CP_vehicle_courseGeneratorSetting_useSameTurnWidth_tooltip" text="Nastaví jízdní pruhy tak, aby se vždy střídaly. To vede k podobným obratům. Další podrobnosti naleznete v nabídce nápovědy."/>
     <text name="CP_vehicle_courseGeneratorSetting_useBaseLineEdge_title" text="Okraj pole"/>
     <text name="CP_vehicle_courseGeneratorSetting_useBaseLineEdge_tooltip" text="Řádky sledují zakřivení okraje pole, který je nejblíže značce pole."/>
     <text name="CP_vehicle_courseGeneratorSetting_narrowField_title" text="Úzké pole"/>
@@ -625,9 +627,9 @@ spirála
 kruh
 "/>
     <text name="CP_help_page_courseGeneratorIsland_text" text="
-Objíždění ostrova je nyní možné pouze při jeho úplném objíždění. 
-I v novém generátoru jsou limity pro ostrov příliš blízko hranice pole. 
-O tom, zda je ostrov příliš blízko, nebo ne, rozhoduje pracovní šířka nástroje. 
+Objíždění ostrova je nyní možné pouze při jeho úplném objíždění.
+I v novém generátoru jsou limity pro ostrov příliš blízko hranice pole.
+O tom, zda je ostrov příliš blízko, nebo ne, rozhoduje pracovní šířka nástroje.
 Stejně jako to, kolik souvratí se vejde mezi ostrov a hranici pole.
 "/>
     <text name="CP_help_page_courseGeneratorIslandFunctions_text" text="

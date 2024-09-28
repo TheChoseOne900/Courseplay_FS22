@@ -663,7 +663,11 @@ function CourseTurn:changeDirectionWhenAligned()
             local nextDirectionChangeIx = self.turnCourse:getNextDirectionChangeFromIx(self.turnCourse:getCurrentWaypointIx())
             if nextDirectionChangeIx then
                 self:debug('skipping to next direction change at %d', nextDirectionChangeIx + 1)
-                self.ppc:initialize(nextDirectionChangeIx + 1)
+                if self.turnCourse:isReverseAt(nextDirectionChangeIx + 1) then
+                    self.ppc:initializeForReversing(nextDirectionChangeIx + 1)
+                else
+                    self.ppc:initialize(nextDirectionChangeIx + 1)
+                end
             end
         end
     end
@@ -1016,6 +1020,8 @@ function StartRowOnly:getDriveData()
                 TurnManeuver.LOWER_IMPLEMENT_AT_TURN_END) then
             self.state = self.states.APPROACHING_ROW
             self:debug('Approaching row')
+            self.driveStrategy:raiseControllerEvent(AIDriveStrategyCourse.onTurnEndProgressEvent,
+                    self.turnContext.workStartNode, self.ppc:isReversing(), true, not self.turnContext:isNextTurnLeft())
         end
     elseif self.state == self.states.APPROACHING_ROW then
         local shouldLower, _ = self.driveStrategy:shouldLowerImplements(self.turnContext.workStartNode,

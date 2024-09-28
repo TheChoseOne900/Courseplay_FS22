@@ -49,6 +49,8 @@ function CpCourseGeneratorSettings.registerEventListeners(vehicleType)
     SpecializationUtil.registerEventListener(vehicleType, "onUpdate", CpCourseGeneratorSettings)
     SpecializationUtil.registerEventListener(vehicleType, "onLoadFinished",CpCourseGeneratorSettings)
     SpecializationUtil.registerEventListener(vehicleType, "onCpUnitChanged", CpCourseGeneratorSettings)
+    SpecializationUtil.registerEventListener(vehicleType, "onReadStream", CpCourseGeneratorSettings)
+    SpecializationUtil.registerEventListener(vehicleType, "onWriteStream", CpCourseGeneratorSettings)
 end
 function CpCourseGeneratorSettings.registerFunctions(vehicleType)
     SpecializationUtil.registerFunction(vehicleType, 'getCourseGeneratorSettings', CpCourseGeneratorSettings.getSettings)
@@ -114,6 +116,20 @@ function CpCourseGeneratorSettings:onUpdate(savegame)
         spec.workWidth:resetToLoadedValue()
     end
     spec.finishedFirstUpdate = true
+end
+
+function CpCourseGeneratorSettings:onReadStream(streamId, connection)
+    local spec = self.spec_cpCourseGeneratorSettings
+    for i, setting in ipairs(spec.settings) do 
+        setting:readStream(streamId, connection)
+    end
+end
+
+function CpCourseGeneratorSettings:onWriteStream(streamId, connection)
+    local spec = self.spec_cpCourseGeneratorSettings
+    for i, setting in ipairs(spec.settings) do 
+        setting:writeStream(streamId, connection)
+    end
 end
 
 function CpCourseGeneratorSettings:isRowsToSkipVisible()
@@ -233,6 +249,10 @@ function CpCourseGeneratorSettings:raiseCallback(callbackStr, setting, ...)
     SpecializationUtil.raiseEvent(self, callbackStr, setting, ...)
 end
 
+function CpCourseGeneratorSettings:raiseDirtyFlag(setting)
+    CourseGeneratorSettingsEvent.sendEvent(self, setting)
+end 
+
 function CpCourseGeneratorSettings:validateSettings()
     local spec = self.spec_cpCourseGeneratorSettings
     for i,setting in ipairs(spec.settings) do 
@@ -256,6 +276,11 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 --- Callbacks for the settings to manipulate the gui elements.
 ------------------------------------------------------------------------------------------------------------------------
+function CpCourseGeneratorSettings:hasMoreThenOneVehicle()
+    local spec = self.spec_cpCourseGeneratorSettings
+    return spec.multiTools:getValue() > 1
+end
+
 function CpCourseGeneratorSettings:hasHeadlandsSelected()
     local spec = self.spec_cpCourseGeneratorSettings
     return spec.numberOfHeadlands:getValue() > 0

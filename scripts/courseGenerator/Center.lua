@@ -19,7 +19,7 @@ function Center:init(context, boundary, headland, startLocation, bigIslands)
         -- if there are no headlands, we generate a virtual one, from the field boundary
         -- so using this later is equivalent of having an actual headland
         local virtualHeadland = CourseGenerator.FieldworkCourseHelper.createVirtualHeadland(boundary, self.context.headlandClockwise,
-                self.context.workingWidth)
+                self.context:getHeadlandWorkingWidth())
         if self.context.sharpenCorners then
             virtualHeadland:sharpenCorners(self.context.turningRadius)
         end
@@ -85,7 +85,7 @@ function Center:generate()
     -- but odd shaped, concave fields or fields with island may have more blocks
     if self.useBaselineEdge then
         self.rows = CourseGenerator.CurvedPathHelper.generateCurvedUpDownRows(self.headlandPolygon, self.context.baselineEdge,
-                self.context.workingWidth, self.context.turningRadius, nil)
+                self.context:getCenterRowSpacing(), self.context.turningRadius, nil)
     else
         local angle = self.context.autoRowAngle and self:_findBestRowAngle() or self.context.rowAngle
         self.rows = self:_generateStraightUpDownRows(angle)
@@ -94,6 +94,13 @@ function Center:generate()
 
     if #blocks < 1 then
         self.logger:debug('No blocks could be generated')
+        return
+    end
+    
+    if self.context:_generateBlocksOnly() then
+        self.logger:debug('Generating blocks only, no sequencing or connecting paths.')
+        self.blocks = blocks
+        self.connectingPaths = {}
         return
     end
 
@@ -176,7 +183,7 @@ function Center:generate()
     self.blocks = blocksInSequence
     local lastLocation = self.startLocation
     for _, b in ipairs(self.blocks) do
-        lastLocation = b:finalize(entries[b], self.context.rowWaypointDistance)
+        lastLocation = b:finalize(entries[b])
     end
     self:_wrapUpConnectingPaths()
     self.logger:debug('Found %d block(s), %d connecting path(s).', #self.blocks, #self.connectingPaths)
@@ -190,7 +197,7 @@ end
 --- crosses them.
 ---@param circle boolean when true, make a full circle on the other polygon, else just go around and continue
 function Center:bypassSmallIsland(islandHeadlandPolygon, circle)
-    local thisIslandCircled = circle
+    local thisIslandCircled = not circle
     -- first the up/down rows in each block ...
     for _, block in ipairs(self.blocks) do
         thisIslandCircled = block:bypassSmallIsland(islandHeadlandPolygon, not thisIslandCircled) or thisIslandCircled
@@ -198,17 +205,18 @@ function Center:bypassSmallIsland(islandHeadlandPolygon, circle)
     -- and then we have those connecting paths between the blocks
     for _, connectingPath in ipairs(self.connectingPaths) do
         if #connectingPath > 1 then
-            thisIslandCircled = CourseGenerator.FieldworkCourseHelper.bypassSmallIsland(connectingPath, self.context.workingWidth,
+            thisIslandCircled = CourseGenerator.FieldworkCourseHelper.bypassSmallIsland(connectingPath, self.context,
                     islandHeadlandPolygon, 1, not thisIslandCircled) or thisIslandCircled
         end
     end
+    return thisIslandCircled
 end
 
 --- Connecting paths should also drive around big islands
 function Center:bypassBigIsland(islandHeadlandPolygon)
     for _, connectingPath in ipairs(self.connectingPaths) do
         if #connectingPath > 1 then
-            CourseGenerator.FieldworkCourseHelper.bypassSmallIsland(connectingPath, self.context.workingWidth,
+            CourseGenerator.FieldworkCourseHelper.bypassSmallIsland(connectingPath, self.context,
                     islandHeadlandPolygon, 1, false)
         end
     end
@@ -231,7 +239,7 @@ function Center:_generateStraightUpDownRows(rowAngle, suppressLog)
     -- move the baseline to the edge of the area we want to cover
     baseline = baseline:createNext(dMin)
     local rowOffsets = self:_calculateRowDistribution(
-            self.context.workingWidth, dMax - dMin, self.context.evenRowDistribution, overlapLast)
+            self.context:getCenterRowSpacing(), dMax - dMin, self.context.evenRowDistribution, overlapLast)
 
     local rows = {}
     local row = baseline:createNext(rowOffsets[1])
@@ -244,7 +252,7 @@ function Center:_generateStraightUpDownRows(rowAngle, suppressLog)
         self.logger:debug('Created %d rows at %.0f° to cover an area %.1f wide, %.1f/%.1f m',
                 #rowOffsets, math.deg(rowAngle), dMax - dMin, rowOffsets[1], rowOffsets[#rowOffsets] or 0)
         self.logger:debug('    even distribution %s, remainder last %s', self.context.evenRowDistribution, overlapLast)
-        self.logger:debug('    dMin: %1.f, dMax: %.1f, startLocationDistance: %.1f', dMin, dMax, startLocationDistance)
+        self.logger:debug('    dMin: %.1f, dMax: %.1f, startLocationDistance: %.1f', dMin, dMax, startLocationDistance)
     end
     return rows
 end
@@ -321,7 +329,7 @@ end
 ---   3. leave the width of all rows the same working width. Here, part of the first or last row will be
 ---      outside of the field (work width * number of rows > field width). We always do this if there is a headland,
 ---      as the remainder will overlap with the headland.
----@param workingWidth
+---@param centerWorkingWidth number working width on the up/down rows in the center
 ---@param fieldWidth number distance between the headland centerlines we need to fill with rows. If there is no
 --- headland, this is the distance between the virtual headland centerlines, which is half working width wider than
 --- the actual field boundary.
@@ -330,32 +338,32 @@ end
 --- false at the beginning
 ---@return number, number, number, number number of rows, offset of first row from the field edge, offset of
 --- rows from the previous row for the next rows, offset of last row from the next to last row.
-function Center:_calculateRowDistribution(workingWidth, fieldWidth, sameWidth, overlapLast)
-    local nRows = math.floor(fieldWidth / workingWidth)
+function Center:_calculateRowDistribution(centerWorkingWidth, fieldWidth, sameWidth, overlapLast)
+    local nRows = math.floor(fieldWidth / centerWorkingWidth)
     if nRows == 0 then
         -- only one row fits between the headlands
         if overlapLast then
-            return { workingWidth / 2 }
+            return { centerWorkingWidth / 2 }
         else
-            return { fieldWidth - workingWidth / 2 }
+            return { fieldWidth - centerWorkingWidth / 2 }
         end
     else
         local width
         if sameWidth then
             -- #1
-            width = (fieldWidth - workingWidth) / (nRows - 1)
+            width = (fieldWidth - centerWorkingWidth) / (nRows - 1)
         else
             -- #2 and #3
-            width = workingWidth
+            width = centerWorkingWidth
         end
         local firstRowOffset
         local rowOffsets = {}
         if self.mayOverlapHeadland then
             -- #3 we have headlands
             if overlapLast then
-                firstRowOffset = workingWidth
+                firstRowOffset = centerWorkingWidth
             else
-                firstRowOffset = fieldWidth - (workingWidth + width * (nRows - 1))
+                firstRowOffset = fieldWidth - (centerWorkingWidth + width * (nRows - 1))
             end
             rowOffsets = { firstRowOffset }
             for _ = firstRowOffset, fieldWidth, width do
@@ -363,13 +371,13 @@ function Center:_calculateRowDistribution(workingWidth, fieldWidth, sameWidth, o
             end
         else
             -- #2, no headlands
-            for _ = workingWidth, fieldWidth - workingWidth, width do
+            for _ = centerWorkingWidth, fieldWidth - centerWorkingWidth, width do
                 table.insert(rowOffsets, width)
             end
             if overlapLast then
-                table.insert(rowOffsets, fieldWidth - (workingWidth + width * #rowOffsets))
+                table.insert(rowOffsets, fieldWidth - (centerWorkingWidth + width * #rowOffsets))
             else
-                rowOffsets[2] = fieldWidth - (workingWidth + width * #rowOffsets)
+                rowOffsets[2] = fieldWidth - (centerWorkingWidth + width * #rowOffsets)
                 table.insert(rowOffsets, width)
             end
 
@@ -432,7 +440,7 @@ function Center:_splitIntoBlocks(rows, headland)
             self.logger:trace('  %.1f m, %d vertices, overlaps with %d block(s)',
                     section:getLength(), #section, #overlappedBlocks)
             if #overlappedBlocks == 0 or #overlappedBlocks > 1 then
-                local newBlock = CourseGenerator.Block(self.context.rowPattern, blockId)
+                local newBlock = CourseGenerator.Block(self.context, blockId)
                 blockId = blockId + 1
                 newBlock:addRow(section)
                 -- remember that we added a section for row #i
