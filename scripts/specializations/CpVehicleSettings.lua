@@ -466,6 +466,13 @@ function CpVehicleSettings:generateSpeedSettingValuesAndTexts(setting, lastValue
     return values, texts, math.min(lastValue, maxSpeed)
 end
 
+function CpVehicleSettings:isRefillOnTheFieldSettingVisible()
+    return AIUtil.hasChildVehicleWithSpecialization(self, Sprayer) or 
+        AIUtil.hasChildVehicleWithSpecialization(self, SowingMachine) or 
+        AIUtil.hasChildVehicleWithSpecialization(self, TreePlanter) or 
+        CpVehicleSettings.isAdditiveFillUnitSettingVisible(self)
+end
+
 ---------------------------------------------
 --- Console Commands
 ---------------------------------------------

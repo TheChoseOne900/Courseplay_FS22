@@ -79,7 +79,7 @@ function FieldworkCourseMultiVehicle:init(context)
             -- create a headland path for each vehicle
             self.headlandPaths[v] = CourseGenerator.HeadlandConnector.connectHeadlandsFromOutside(self.headlandsForVehicle[v],
             -- TODO is this really the headland working width? Not the combined width?
-                    self.context.startLocation, self.context:getHeadlandWorkingWidth(), self.context.turningRadius)
+                    self.context.startLocation, self:_getHeadlandWorkingWidth(), self.context.turningRadius)
             self:routeHeadlandsAroundSmallIslands(self.headlandPaths[v])
         end
         self.logger:debug('### Generating up/down rows ###')
@@ -93,7 +93,7 @@ function FieldworkCourseMultiVehicle:init(context)
             -- create a headland path for each vehicle
             self.headlandPaths[v] = CourseGenerator.HeadlandConnector.connectHeadlandsFromInside(self.headlandsForVehicle[v],
             -- TODO is this really the headland working width? Not the combined width?
-                    endOfLastRow, self.context:getHeadlandWorkingWidth(), self.context.turningRadius)
+                    endOfLastRow, self:_getHeadlandWorkingWidth(), self.context.turningRadius)
             self:routeHeadlandsAroundSmallIslands(self.headlandPaths[v])
         end
     end
@@ -232,6 +232,8 @@ function FieldworkCourseMultiVehicle:generateCenter()
     -- if there are no headlands, or there are, but we start working in the middle, then use the
     -- designated start location, otherwise the point where the innermost headland ends.
     if #self.headlands == 0 then
+        -- the virtual headland the center uses is the combined working width
+        self.context:setHeadlandWidthForAdjustment(self.context.nVehicles * self.context.workingWidth)
         self.center = CourseGenerator.Center(self.context, self.boundary, nil, self.context.startLocation, self.bigIslands)
     else
         -- The center is generated with the combined width of all vehicles and it assumes that the headland
@@ -247,7 +249,7 @@ function FieldworkCourseMultiVehicle:generateCenter()
             centerBoundary = referenceHeadland
         else
             centerBoundary = CourseGenerator.Headland(referenceHeadland:getPolygon(), self.context.headlandClockwise,
-                    #self.headlands - 1, self.context:getHeadlandWorkingWidth() / 2, false)
+                    #self.headlands - 1, self:_getHeadlandWorkingWidth() / 2, false)
         end
         CourseGenerator.addDebugPolyline(centerBoundary:getPolygon())
         local innerMostHeadlandPolygon = self.headlands[#self.headlands]:getPolygon()
@@ -400,8 +402,11 @@ function FieldworkCourseMultiVehicle:_offsetConnectingPath(path, ix, offsetVecto
         section:append(path[i])
         i = i + 1
     until i > #path or not path[i]:getAttributes():isOnConnectingPath()
-    local offsetConnectingPath = _generateOffsetSection(section, offsetVector)
-    _appendOffsetSection(section, offsetConnectingPath, offsetPath)
+    if #section > 1 then
+        -- connecting paths with a single vertex can be ignored
+        local offsetConnectingPath = _generateOffsetSection(section, offsetVector)
+        _appendOffsetSection(section, offsetConnectingPath, offsetPath)
+    end
     return i
 end
 

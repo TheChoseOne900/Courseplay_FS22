@@ -6,7 +6,7 @@ CourseGenerator.Field = Field
 
 ---@param id string unique ID for this field for logging
 ---@param num number field number as shown in game
----@param boundary Polygon|nil boundary of the field
+---@param boundary [{x, y}]|nil boundary of the field
 function Field:init(id, num, boundary)
     self.id = id
     self.num = num
@@ -68,6 +68,13 @@ function Field.loadSavedFields(fileName)
         f:setupIslands()
     end
     return fields
+end
+
+--- Smooth out zigzags in the boundary. Zigzags are created when the FieldScanner is running at high resolution
+--- bigger than the game field pixel size
+function Field:_smoothBoundary()
+    CourseGenerator.SplineHelper.smooth(self:getBoundary(), 2, 1, #self:getBoundary(), math.rad(5), math.rad(45))
+    self:getBoundary():ensureMinimumEdgeLength(CourseGenerator.cMaxEdgeLength, math.rad(30))
 end
 
 --- Center of the field (centroid)

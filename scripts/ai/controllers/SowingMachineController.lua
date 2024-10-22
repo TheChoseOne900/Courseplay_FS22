@@ -5,6 +5,7 @@ SowingMachineController = CpObject(ImplementController)
 function SowingMachineController:init(vehicle, implement)
     ImplementController.init(self, vehicle, implement)
     self.sowingMachineSpec = self.implement.spec_sowingMachine
+	self:addRefillImplementAndFillUnit(self.implement, self.sowingMachineSpec.fillUnitIndex)
 end
 
 function SowingMachineController:update()
@@ -37,4 +38,17 @@ end
 
 function SowingMachineController:onFinished()
     self.implement:setIsTurnedOn(false)
+end
+
+-------------------------
+--- Refill handling
+-------------------------
+
+function SowingMachineController:needsRefilling()
+	if not g_currentMission.missionInfo.helperBuySeeds then
+		if self.implement:getFillUnitFillLevel(self.sowingMachineSpec.fillUnitIndex) <= 0 then 
+			return ImplementController.needsRefilling(self)
+		end
+	end
+	return false
 end

@@ -212,6 +212,10 @@
     <text name="CP_vehicle_setting_convoyDistance_tooltip" text="Afstand mellem kørtøjer. Værdi: 40 - 400"/>
     <text name="CP_vehicle_setting_debugActive_title" text="køretøj debug"/>
     <text name="CP_vehicle_setting_debugActive_tooltip" text="Debuginformationer for køretøj tænd/sluk. Visuel og logindtastninger"/>
+    <text name="CP_vehicle_setting_refillOnTheField_title" text="Refill tool"/>
+    <text name="CP_vehicle_setting_refillOnTheField_tooltip" text="Refill tool on the field"/>
+    <text name="CP_vehicle_setting_refillOnTheField_waiting" text="Waiting"/>
+    <text name="CP_vehicle_setting_refillOnTheField_active" text="Active"/>
     <!---->
     <!--Vehicle bunker silo settings-->
     <!---->
@@ -363,6 +367,8 @@
     <text name="CP_global_setting_autoRepair_always" text="Opretholde 100%"/>
     <text name="CP_global_setting_fuelThreshold_title" text="Brændstofstærskel"/>
     <text name="CP_global_setting_fuelThreshold_tooltip" text="Føreren fyres, hvis brændstofprocenten er mindre end."/>
+    <text name="CP_global_setting_waitForRefueling_title" text="Waits for refueling"/>
+    <text name="CP_global_setting_waitForRefueling_tooltip" text="Vehicle waits until it is refueled."/>
     <text name="CP_global_setting_brokenThreshold_title" text="Vedligholdestærskel"/>
     <text name="CP_global_setting_brokenThreshold_tooltip" text="Føreren fyres, hvis køretøjet eller et redskab er mere ødelagt. 100% er funktionen deaktiveret."/>
     <text name="CP_global_setting_stopThreshingDuringRain_title" text="Stopper mejetærskere, imens det regner"/>
@@ -440,6 +446,7 @@ Ruten gemmes automatisk ved lukning af editoren og tilsidesætter den valgte rut
     <!--Course editor-->
     <!---->
     <text name="CP_editor_course_title" text="Rute editor"/>
+    <text name="CP_editor_change_lane_offset" text="Change selected lane offset(%s)"/>
     <text name="CP_editor_delete_title" text="Slet vejpunkter"/>
     <text name="CP_editor_delete_primary_text" text="primær"/>
     <text name="CP_editor_delete_secondary_text" text="sekundær"/>

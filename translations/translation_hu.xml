@@ -212,6 +212,10 @@
     <text name="CP_vehicle_setting_convoyDistance_tooltip" text="Követési távolság ha több gép dolgozik ugyanazon a táblán. 40 - 400 m"/>
     <text name="CP_vehicle_setting_debugActive_title" text="Jármű hibakeresés"/>
     <text name="CP_vehicle_setting_debugActive_tooltip" text="Engedélyezi/letiltja a hibakeresést ennél a járműnél."/>
+    <text name="CP_vehicle_setting_refillOnTheField_title" text="Refill tool"/>
+    <text name="CP_vehicle_setting_refillOnTheField_tooltip" text="Refill tool on the field"/>
+    <text name="CP_vehicle_setting_refillOnTheField_waiting" text="Waiting"/>
+    <text name="CP_vehicle_setting_refillOnTheField_active" text="Active"/>
     <!---->
     <!--Vehicle bunker silo settings-->
     <!---->
@@ -363,6 +367,8 @@
     <text name="CP_global_setting_autoRepair_always" text="Javítsa"/>
     <text name="CP_global_setting_fuelThreshold_title" text="Minimum üzemanagszint"/>
     <text name="CP_global_setting_fuelThreshold_tooltip" text="A segítő abbahagyja a munkát, ha az üzemanyagszint ez alá csökken."/>
+    <text name="CP_global_setting_waitForRefueling_title" text="Waits for refueling"/>
+    <text name="CP_global_setting_waitForRefueling_tooltip" text="Vehicle waits until it is refueled."/>
     <text name="CP_global_setting_brokenThreshold_title" text="Maximum meghibásodás"/>
     <text name="CP_global_setting_brokenThreshold_tooltip" text="A segítő abbahagyja a munkát, ha a jármű/szerszám ennél jobban meghibásodik. 100% soha nem hagyja abba."/>
     <text name="CP_global_setting_stopThreshingDuringRain_title" text="Kombájn megállítása esőben"/>
@@ -440,6 +446,7 @@ Az útvonal automatikusan mentésre kerül a szerkesztő bezárásakor és felü
     <!--Course editor-->
     <!---->
     <text name="CP_editor_course_title" text="Útvonal szerkesztő"/>
+    <text name="CP_editor_change_lane_offset" text="Change selected lane offset(%s)"/>
     <text name="CP_editor_delete_title" text="Csomópontok törlése"/>
     <text name="CP_editor_delete_primary_text" text="Kijelölt pont törlése"/>
     <text name="CP_editor_delete_secondary_text" text="Kijelölt pont törlése"/>

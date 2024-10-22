@@ -212,6 +212,10 @@
     <text name="CP_vehicle_setting_convoyDistance_tooltip" text="车辆之间的距离。 调整范围: 40 - 400"/>
     <text name="CP_vehicle_setting_debugActive_title" text="车辆调试"/>
     <text name="CP_vehicle_setting_debugActive_tooltip" text="启用/禁用此车辆的调试。"/>
+    <text name="CP_vehicle_setting_refillOnTheField_title" text="Refill tool"/>
+    <text name="CP_vehicle_setting_refillOnTheField_tooltip" text="Refill tool on the field"/>
+    <text name="CP_vehicle_setting_refillOnTheField_waiting" text="Waiting"/>
+    <text name="CP_vehicle_setting_refillOnTheField_active" text="Active"/>
     <!---->
     <!--Vehicle bunker silo settings-->
     <!---->
@@ -363,6 +367,8 @@
     <text name="CP_global_setting_autoRepair_always" text="保持100%"/>
     <text name="CP_global_setting_fuelThreshold_title" text="燃料临界值"/>
     <text name="CP_global_setting_fuelThreshold_tooltip" text="如果燃料剩余量过低，司机将停止工作。"/>
+    <text name="CP_global_setting_waitForRefueling_title" text="Waits for refueling"/>
+    <text name="CP_global_setting_waitForRefueling_tooltip" text="Vehicle waits until it is refueled."/>
     <text name="CP_global_setting_brokenThreshold_title" text="损坏临界值"/>
     <text name="CP_global_setting_brokenThreshold_tooltip" text="如果车辆或工具损坏过多，司机将停止工作。100%为关闭。"/>
     <text name="CP_global_setting_stopThreshingDuringRain_title" text="下雨时停止收割机工作"/>
@@ -440,6 +446,7 @@
     <!--Course editor-->
     <!---->
     <text name="CP_editor_course_title" text="任务线路编辑"/>
+    <text name="CP_editor_change_lane_offset" text="Change selected lane offset(%s)"/>
     <text name="CP_editor_delete_title" text="删除路线"/>
     <text name="CP_editor_delete_primary_text" text="主要路线"/>
     <text name="CP_editor_delete_secondary_text" text="次要路线"/>

@@ -14,7 +14,7 @@ function FieldScanner:init(resolution)
     -- sure if it is 1 or 0.5, so 0.2 seems to be a safe bet
     self.resolution = resolution or 0.2
     self.highResolution = 0.1
-    self.normalTracerLookahead = 3.0
+    self.normalTracerLookahead = 5.0
     self.shortTracerLookahead = self.normalTracerLookahead / 10
     self.angleStep = self.highResolution / self.normalTracerLookahead
 end
@@ -177,7 +177,7 @@ function FieldScanner:findContour(x, z)
         else
             if not done and not lost then
                 self:debug('%d. try, edge not found, we may have hit an island or corner, reset/rotate the probe a bit and retry', i)
-                setRotation(probe, 0, i * math.pi / 7, 0)
+                setRotation(probe, 0, i * math.pi / 6, 0)
             elseif lost then
                 self:info('Could not trace field edge, limit search to field %d and retry', fieldId)
                 limitToFieldId = fieldId

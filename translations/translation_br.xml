@@ -212,6 +212,10 @@
     <text name="CP_vehicle_setting_convoyDistance_tooltip" text="Distância entre veículos. Valor: 40 - 400"/>
     <text name="CP_vehicle_setting_debugActive_title" text="Debug do veículo"/>
     <text name="CP_vehicle_setting_debugActive_tooltip" text="Ativar/desativar debug para este veículo."/>
+    <text name="CP_vehicle_setting_refillOnTheField_title" text="Refill tool"/>
+    <text name="CP_vehicle_setting_refillOnTheField_tooltip" text="Refill tool on the field"/>
+    <text name="CP_vehicle_setting_refillOnTheField_waiting" text="Waiting"/>
+    <text name="CP_vehicle_setting_refillOnTheField_active" text="Active"/>
     <!---->
     <!--Vehicle bunker silo settings-->
     <!---->
@@ -363,6 +367,8 @@
     <text name="CP_global_setting_autoRepair_always" text="Manter sempre reparado"/>
     <text name="CP_global_setting_fuelThreshold_title" text="Limite de combustível"/>
     <text name="CP_global_setting_fuelThreshold_tooltip" text="Motorista será liberado, se a porcentagem de combustível for menor."/>
+    <text name="CP_global_setting_waitForRefueling_title" text="Waits for refueling"/>
+    <text name="CP_global_setting_waitForRefueling_tooltip" text="Vehicle waits until it is refueled."/>
     <text name="CP_global_setting_brokenThreshold_title" text="Limite de danos"/>
     <text name="CP_global_setting_brokenThreshold_tooltip" text="Motorista será liberado, se o veículo ou implemento estiver 100% danificado."/>
     <text name="CP_global_setting_stopThreshingDuringRain_title" text="Parar a colheitadeira, enquanto estiver chovendo"/>
@@ -440,6 +446,7 @@ A rota é salva automaticamente ao fechar o editor e substituir a rota seleciona
     <!--Course editor-->
     <!---->
     <text name="CP_editor_course_title" text="Editor de rota"/>
+    <text name="CP_editor_change_lane_offset" text="Mudar para distânciamento da faixa (%s)"/>
     <text name="CP_editor_delete_title" text="Excluir waypoints"/>
     <text name="CP_editor_delete_primary_text" text="primário"/>
     <text name="CP_editor_delete_secondary_text" text="secundário"/>
@@ -1030,7 +1037,7 @@ Agora sua seleção deve ser semelhante à imagem.
     <text name="input_CP_DBG_CHANNEL_MENU_VISIBILITY" text="CP: Mostrar canal de debug sim/não."/>
     <text name="input_CP_OPEN_CLOSE_VEHICLE_SETTING_DISPLAY" text="CP: Abrir mini GUI"/>
     <text name="input_CP_START_STOP" text="CP: Dirigir/stop motorista"/>
-    <text name="input_CP_CHANGE_SELECTED_JOB" text="CP: Change current selected job"/>
+    <text name="input_CP_CHANGE_SELECTED_JOB" text="CP: Alterar trabalho selecionado atual"/>
     <text name="input_CP_CHANGE_STARTING_POINT" text="CP: Mudar ponto inicial"/>
     <text name="input_CP_CLEAR_COURSE" text="CP: Limpa a rota atual"/>
     <text name="input_CP_CHANGE_COURSE_VISIBILITY" text="Ecibir a  rota atual do veículo"/>

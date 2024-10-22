@@ -194,8 +194,8 @@ function Course:enrichWaypointData(startIx)
     end
     for i = startIx or 1, #self.waypoints - 1 do
         self.waypoints[i].dToHere = self.length
-        local cx, _, cz = self:getWaypointPosition(i)
-        local nx, _, nz = self:getWaypointPosition(i + 1)
+        local cx, _, cz = self.waypoints[i]:getPosition()
+        local nx, _, nz = self.waypoints[i + 1]:getPosition()
         local dToNext = MathUtil.getPointPointDistance(cx, cz, nx, nz)
         self.waypoints[i].dToNext = dToNext
         self.length = self.length + dToNext
@@ -212,12 +212,13 @@ function Course:enrichWaypointData(startIx)
         -- of setting dx/dz to 0 (instead of NaN) but should investigate as it does not make sense
         local dx, dz = MathUtil.vector2Normalize(nx - cx, nz - cz)
         -- check for NaN
-        if dx == dx and dz == dz then
+        if dx == dx and dz == dz and not (dx == 0 and dz == 0)then
             self.waypoints[i].dx, self.waypoints[i].dz = dx, dz
             self.waypoints[i].yRot = MathUtil.getYRotationFromDirection(dx, dz)
         else
             self.waypoints[i].dx, self.waypoints[i].dz = 0, 0
-            self.waypoints[i].yRot = 0
+            -- NaN or both 0, use the direction of the previous waypoint
+            self.waypoints[i].yRot = self.waypoints[i - 1].yRot
         end
         self.waypoints[i].angle = math.deg(self.waypoints[i].yRot)
         self.waypoints[i].calculatedRadius = i == 1 and math.huge or self:calculateRadius(i)
@@ -354,6 +355,10 @@ function Course:isTurnStartAtIx(ix)
                     not self:isOnConnectingPath(ix + 1) and
                     not self:shouldUsePathfinderToNextWaypoint(ix)) or
             (self.waypoints[ix + 1] and self.waypoints[ix + 1]:isHeadlandTurn())
+end
+
+function Course:isHeadlandTurnAtIx(ix)
+    return ix <= #self.waypoints and self.waypoints[ix]:isHeadlandTurn()
 end
 
 function Course:isTurnEndAtIx(ix)
@@ -497,10 +502,11 @@ end
 ---@param ix number waypoint index
 ---@return number, number, number x, y, z
 function Course:getWaypointPosition(ix)
-    if self:isTurnStartAtIx(ix) then
+    if self:isTurnStartAtIx(ix) and not self:isHeadlandTurnAtIx(ix) then
         -- turn start waypoints point to the turn end wp, for example at the row end they point 90 degrees to the side
         -- from the row direction. This is a problem when there's an offset so use the direction of the previous wp
-        -- when calculating the offset for a turn start wp.
+        -- when calculating the offset for a turn start wp, except for headlands turns where we actually drive the
+        -- section between turn start and turn end.
         return self:getOffsetPositionWithOtherWaypointDirection(ix, ix - 1)
     else
         return self.waypoints[ix]:getOffsetPosition(self.offsetX + self.temporaryOffsetX:get(), self.offsetZ + self.temporaryOffsetZ:get())
@@ -610,8 +616,15 @@ function Course:getWaypointYRotation(ix)
     local cx, _, cz = self:getWaypointPosition(i)
     local nx, _, nz = self:getWaypointPosition(i + 1)
     local dx, dz = MathUtil.vector2Normalize(nx - cx, nz - cz)
-    -- check for NaN
-    if dx ~= dx or dz ~= dz then
+    -- check for NaN, or if current and next are at the same position
+    if dx ~= dx or dz ~= dz or (dx == 0 and dz == 0) then
+        -- use the direction of the previous waypoint if exists, otherwise the next. This is to make sure that
+        -- the WaypointNode used by the PPC has a valid direction
+        if i > 1 then
+            return self.waypoints[i - 1].yRot
+        else
+            return self.waypoints[i + 1].yRot
+        end
         return 0
     end
     return MathUtil.getYRotationFromDirection(dx, dz)
@@ -1572,8 +1585,8 @@ function Course:saveToXml(courseXml, courseKey)
     end
 end
 
----@param vehicle  table
----@param courseXml XmlFile
+---@param vehicle  table|nil
+---@param courseXml table
 ---@param courseKey string key to the course in the XML
 function Course.createFromXml(vehicle, courseXml, courseKey)
     local course = Course(vehicle, {})
@@ -1602,7 +1615,9 @@ function Course.createFromXml(vehicle, courseXml, courseKey)
     if course.nVehicles and course.nVehicles > 1 then
         course.multiVehicleData = Course.MultiVehicleData.createFromXmlFile(courseXml, courseKey)
         course:setPosition(course.multiVehicleData:getPosition())
-        vehicle:getCpLaneOffsetSetting():setValue(course.multiVehicleData:getPosition())
+        if vehicle then
+            vehicle:getCpLaneOffsetSetting():setValue(course.multiVehicleData:getPosition())
+        end
     else
         course:enrichWaypointData()
     end
@@ -1813,4 +1828,17 @@ function Course.MultiVehicleData.createFromStream(stream, nVehicles)
         end
     end
     return mvd
+end
+
+function Course.MultiVehicleData.getAllowedPositions(nMultiToolVehicles)
+    if nMultiToolVehicles == 2 then 
+        return {-1,1}
+    elseif nMultiToolVehicles == 3 then 
+        return {-1,0,1}
+    elseif nMultiToolVehicles == 4 then 
+        return {-2,-1,1,2}
+    elseif nMultiToolVehicles == 5 then 
+        return {-2,-1,0,1,2}
+    end
+    return {0}
 end

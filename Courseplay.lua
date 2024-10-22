@@ -1,5 +1,7 @@
 
 --- Global class
+---@class Courseplay
+---@operator call:Courseplay
 Courseplay = CpObject()
 Courseplay.MOD_NAME = g_currentModName
 Courseplay.BASE_DIRECTORY = g_currentModDirectory
@@ -196,6 +198,7 @@ function Courseplay:update(dt)
     g_bunkerSiloManager:update(dt)
     g_triggerManager:update(dt)
 	g_baleToCollectManager:update(dt)
+	g_courseEditor:update(dt)
     if not self.postInit then 
         -- Doubles the map zoom for 4x Maps. Mainly to make it easier to set targets for unload triggers.
         self.postInit = true
@@ -333,23 +336,26 @@ function Courseplay.removePlayerActionEvents(player)
 end
 
 --- Registers all cp specializations.
----@param typeManager TypeManager
+---@param typeManager table
 function Courseplay.register(typeManager)
-	--- TODO: make this function async. 
-	for typeName, typeEntry in pairs(typeManager.types) do	
-		CpAIWorker.register(typeManager, typeName, typeEntry.specializations)
-		CpVehicleSettings.register(typeManager, typeName, typeEntry.specializations)
-		CpCourseGeneratorSettings.register(typeManager, typeName, typeEntry.specializations)
-		CpCourseManager.register(typeManager, typeName, typeEntry.specializations)
-		CpAIFieldWorker.register(typeManager, typeName, typeEntry.specializations)
-		CpAIBaleFinder.register(typeManager, typeName, typeEntry.specializations)
-		CpAICombineUnloader.register(typeManager, typeName, typeEntry.specializations)
-		CpAISiloLoaderWorker.register(typeManager, typeName, typeEntry.specializations)
-		CpAIBunkerSiloWorker.register(typeManager, typeName, typeEntry.specializations)
-		CpGamePadHud.register(typeManager, typeName,typeEntry.specializations)
-		CpHud.register(typeManager, typeName, typeEntry.specializations)
-		CpInfoTexts.register(typeManager, typeName, typeEntry.specializations)
-		CpShovelPositions.register(typeManager, typeName, typeEntry.specializations)
+	if typeManager.typeName == "vehicle" and g_modIsLoaded[Courseplay.MOD_NAME] then
+		--- TODO: make this function async. 
+		for typeName, typeEntry in pairs(typeManager.types) do	
+			CpAIWorker.register(typeManager, typeName, typeEntry.specializations)
+			CpVehicleSettings.register(typeManager, typeName, typeEntry.specializations)
+			CpCourseGeneratorSettings.register(typeManager, typeName, typeEntry.specializations)
+			CpCourseManager.register(typeManager, typeName, typeEntry.specializations)
+			CpAIFieldWorker.register(typeManager, typeName, typeEntry.specializations)
+			CpAIBaleFinder.register(typeManager, typeName, typeEntry.specializations)
+			CpAICombineUnloader.register(typeManager, typeName, typeEntry.specializations)
+			CpAISiloLoaderWorker.register(typeManager, typeName, typeEntry.specializations)
+			CpAIBunkerSiloWorker.register(typeManager, typeName, typeEntry.specializations)
+			CpGamePadHud.register(typeManager, typeName,typeEntry.specializations)
+			CpHud.register(typeManager, typeName, typeEntry.specializations)
+			CpInfoTexts.register(typeManager, typeName, typeEntry.specializations)
+			CpShovelPositions.register(typeManager, typeName, typeEntry.specializations)
+		end
+		typeManager:addSpecialization("fillableImplement", "aiLoadable")
 	end
 end
 TypeManager.finalizeTypes = Utils.prependedFunction(TypeManager.finalizeTypes, Courseplay.register)
