@@ -1,7 +1,7 @@
 # Courseplay Beta for Farming Simulator 2022
 
 <!-- [![Modhub release (latest by date)](https://img.shields.io/badge/dynamic/xml?color=blue&style=flat-square&label=Modhub+Release&prefix=v&query=%2F%2Fdiv%5B%40class%3D%27table-cell%27%5D%5B2%5D%5Bcontains%28text%28%29%2C%227.%22%29%5D&url=https%3A%2F%2Fwww.farming-simulator.com%2Fmod.php%3Flang%3Dde%26country%3Dde%26mod_id%3D248390%26title%3Dfs2022)](https://www.farming-simulator.com/mod.php?lang=de&country=de&mod_id=248390&title=fs2022) -->
-[![Modhub release](https://img.shields.io/badge/Modhub%20Release-Modification-blue.svg)](https://www.farming-simulator.com/mod.php?mod_id=248390)
+[![Modhub release](https://img.shields.io/badge/Modhub%20Release-Modification-blue.svg)](https://www.farming-simulator.com/mod.php?mod_id=248390title=fs2022)
 [![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/Courseplay/Courseplay_FS22?include_prereleases&style=flat-square&label=Github+Release)](https://github.com/Courseplay/Courseplay_FS22/releases/latest)
 [![GitHub Pre-Releases (by Asset)](https://img.shields.io/github/downloads-pre/Courseplay/Courseplay_FS22/latest/FS22_Courseplay.zip?style=flat-square)](https://github.com/Courseplay/Courseplay_FS22/releases/latest/download/FS22_Courseplay.zip)
 [![GitHub issues](https://img.shields.io/github/issues/Courseplay/Courseplay_FS22?style=flat-square)](https://github.com/Courseplay/Courseplay_FS22/issues)
@@ -89,6 +89,7 @@ We work long, hard, in our own free time at developing and improving Courseplay.
 
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=7PDM2P6HQ5D56&item_name=Promote+the+development+of+Courseplay&currency_code=EUR&source=url)
 
+<a href="https://www.buymeacoffee.com/courseplay" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 ___
 
 ## Contributors
